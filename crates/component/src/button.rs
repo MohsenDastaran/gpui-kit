@@ -1,12 +1,27 @@
+//! GPUI-target copy source for Button.
+//!
+//! Styled presentation over [`gpui_base::Button`]. The registry CLI copies this
+//! file; it does not copy `gpui-base`. `ButtonGroup`, `DropdownButton`, and
+//! `Toggle` live in submodules and are not part of the Button copy unit.
+
+mod button_group;
+mod button_icon;
+mod dropdown_button;
+mod toggle;
+
+pub use button_group::*;
+pub(crate) use button_icon::*;
+pub use dropdown_button::*;
+pub use toggle::*;
+
 use std::rc::Rc;
 
 use crate::ThemeStyled as _;
 use crate::{
-    ActiveTheme, Colorize as _, Disableable, Icon, Placement, RoleOverride, Selectable, Sizable,
-    Size, StyleSized, StyledExt,
+    ActiveTheme, Colorize as _, Disableable, Icon, IconName, Placement, RoleOverride, Selectable,
+    Sizable, Size, StyleSized, StyledExt,
     button::ButtonIcon,
     h_flex,
-    select::Caret,
     tooltip::{ManagedTooltipExt as _, Tooltip},
 };
 use gpui::{
@@ -15,6 +30,39 @@ use gpui::{
     StatefulInteractiveElement as _, StyleRefinement, Styled, Window, div,
     prelude::FluentBuilder as _, relative, transparent_white,
 };
+
+
+/// Chevron used by Button, Select, and Combobox triggers.
+#[derive(IntoElement)]
+pub struct Caret {
+    size: Size,
+    color: Option<Hsla>,
+}
+
+impl Caret {
+    /// Create a caret sized for its trigger.
+    pub fn new(size: Size) -> Self {
+        Self { size, color: None }
+    }
+
+    /// Set the caret color.
+    pub fn text_color(mut self, color: Hsla) -> Self {
+        self.color = Some(color);
+        self
+    }
+}
+
+impl RenderOnce for Caret {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        Icon::new(IconName::ChevronDown)
+            .with_size(match self.size {
+                Size::XSmall => Size::XSmall,
+                Size::Small => Size::Small,
+                _ => Size::Medium,
+            })
+            .when_some(self.color, |this, color| this.text_color(color))
+    }
+}
 
 #[derive(Default, Clone, Copy)]
 pub enum ButtonRounded {

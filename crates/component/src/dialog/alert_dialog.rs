@@ -397,7 +397,7 @@ mod tests {
     use gpui::{ClickEvent, TestAppContext, px, size};
 
     use super::*;
-    use crate::dialog::dialog::tests::window;
+    use crate::dialog::tests::window;
 
     /// `button_props` overrides only the fields it sets, so the Cancel button
     /// `confirm` asked for survives a later props value that never mentions it.

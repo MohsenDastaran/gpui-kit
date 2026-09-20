@@ -1,3 +1,9 @@
+//! GPUI-target copy source for Dropdown.
+//!
+//! Styled `DropdownMenu` over Popover and [`PopupMenu`]. The registry CLI copies
+//! this file; it does not copy `gpui-base`. Keep `gpui-base` as the behavior
+//! dependency of the popup primitives those types wrap.
+
 use std::rc::Rc;
 
 use gpui::{

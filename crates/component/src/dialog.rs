@@ -1,20 +1,38 @@
+//! GPUI-target copy source for Dialog.
+//!
+//! Styled presentation over [`gpui_base::Dialog`] parts. The registry CLI copies
+//! this file; it does not copy `gpui-base`. `AlertDialog` lives in a submodule
+//! and is not part of the Dialog copy unit.
+
+mod alert_dialog;
+mod dispatch_anchor;
+
+pub use alert_dialog::*;
+pub(crate) use dispatch_anchor::DialogDispatchAnchor;
+
+
+// --- dialog.rs ---
+
 use gpui_base::TestSupportExt as _;
 use std::{rc::Rc, sync::LazyLock, time::Duration};
 
 use gpui::{
     Action, Animation, AnimationExt as _, AnyElement, App, BoxShadow, ClickEvent, Edges,
     FocusHandle, Hsla, InteractiveElement, IntoElement, ParentElement, Pixels, RenderOnce,
-    SharedString, StyleRefinement, Styled, Window, WindowControlArea, anchored, div, hsla, point,
-    prelude::FluentBuilder, px,
+    SharedString, StatefulInteractiveElement, StyleRefinement, Styled, Window, WindowControlArea,
+    anchored, div, hsla, point, prelude::FluentBuilder, px, relative,
 };
-use gpui_base::{ElementExt as _, TextSelectionScopeId};
+use gpui_base::{
+    DialogDescription as BaseDialogDescription, DialogTitle as BaseDialogTitle, ElementExt as _,
+    TextSelectionScopeId,
+};
 use rust_i18n::t;
 
 use crate::{
     ActiveTheme as _, IconName, Root, Sizable as _, StyledExt, TITLE_BAR_HEIGHT, WindowExt as _,
     animation::cubic_bezier,
     button::{Button, ButtonVariant, ButtonVariants as _},
-    dialog::{DialogContent, DialogDispatchAnchor, DialogTitle},
+    h_flex,
     scroll::ScrollableElement as _,
     v_flex,
 };
@@ -909,5 +927,311 @@ pub(crate) mod tests {
         assert!(first.bottom() <= viewport.height - px(16.), "{first:?}");
         assert!(second.bottom() <= viewport.height - px(16.), "{second:?}");
         assert!(second.size.height < first.size.height);
+    }
+}
+
+// --- title.rs ---
+
+/// Title element for a dialog header.
+#[derive(IntoElement)]
+pub struct DialogTitle {
+    base: BaseDialogTitle,
+    style: StyleRefinement,
+    children: Vec<AnyElement>,
+}
+
+impl DialogTitle {
+    pub fn new() -> Self {
+        Self {
+            base: BaseDialogTitle::new(),
+            style: StyleRefinement::default(),
+            children: vec![],
+        }
+    }
+}
+
+impl ParentElement for DialogTitle {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl Styled for DialogTitle {
+    fn style(&mut self) -> &mut StyleRefinement {
+        &mut self.style
+    }
+}
+
+impl RenderOnce for DialogTitle {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        self.base
+            .text_base()
+            .font_semibold()
+            .line_height(relative(1.25))
+            .refine_style(&self.style)
+            .children(self.children)
+    }
+}
+
+// --- description.rs ---
+
+/// Description element for a dialog header.
+///
+/// Typically used inside a DialogHeader component to provide additional context.
+///
+/// # Examples
+///
+/// ```ignore
+/// DialogDescription::new("This action cannot be undone.")
+/// ```
+#[derive(IntoElement)]
+pub struct DialogDescription {
+    base: BaseDialogDescription,
+    style: StyleRefinement,
+    children: Vec<AnyElement>,
+}
+
+impl DialogDescription {
+    pub fn new() -> Self {
+        Self {
+            base: BaseDialogDescription::new(),
+            style: StyleRefinement::default(),
+            children: vec![],
+        }
+    }
+}
+
+impl ParentElement for DialogDescription {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl Styled for DialogDescription {
+    fn style(&mut self) -> &mut StyleRefinement {
+        &mut self.style
+    }
+}
+
+impl RenderOnce for DialogDescription {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        self.base
+            .text_sm()
+            .text_color(cx.theme().muted_foreground)
+            .refine_style(&self.style)
+            .children(self.children)
+    }
+}
+
+// --- header.rs ---
+
+/// Header section of a dialog, typically contains DialogTitle and DialogDescription.
+///
+/// # Examples
+///
+/// ```ignore
+/// DialogHeader::new()
+///     .child(DialogTitle::new().child("Delete Account"))
+///     .child(DialogDescription::new().child("This action cannot be undone."))
+/// ```
+#[derive(IntoElement)]
+pub struct DialogHeader {
+    style: StyleRefinement,
+    children: Vec<AnyElement>,
+}
+
+impl DialogHeader {
+    pub fn new() -> Self {
+        Self {
+            style: StyleRefinement::default(),
+            children: Vec::new(),
+        }
+    }
+}
+
+impl ParentElement for DialogHeader {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl Styled for DialogHeader {
+    fn style(&mut self) -> &mut StyleRefinement {
+        &mut self.style
+    }
+}
+
+impl RenderOnce for DialogHeader {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        v_flex()
+            .gap_2()
+            .refine_style(&self.style)
+            .children(self.children)
+    }
+}
+
+// --- footer.rs ---
+
+/// Footer section of a dialog, typically contains action buttons.
+///
+/// # Examples
+///
+/// ```ignore
+/// DialogFooter::new()
+///     .child(DialogClose::new().trigger(|button| button.label("Cancel")))
+///     .child(Button::new("confirm").label("Confirm"))
+/// ```
+#[derive(IntoElement)]
+pub struct DialogFooter {
+    style: StyleRefinement,
+    children: Vec<AnyElement>,
+}
+
+impl DialogFooter {
+    pub fn new() -> Self {
+        Self {
+            style: StyleRefinement::default(),
+            children: Vec::new(),
+        }
+    }
+}
+
+impl ParentElement for DialogFooter {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl Styled for DialogFooter {
+    fn style(&mut self) -> &mut StyleRefinement {
+        &mut self.style
+    }
+}
+
+impl RenderOnce for DialogFooter {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        h_flex()
+            .gap_2()
+            .justify_end()
+            .line_height(relative(1.25))
+            .rounded_b(cx.theme().radius_lg)
+            .refine_style(&self.style)
+            .children(self.children)
+    }
+}
+
+pub trait DialogFooterButton {
+    fn is_cancel(&self) -> bool {
+        false
+    }
+
+    fn is_action(&self) -> bool {
+        false
+    }
+}
+#[derive(IntoElement)]
+pub struct DialogClose {
+    base: gpui_base::DialogClose,
+}
+
+impl DialogClose {
+    pub fn new() -> Self {
+        Self {
+            base: gpui_base::DialogClose::new(),
+        }
+    }
+
+    /// Styles a close button whose accessibility and activation are owned by Base.
+    pub fn trigger<E: IntoElement>(mut self, build: impl FnOnce(Button) -> E) -> Self {
+        self.base = self
+            .base
+            .trigger(|button| build(Button::new("close").with_base(button)));
+        self
+    }
+}
+
+impl ParentElement for DialogClose {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.base.extend(elements);
+    }
+}
+
+impl RenderOnce for DialogClose {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        div().size_full().child(self.base)
+    }
+}
+
+#[derive(IntoElement)]
+pub struct DialogAction {
+    children: Vec<AnyElement>,
+}
+
+impl DialogAction {
+    pub fn new() -> Self {
+        Self {
+            children: Vec::new(),
+        }
+    }
+}
+
+impl ParentElement for DialogAction {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl RenderOnce for DialogAction {
+    fn render(self, window: &mut Window, cx: &mut App) -> impl IntoElement {
+        let anchor = DialogDispatchAnchor::new("dialog-action-anchor", window, cx);
+        div()
+            .size_full()
+            .id("dialog-action")
+            .child(anchor.element())
+            .on_click(move |_, window, cx| {
+                anchor.dispatch(&Confirm { secondary: false }, window, cx)
+            })
+            .children(self.children)
+    }
+}
+
+// --- content.rs ---
+
+/// Content container for a dialog.
+#[derive(IntoElement)]
+pub struct DialogContent {
+    style: StyleRefinement,
+    children: Vec<AnyElement>,
+}
+
+impl DialogContent {
+    pub fn new() -> Self {
+        Self {
+            style: StyleRefinement::default(),
+            children: Vec::new(),
+        }
+    }
+}
+
+impl ParentElement for DialogContent {
+    fn extend(&mut self, elements: impl IntoIterator<Item = AnyElement>) {
+        self.children.extend(elements);
+    }
+}
+
+impl Styled for DialogContent {
+    fn style(&mut self) -> &mut StyleRefinement {
+        &mut self.style
+    }
+}
+
+impl RenderOnce for DialogContent {
+    fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
+        v_flex()
+            .w_full()
+            .flex_1()
+            .rounded(cx.theme().radius_lg)
+            .refine_style(&self.style)
+            .children(self.children)
     }
 }

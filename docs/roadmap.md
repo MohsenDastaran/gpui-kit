@@ -5,7 +5,7 @@
 **Progress**
 
 - [x] 1. Restructure
-- [ ] 2. GPUI target source
+- [x] 2. GPUI target source
 - [ ] 3. Design tokens
 - [ ] 4. Registry + CLI (GPUI only)
 - [ ] 5. Slint target

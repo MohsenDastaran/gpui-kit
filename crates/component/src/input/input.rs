@@ -1,3 +1,9 @@
+//! GPUI-target copy source for Input.
+//!
+//! Styled presentation over [`gpui_base::InputBase`]. The registry CLI copies
+//! this file; it does not copy `gpui-base`. Editor, textarea, and OTP live in
+//! sibling modules and are not part of the Input copy unit.
+
 use std::rc::Rc;
 
 use gpui::prelude::FluentBuilder as _;

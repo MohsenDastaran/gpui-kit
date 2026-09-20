@@ -1,3 +1,13 @@
+//! GPUI-target copy source for Tabs.
+//!
+//! Styled presentation over [`gpui_base::Tab`] / [`gpui_base::Tabs`]. The registry
+//! CLI copies this file; [`tab_bar`] is the TabBar companion in the same copy
+//! unit. It does not copy `gpui-base`.
+
+mod tab_bar;
+
+pub use tab_bar::*;
+
 use std::{rc::Rc, time::Duration};
 
 use crate::animation::{Lerp, ease_in_out_cubic};

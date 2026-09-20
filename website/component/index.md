@@ -57,6 +57,7 @@ collapsed: false
 ### Layout Components
 
 - [DescriptionList](description-list) - Key-value pair display
+- [Card](card) - Bordered content surface with header, body, and footer
 - [GroupBox](group-box) - Grouped content with borders
 - [Root](root) - Window-level provider for themes, dialogs, and notifications
 - [Theme](theme) - Customize colors, typography, and light/dark appearance

@@ -1,3 +1,8 @@
+//! GPUI-target copy source for Switch.
+//!
+//! Styled presentation over [`gpui_base::Switch`]. The registry CLI copies this
+//! file; it does not copy `gpui-base`.
+
 use crate::{
     ActiveTheme, Disableable, FocusableExt, Side, Sizable, Size, StyledExt, ThemeStyled as _,
     text::Text, tooltip::ComponentTooltip,

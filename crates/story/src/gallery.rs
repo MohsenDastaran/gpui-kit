@@ -74,6 +74,7 @@ impl Gallery {
                 StoryContainer::panel::<BubbleStory>(window, cx),
                 StoryContainer::panel::<ButtonStory>(window, cx),
                 StoryContainer::panel::<CalendarStory>(window, cx),
+                StoryContainer::panel::<CardStory>(window, cx),
                 StoryContainer::panel::<CarouselStory>(window, cx),
                 StoryContainer::panel::<ChartStory>(window, cx),
                 StoryContainer::panel::<CheckboxStory>(window, cx),

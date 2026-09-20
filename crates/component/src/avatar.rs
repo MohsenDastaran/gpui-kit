@@ -1,14 +1,47 @@
+//! GPUI-target copy source for Avatar.
+//!
+//! Styled presentation over [`gpui_base::Avatar`]. The registry CLI copies this
+//! file; it does not copy `gpui-base`. `AvatarGroup` lives in a submodule and is
+//! not part of the Avatar copy unit.
+
+mod avatar_group;
+
+pub use avatar_group::*;
+
+use crate::{ActiveTheme, Icon, IconName, Sizable, Size, StyledExt as _, ThemeStyled as _, oklch};
 use gpui::{
-    App, Hsla, ImageSource, InteractiveElement, Interactivity, IntoElement, ParentElement as _,
-    RenderOnce, SharedString, StyleRefinement, Styled, Window, div, prelude::FluentBuilder,
+    App, Div, Hsla, ImageSource, Img, InteractiveElement, Interactivity, IntoElement,
+    ParentElement as _, Pixels, RenderOnce, SharedString, StyleRefinement, Styled, Window, div,
+    prelude::FluentBuilder, px, rems,
 };
 use gpui_base::{Avatar as BaseAvatar, AvatarFallback, AvatarImage};
 
-use crate::{
-    ActiveTheme, Icon, IconName, Sizable, Size, StyledExt, ThemeStyled as _,
-    avatar::{AvatarSized as _, avatar_size},
-    oklch,
-};
+/// Returns the size of the avatar based on the given [`Size`].
+pub(crate) fn avatar_size(size: Size) -> Pixels {
+    match size {
+        Size::Large => px(80.),
+        Size::Medium => px(48.),
+        Size::Small => px(24.),
+        Size::XSmall => px(16.),
+        Size::Size(size) => size,
+    }
+}
+
+/// Extension for add `avatar_size` method to `IntoElement` to apply avatar size to element.
+pub(crate) trait AvatarSized: IntoElement + Styled {
+    fn avatar_text_size(self, size: Size) -> Self {
+        match size {
+            Size::Large => self.text_3xl().font_semibold(),
+            Size::Medium => self.text_sm(),
+            Size::Small => self.text_xs(),
+            Size::XSmall => self.text_size(rems(0.65)),
+            Size::Size(size) => self.size(size * 0.5),
+        }
+    }
+}
+impl AvatarSized for Div {}
+impl AvatarSized for Icon {}
+impl AvatarSized for Img {}
 
 /// User avatar element.
 ///

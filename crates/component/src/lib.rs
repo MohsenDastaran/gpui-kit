@@ -1,3 +1,10 @@
+//! GPUI Component: the styled presentation layer over [`gpui_base`].
+//!
+//! The registry CLI (roadmap phase 4) copies GPUI-target files from this crate.
+//! It does not copy `gpui-base`; applications keep that crate as a real
+//! dependency, the same way shadcn keeps Radix. The twelve copy sources are
+//! listed in `registry/README.md`.
+
 use gpui::App;
 use std::ops::Deref;
 
@@ -30,6 +37,7 @@ pub mod badge;
 pub mod breadcrumb;
 pub mod bubble;
 pub mod button;
+pub mod card;
 pub mod carousel;
 pub mod chart;
 pub mod checkbox;

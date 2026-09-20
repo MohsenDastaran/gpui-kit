@@ -1,3 +1,8 @@
+//! GPUI-target copy source for Badge.
+//!
+//! Presentational overlay. There is no `gpui-base` Badge primitive. The registry
+//! CLI copies this file; it does not copy `gpui-base`.
+
 use gpui::{
     AnyElement, App, Hsla, IntoElement, ParentElement, RenderOnce, StyleRefinement, Styled, Window,
     div, prelude::FluentBuilder, px, relative,

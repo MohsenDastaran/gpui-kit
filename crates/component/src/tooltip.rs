@@ -1,3 +1,8 @@
+//! GPUI-target copy source for Tooltip.
+//!
+//! Styled presentation over [`gpui_base::Tooltip`]. The registry CLI copies this
+//! file; it does not copy `gpui-base`.
+
 use std::{cell::Cell, rc::Rc, time::Duration};
 
 use gpui::{

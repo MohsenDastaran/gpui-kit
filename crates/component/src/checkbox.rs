@@ -1,3 +1,8 @@
+//! GPUI-target copy source for Checkbox.
+//!
+//! Styled presentation over [`gpui_base::Checkbox`]. The registry CLI copies
+//! this file; it does not copy `gpui-base`.
+
 use std::rc::Rc;
 
 use crate::{
