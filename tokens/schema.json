@@ -1,0 +1,135 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "DesignTokens",
+  "description": "Framework-independent design tokens (color, spacing, radius, typography). Derived from .theme-schema.json and crates/component/src/theme/default-theme.json. The registry CLI maps this file to a GPUI ThemeSet.",
+  "type": "object",
+  "required": ["name", "modes"],
+  "properties": {
+    "name": { "type": "string" },
+    "author": { "type": ["string", "null"] },
+    "url": { "type": ["string", "null"] },
+    "modes": {
+      "type": "object",
+      "required": ["light", "dark"],
+      "properties": {
+        "light": { "$ref": "#/$defs/TokenMode" },
+        "dark": { "$ref": "#/$defs/TokenMode" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "TokenMode": {
+      "type": "object",
+      "required": ["name", "color", "spacing", "radius", "typography", "shadow"],
+      "properties": {
+        "name": { "type": "string" },
+        "color": { "$ref": "#/$defs/ColorTokens" },
+        "spacing": { "$ref": "#/$defs/SpacingTokens" },
+        "radius": { "$ref": "#/$defs/RadiusTokens" },
+        "typography": { "$ref": "#/$defs/TypographyTokens" },
+        "shadow": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "ColorTokens": {
+      "type": "object",
+      "description": "Semantic colors. Hex only — named GPUI palette keys such as neutral-900 stay in the GPUI theme layer.",
+      "required": [
+        "background",
+        "foreground",
+        "surface",
+        "surface_foreground",
+        "primary",
+        "primary_foreground",
+        "secondary",
+        "secondary_foreground",
+        "muted",
+        "muted_foreground",
+        "accent",
+        "accent_foreground",
+        "destructive",
+        "destructive_foreground",
+        "border",
+        "input",
+        "ring",
+        "selection"
+      ],
+      "properties": {
+        "background": { "type": "string" },
+        "foreground": { "type": "string" },
+        "surface": { "type": "string" },
+        "surface_foreground": { "type": "string" },
+        "primary": { "type": "string" },
+        "primary_foreground": { "type": "string" },
+        "secondary": { "type": "string" },
+        "secondary_foreground": { "type": "string" },
+        "muted": { "type": "string" },
+        "muted_foreground": { "type": "string" },
+        "accent": { "type": "string" },
+        "accent_foreground": { "type": "string" },
+        "destructive": { "type": "string" },
+        "destructive_foreground": { "type": "string" },
+        "border": { "type": "string" },
+        "input": { "type": "string" },
+        "ring": { "type": "string" },
+        "selection": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "SpacingTokens": {
+      "type": "object",
+      "required": ["xxs", "xs", "sm", "md", "lg", "xl", "xxl"],
+      "properties": {
+        "xxs": { "type": "number" },
+        "xs": { "type": "number" },
+        "sm": { "type": "number" },
+        "md": { "type": "number" },
+        "lg": { "type": "number" },
+        "xl": { "type": "number" },
+        "xxl": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "RadiusTokens": {
+      "type": "object",
+      "required": ["none", "sm", "md", "lg", "xl", "full"],
+      "properties": {
+        "none": { "type": "number" },
+        "sm": { "type": "number" },
+        "md": { "type": "number" },
+        "lg": { "type": "number" },
+        "xl": { "type": "number" },
+        "full": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "TextStyle": {
+      "type": "object",
+      "required": ["size", "line_height", "weight"],
+      "properties": {
+        "size": { "type": "number" },
+        "line_height": { "type": "number" },
+        "weight": { "type": "number" }
+      },
+      "additionalProperties": false
+    },
+    "TypographyTokens": {
+      "type": "object",
+      "required": ["sans", "font_size", "mono_font_size", "xs", "sm", "md", "lg", "xl", "mono_md"],
+      "properties": {
+        "sans": { "type": "string" },
+        "mono": { "type": ["string", "null"] },
+        "font_size": { "type": "number" },
+        "mono_font_size": { "type": "number" },
+        "xs": { "$ref": "#/$defs/TextStyle" },
+        "sm": { "$ref": "#/$defs/TextStyle" },
+        "md": { "$ref": "#/$defs/TextStyle" },
+        "lg": { "$ref": "#/$defs/TextStyle" },
+        "xl": { "$ref": "#/$defs/TextStyle" },
+        "mono_md": { "$ref": "#/$defs/TextStyle" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

@@ -10,7 +10,6 @@ mod dispatch_anchor;
 pub use alert_dialog::*;
 pub(crate) use dispatch_anchor::DialogDispatchAnchor;
 
-
 // --- dialog.rs ---
 
 use gpui_base::TestSupportExt as _;

@@ -1,6 +1,5 @@
 use gpui_kit::{
-    App, AppContext, Context, Entity, Focusable, IntoElement, ParentElement, Render, Styled,
-    Window,
+    App, AppContext, Context, Entity, Focusable, IntoElement, ParentElement, Render, Styled, Window,
 };
 
 use gpui_kit::component::{

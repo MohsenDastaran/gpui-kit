@@ -31,7 +31,6 @@ use gpui::{
     prelude::FluentBuilder as _, relative, transparent_white,
 };
 
-
 /// Chevron used by Button, Select, and Combobox triggers.
 #[derive(IntoElement)]
 pub struct Caret {

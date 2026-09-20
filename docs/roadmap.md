@@ -6,7 +6,7 @@
 
 - [x] 1. Restructure
 - [x] 2. GPUI target source
-- [ ] 3. Design tokens
+- [x] 3. Design tokens
 - [ ] 4. Registry + CLI (GPUI only)
 - [ ] 5. Slint target
 - [ ] 6. Cross-framework component spec
