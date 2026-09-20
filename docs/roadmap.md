@@ -4,7 +4,7 @@
 
 **Progress**
 
-- [ ] 1. Restructure
+- [x] 1. Restructure
 - [ ] 2. GPUI target source
 - [ ] 3. Design tokens
 - [ ] 4. Registry + CLI (GPUI only)

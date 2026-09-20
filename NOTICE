@@ -1,0 +1,12 @@
+GPUI Kit
+Copyright 2024 - 2026 Longbridge <https://longbridge.com>
+
+This product is licensed under the Apache License, Version 2.0.
+See LICENSE-APACHE.
+
+This product includes software developed at Zed Industries (GPUI),
+also licensed under the Apache License, Version 2.0.
+https://github.com/zed-industries/zed
+
+The `gpui-pre-*` crates are snapshots of GPUI, published with Zed's license
+and notices intact.

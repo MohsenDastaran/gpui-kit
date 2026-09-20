@@ -211,7 +211,7 @@ cargo run -p window_title
 
 ## 许可证
 
-Apache-2.0
+Apache-2.0。第三方声明见 [NOTICE](./NOTICE)。
 
 - 基于 Zed Industries 的 [GPUI](https://github.com/zed-industries/zed) 构建，GPUI 同样采用 Apache-2.0。`gpui-pre-*` 是它的快照，发布时保留 Zed 的许可证与声明。
 - UI 设计基于 [shadcn/ui](https://ui.shadcn.com)，部分来自 [Reui](https://reui.io)。

@@ -1,0 +1,14 @@
+[package]
+name = "registry-cli"
+description = "The `dui` CLI for the cross-framework UI registry."
+version = "0.6.4"
+license = "Apache-2.0"
+publish = false
+edition.workspace = true
+
+[[bin]]
+name = "dui"
+path = "src/main.rs"
+
+[lints]
+workspace = true

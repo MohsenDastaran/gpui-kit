@@ -1,0 +1,10 @@
+[package]
+name = "slint-component"
+description = "Hand-authored Slint components for the cross-framework registry."
+version = "0.6.4"
+license = "Apache-2.0"
+publish = false
+edition.workspace = true
+
+[lints]
+workspace = true
