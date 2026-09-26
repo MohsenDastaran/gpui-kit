@@ -1,0 +1,25 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Switch } from "../switch.slint";
+import { ControlSize } from "../theme.slint";
+
+export component SwitchExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Basic"; variant: GroupBoxVariant.outline;
+        Switch { label: "Airplane mode"; }
+        Switch { label: "Wi-Fi"; checked: true; }
+        Switch { label: "Disabled"; enabled: false; }
+    }
+    GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 16px;
+            Switch { size: ControlSize.xsmall; checked: true; }
+            Switch { size: ControlSize.small; checked: true; }
+            Switch { checked: true; }
+            Switch { size: ControlSize.large; checked: true; }
+        }
+    }
+
+}

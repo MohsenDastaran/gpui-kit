@@ -1,0 +1,34 @@
+import { Theme } from "theme.slint";
+
+export enum GroupBoxVariant { normal, fill, outline }
+
+// A container grouping related content under an optional title. Mirrors GPUI
+// Component's `GroupBox`: `normal` has no chrome, `fill` a muted background,
+// `outline` a border.
+export component GroupBox inherits VerticalLayout {
+    in property <string> title;
+    in property <GroupBoxVariant> variant: GroupBoxVariant.normal;
+
+    spacing: variant == GroupBoxVariant.normal ? 16px : 12px;
+
+    if title != "": Text {
+        text: title;
+        color: Theme.muted-foreground;
+        font-size: Theme.font-size-sm;
+        font-weight: 500;
+    }
+
+    Rectangle {
+        background: variant == GroupBoxVariant.fill ? Theme.muted.with-alpha(Theme.dark ? 0.5 : 0.6) : transparent;
+        border-width: variant == GroupBoxVariant.outline ? 1px : 0;
+        border-color: Theme.border;
+        border-radius: Theme.radius-md;
+
+        VerticalLayout {
+            padding: variant == GroupBoxVariant.normal ? 0 : 16px;
+            spacing: 16px;
+            alignment: start;
+            @children
+        }
+    }
+}

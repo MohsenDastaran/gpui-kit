@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Menu } from "../menu.slint";
+
+export component MenuExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Menu {
+        items: [
+            { label: "New file", icon: "file", shortcut: "⌘N", disabled: false, checked: false, separator: false },
+            { label: "Copy", icon: "copy", shortcut: "⌘C", disabled: false, checked: false, separator: false },
+            { label: "", icon: "", shortcut: "", disabled: false, checked: false, separator: true },
+            { label: "Delete", icon: "trash", shortcut: "⌫", disabled: false, checked: false, separator: false },
+        ];
+    }
+
+}

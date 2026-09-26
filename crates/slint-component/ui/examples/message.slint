@@ -1,0 +1,13 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Message, MessageRole } from "../message.slint";
+
+export component MessageExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Message { role: MessageRole.user; body: "How do I add a Slint button?"; }
+    Message { role: MessageRole.assistant; body: "Copy button.slint and theme.slint into your project, then import Button."; }
+
+}

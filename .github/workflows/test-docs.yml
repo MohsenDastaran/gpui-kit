@@ -6,6 +6,7 @@ on:
       - ".github/workflows/test-docs.yml"
       - "crates/base/**"
       - "crates/story-web/**"
+      - "crates/slint-component/**"
 
 jobs:
   build:

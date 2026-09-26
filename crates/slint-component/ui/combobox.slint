@@ -1,0 +1,78 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Input } from "input.slint";
+import { SelectItem } from "select.slint";
+
+// A searchable list. Mirrors GPUI Component's `Combobox`.
+export component Combobox {
+    in property <[SelectItem]> items;
+    in-out property <string> text;
+    in-out property <int> selected: -1;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(index: int);
+
+    height: Theme.control-height(size);
+    min-width: 200px;
+
+    Input {
+        text <=> root.text;
+        placeholder: "Search…";
+        suffix-icon: "chevrons-up-down";
+        size: root.size;
+        accepted => {
+            pop.show();
+        }
+    }
+
+    TouchArea {
+        x: parent.width - 28px;
+        width: 28px;
+        height: 100%;
+        clicked => {
+            pop.show();
+        }
+    }
+
+    pop := PopupWindow {
+        y: Theme.control-height(size) + 4px;
+        width: root.width;
+        close-policy: close-on-click-outside;
+
+        Rectangle {
+            border-radius: Theme.radius-lg;
+            border-width: 1px;
+            border-color: Theme.border;
+            background: Theme.popover;
+            drop-shadow-blur: 12px;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-color: Theme.shadow;
+
+            VerticalLayout {
+                padding: 4px;
+                for item[index] in root.items: Rectangle {
+                    visible: true;
+                    border-radius: Theme.radius-sm;
+                    background: touch.has-hover ? Theme.accent : transparent;
+                    HorizontalLayout {
+                        padding: 8px;
+                        Text {
+                            horizontal-stretch: 1;
+                            text: item.label;
+                            color: Theme.foreground;
+                            font-size: Theme.font-size-sm;
+                        }
+                        if selected == index: Icon { name: "check"; size: 14px; color: Theme.foreground; }
+                    }
+                    touch := TouchArea {
+                        clicked => {
+                            root.selected = index;
+                            root.text = item.label;
+                            root.changed(index);
+                            pop.close();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

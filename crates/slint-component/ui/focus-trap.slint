@@ -1,0 +1,33 @@
+import { Theme } from "theme.slint";
+
+// Keeps keyboard focus cycling inside a region. Mirrors GPUI Component's
+// `FocusTrap`. Slint FocusScope does not expose a full tab ring; Tab still
+// walks the children, and Escape calls `escaped`.
+export component FocusTrap {
+    in property <bool> enabled: true;
+    callback escaped();
+
+    forward-focus: scope;
+
+    scope := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == Key.Escape {
+                root.escaped();
+                return accept;
+            }
+            reject
+        }
+
+        Rectangle {
+            border-width: 1px;
+            border-color: Theme.border;
+            border-radius: Theme.radius-lg;
+            VerticalLayout {
+                padding: 16px;
+                spacing: 12px;
+                @children
+            }
+        }
+    }
+}

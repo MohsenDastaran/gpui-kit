@@ -1,0 +1,173 @@
+import { Theme, ControlSize } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption } from "../table.slint";
+
+export component TableExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <[{ invoice: string, status: string, method: string, amount: string }]> invoices: [
+        { invoice: "INV001", status: "Paid", method: "Credit Card", amount: "$250.00" },
+        { invoice: "INV002", status: "Pending", method: "PayPal", amount: "$150.00" },
+        { invoice: "INV003", status: "Unpaid", method: "Bank Transfer", amount: "$350.00" },
+        { invoice: "INV004", status: "Paid", method: "Credit Card", amount: "$450.00" },
+        { invoice: "INV005", status: "Paid", method: "PayPal", amount: "$550.00" },
+    ];
+    private property <bool> striped;
+    private property <bool> bordered: true;
+    private property <ControlSize> table-size: ControlSize.medium;
+
+    GroupBox {
+        title: "Basic table";
+        variant: GroupBoxVariant.outline;
+
+        Table {
+            TableHeader {
+                TableRow {
+                    TableHead { text: "Invoice"; }
+                    TableHead { text: "Status"; }
+                    TableHead { text: "Method"; }
+                    TableHead { text: "Amount"; align: TextHorizontalAlignment.right; }
+                }
+            }
+            TableBody {
+                for row[i] in invoices: TableRow {
+                    index: i;
+                    TableCell { text: row.invoice; }
+                    TableCell { text: row.status; }
+                    TableCell { text: row.method; }
+                    TableCell { text: row.amount; align: TextHorizontalAlignment.right; }
+                }
+            }
+            TableCaption { text: "A list of your recent invoices."; }
+        }
+    }
+
+    GroupBox {
+        title: "Striped, bordered and sizes";
+        variant: GroupBoxVariant.outline;
+
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button {
+                text: "Striped";
+                selected: striped;
+                clicked => {
+                    striped = !striped;
+                }
+            }
+            Button {
+                text: "Bordered";
+                selected: bordered;
+                clicked => {
+                    bordered = !bordered;
+                }
+            }
+            Rectangle { width: 8px; }
+            Button {
+                text: "Small";
+                selected: table-size == ControlSize.small;
+                clicked => {
+                    table-size = ControlSize.small;
+                }
+            }
+            Button {
+                text: "Medium";
+                selected: table-size == ControlSize.medium;
+                clicked => {
+                    table-size = ControlSize.medium;
+                }
+            }
+            Button {
+                text: "Large";
+                selected: table-size == ControlSize.large;
+                clicked => {
+                    table-size = ControlSize.large;
+                }
+            }
+        }
+
+        Table {
+            bordered: bordered;
+            TableHeader {
+                TableRow {
+                    TableHead { text: "Invoice"; size: table-size; }
+                    TableHead { text: "Status"; size: table-size; align: TextHorizontalAlignment.center; }
+                    TableHead { text: "Method"; size: table-size; }
+                    TableHead { text: "Amount"; size: table-size; align: TextHorizontalAlignment.right; }
+                }
+            }
+            TableBody {
+                for row[i] in invoices: TableRow {
+                    index: i;
+                    striped: striped;
+                    TableCell { text: row.invoice; size: table-size; }
+                    TableCell {
+                        size: table-size;
+                        align: TextHorizontalAlignment.center;
+                        VerticalLayout {
+                            alignment: center;
+                            Rectangle {
+                                property <color> tone: row.status == "Paid" ? Theme.success : row.status == "Pending" ? Theme.warning : Theme.danger;
+                                height: 20px;
+                                border-radius: Theme.radius-sm;
+                                background: Theme.tint(tone);
+                                HorizontalLayout {
+                                    padding-left: 6px;
+                                    padding-right: 6px;
+                                    Text {
+                                        text: row.status;
+                                        color: tone;
+                                        font-size: Theme.font-size-xs;
+                                        font-weight: 500;
+                                        vertical-alignment: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    TableCell { text: row.method; size: table-size; }
+                    TableCell { text: row.amount; size: table-size; align: TextHorizontalAlignment.right; }
+                }
+            }
+            TableFooter {
+                TableRow {
+                    TableCell { text: "Total"; size: table-size; col-span: 3; }
+                    TableCell { text: "$1,750.00"; size: table-size; align: TextHorizontalAlignment.right; }
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Column widths";
+        variant: GroupBoxVariant.outline;
+
+        Table {
+            TableHeader {
+                TableRow {
+                    TableHead { text: "ID"; width: 80px; }
+                    TableHead { text: "Name"; }
+                    TableHead { text: "Email"; col-span: 2; }
+                    TableHead { text: "Date"; width: 120px; }
+                }
+            }
+            TableBody {
+                for person[i] in [
+                    { id: "1", name: "John Doe", email: "john@example.com", date: "2026-01-12" },
+                    { id: "2", name: "Jane Smith", email: "jane@example.com", date: "2026-02-03" },
+                    { id: "3", name: "Carlos Rivera", email: "carlos@example.com", date: "2026-03-21" },
+                ]: TableRow {
+                    index: i;
+                    TableCell { text: person.id; width: 80px; mono: true; text-color: Theme.muted-foreground; }
+                    TableCell { text: person.name; }
+                    TableCell { text: person.email; col-span: 2; }
+                    TableCell { text: person.date; width: 120px; mono: true; }
+                }
+            }
+        }
+    }
+}

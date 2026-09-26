@@ -1,0 +1,30 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { BarChart, ChartLegend } from "../chart.slint";
+
+export component ChartExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    BarChart {
+        height: 180px;
+        points: [
+            { label: "Mon", value: 40 },
+            { label: "Tue", value: 70 },
+            { label: "Wed", value: 55 },
+            { label: "Thu", value: 90 },
+            { label: "Fri", value: 30 },
+        ];
+    }
+    ChartLegend {
+        points: [
+            { label: "Mon", value: 40 },
+            { label: "Tue", value: 70 },
+            { label: "Wed", value: 55 },
+            { label: "Thu", value: 90 },
+            { label: "Fri", value: 30 },
+        ];
+    }
+
+}

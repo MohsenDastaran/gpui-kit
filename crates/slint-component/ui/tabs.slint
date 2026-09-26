@@ -1,0 +1,79 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export enum TabsVariant { underline, pill, outline }
+
+export struct TabItem {
+    label: string,
+    icon: string,
+    disabled: bool,
+}
+
+// A tab bar plus content switch. Mirrors GPUI Component's `Tabs`.
+export component Tabs inherits VerticalLayout {
+    in property <[TabItem]> items;
+    in-out property <int> selected: 0;
+    in property <TabsVariant> variant: TabsVariant.underline;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(index: int);
+
+    spacing: 0;
+
+    HorizontalLayout {
+        spacing: variant == TabsVariant.underline ? 0 : 4px;
+        padding: variant == TabsVariant.underline ? 0 : 4px;
+
+        for item[index] in items: Rectangle {
+            border-radius: variant == TabsVariant.underline ? 0 : Theme.radius-sm;
+            background: selected == index && variant != TabsVariant.underline ? Theme.muted : transparent;
+
+            HorizontalLayout {
+                padding-left: Theme.control-padding(size);
+                padding-right: Theme.control-padding(size);
+                padding-top: 6px;
+                padding-bottom: 6px;
+                spacing: 6px;
+                alignment: center;
+
+                if item.icon != "": Icon {
+                    name: item.icon;
+                    size: Theme.icon-size(size);
+                    color: selected == index ? Theme.foreground : Theme.muted-foreground;
+                }
+
+                Text {
+                    text: item.label;
+                    color: item.disabled ? Theme.muted-foreground.with-alpha(0.5)
+                        : selected == index ? Theme.foreground
+                        : Theme.muted-foreground;
+                    font-size: Theme.control-font-size(size);
+                    font-weight: selected == index ? 600 : 500;
+                }
+            }
+
+            if variant == TabsVariant.underline && selected == index: Rectangle {
+                y: parent.height - 2px;
+                height: 2px;
+                background: Theme.primary;
+            }
+
+            TouchArea {
+                enabled: !item.disabled;
+                clicked => {
+                    root.selected = index;
+                    root.changed(index);
+                }
+            }
+        }
+    }
+
+    if variant == TabsVariant.underline: Rectangle {
+        height: 1px;
+        background: Theme.border;
+    }
+
+    VerticalLayout {
+        padding-top: 16px;
+        @children
+    }
+}

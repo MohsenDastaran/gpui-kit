@@ -1,0 +1,27 @@
+import { Theme, Status } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { DataTable, DataTableColumn, DataTableRow } from "../data-table.slint";
+
+export component DataTableExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "Invoices";
+        variant: GroupBoxVariant.outline;
+        DataTable {
+            height: 240px;
+            columns: [
+                { key: "invoice", title: "Invoice", width: 100px, align: TextHorizontalAlignment.left, sortable: true, resizable: false },
+                { key: "status", title: "Status", width: 100px, align: TextHorizontalAlignment.left, sortable: true, resizable: false },
+                { key: "amount", title: "Amount", width: 0, align: TextHorizontalAlignment.right, sortable: true, resizable: false },
+            ];
+            rows: [
+                { id: "1", cells: [{ text: "INV001", status: Status.default }, { text: "Paid", status: Status.success }, { text: "$250", status: Status.default }] },
+                { id: "2", cells: [{ text: "INV002", status: Status.default }, { text: "Pending", status: Status.warning }, { text: "$150", status: Status.default }] },
+                { id: "3", cells: [{ text: "INV003", status: Status.default }, { text: "Unpaid", status: Status.danger }, { text: "$350", status: Status.default }] },
+            ];
+        }
+    }
+}

@@ -1,0 +1,60 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Button } from "button.slint";
+import { Progress } from "progress.slint";
+
+// A file chip. Mirrors GPUI Component's `Attachment`.
+export component Attachment {
+    in property <string> name;
+    in property <string> size;
+    in property <float> progress: 100;
+    callback removed();
+
+    HorizontalLayout {
+        spacing: 10px;
+        padding: 10px;
+
+        Rectangle {
+            width: 36px;
+            height: 36px;
+            border-radius: Theme.radius-md;
+            background: Theme.muted;
+            Icon {
+                x: 10px;
+                y: 10px;
+                name: "file";
+                size: 16px;
+                color: Theme.foreground;
+            }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 4px;
+            Text {
+                text: name;
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                font-weight: 500;
+                overflow: elide;
+            }
+            Text {
+                text: size;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+            }
+            if progress < 100: Progress {
+                value: progress;
+                size: ControlSize.xsmall;
+            }
+        }
+
+        Button {
+            icon: "x";
+            variant: ButtonVariant.ghost;
+            size: ControlSize.xsmall;
+            accessible-label: "Remove";
+            clicked => { root.removed(); }
+        }
+    }
+}

@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Tree } from "../tree.slint";
+
+export component TreeExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Tree {
+        items: [
+            { label: "src", depth: 0, folder: true, expanded: true },
+            { label: "lib.rs", depth: 1, folder: false, expanded: false },
+            { label: "main.rs", depth: 1, folder: false, expanded: false },
+            { label: "ui", depth: 0, folder: true, expanded: false },
+        ];
+    }
+
+}

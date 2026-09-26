@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Collapsible } from "../collapsible.slint";
+
+export component CollapsibleExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Details"; variant: GroupBoxVariant.outline;
+        Collapsible {
+            title: "Advanced";
+            open: true;
+            Text { text: "These options are for power users."; color: Theme.foreground; }
+        }
+    }
+
+}

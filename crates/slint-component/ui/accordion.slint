@@ -1,0 +1,216 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+// One section of a data-driven `Accordion`.
+export struct AccordionEntry {
+    title: string,
+    icon: string,
+    content: string,
+}
+
+// One collapsible section. Mirrors GPUI Component's `AccordionItem`: a title
+// row with an optional leading icon that toggles a content panel, sizes, a
+// disabled state, and an animated chevron and reveal. Put the content in
+// `@children`, and set `last` on the final item to drop its separator.
+export component AccordionItem {
+    in property <string> title;
+    in property <string> icon;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> enabled: true;
+    in property <bool> last;
+    in-out property <bool> open;
+    callback toggled(open: bool);
+
+    private property <length> padding-x: size == ControlSize.xsmall ? 6px
+        : size == ControlSize.small ? 8px
+        : size == ControlSize.large ? 16px
+        : 12px;
+    private property <length> padding-y: size == ControlSize.xsmall ? 4px
+        : size == ControlSize.small ? 6px
+        : size == ControlSize.large ? 12px
+        : 8px;
+    private property <length> font-size: size == ControlSize.xsmall ? 13px
+        : size == ControlSize.large ? 16px
+        : 14px;
+    private property <color> ink: enabled ? Theme.foreground : Theme.muted-foreground;
+
+    function toggle() {
+        root.open = !root.open;
+        root.toggled(root.open);
+    }
+
+    VerticalLayout {
+        Rectangle {
+            background: !root.enabled ? transparent
+                : touch.pressed ? Theme.accent
+                : touch.has-hover ? Theme.accent.with-alpha(0.5)
+                : transparent;
+            animate background { duration: 100ms; }
+
+            accessible-role: button;
+            accessible-label: root.title;
+            accessible-enabled: root.enabled;
+            accessible-expandable: true;
+            accessible-expanded: root.open;
+            accessible-action-default => {
+                root.toggle();
+            }
+
+            HorizontalLayout {
+                padding-left: root.padding-x;
+                padding-right: root.padding-x;
+                padding-top: root.padding-y;
+                padding-bottom: root.padding-y;
+                spacing: 12px;
+
+                HorizontalLayout {
+                    horizontal-stretch: 1;
+                    spacing: root.size == ControlSize.xsmall || root.size == ControlSize.small ? 4px : 8px;
+
+                    if root.icon != "": VerticalLayout {
+                        alignment: center;
+                        Icon {
+                            name: root.icon;
+                            size: Theme.icon-size(root.size);
+                            color: root.ink;
+                        }
+                    }
+
+                    Text {
+                        horizontal-stretch: 1;
+                        text: root.title;
+                        color: root.ink;
+                        font-size: root.font-size;
+                        font-weight: 500;
+                        overflow: elide;
+                        vertical-alignment: center;
+                    }
+                }
+
+                if root.enabled: VerticalLayout {
+                    alignment: center;
+                    Rectangle {
+                        width: 12px;
+                        height: 12px;
+                        transform-rotation: root.open ? 180deg : 0deg;
+                        animate transform-rotation { duration: 150ms; easing: ease-out; }
+
+                        Icon {
+                            name: "chevron-down";
+                            size: 12px;
+                            color: Theme.muted-foreground;
+                        }
+                    }
+                }
+            }
+
+            if focus.has-focus: Rectangle {
+                border-width: 2px;
+                border-color: Theme.ring;
+                border-radius: Theme.radius-sm;
+            }
+
+            focus := FocusScope {
+                enabled: root.enabled;
+                key-pressed(event) => {
+                    if event.text == " " || event.text == "\n" {
+                        root.toggle();
+                        return accept;
+                    }
+                    reject
+                }
+            }
+
+            touch := TouchArea {
+                enabled: root.enabled;
+                clicked => {
+                    root.toggle();
+                }
+            }
+        }
+
+        Rectangle {
+            clip: true;
+            visible: root.open || self.height > 0;
+            height: root.open ? content.preferred-height : 0;
+            animate height { duration: 150ms; easing: ease-out; }
+
+            content := VerticalLayout {
+                y: 0;
+                width: parent.width;
+                height: self.preferred-height;
+                padding-left: root.padding-x;
+                padding-right: root.padding-x;
+                padding-bottom: root.padding-y;
+                @children
+            }
+        }
+
+        if !root.last: Rectangle {
+            height: 1px;
+            background: Theme.border;
+        }
+    }
+}
+
+// A vertical stack of collapsible sections. Mirrors GPUI Component's
+// `Accordion`: one open section at a time, or several with `multiple`, a
+// bordered card by default, sizes, a disabled state, and a toggle event.
+// Pass text sections through `items`, or compose `AccordionItem` children for
+// rich content; `open-index` is the open section in single mode.
+export component Accordion {
+    in property <[AccordionEntry]> items;
+    in property <bool> multiple;
+    in property <bool> bordered: true;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    in-out property <int> open-index: -1;
+    callback toggled(index: int, open: bool);
+
+    private property <length> font-size: size == ControlSize.xsmall ? 13px
+        : size == ControlSize.large ? 16px
+        : 14px;
+
+    Rectangle {
+        background: Theme.background;
+        border-width: root.bordered ? 1px : 0;
+        border-color: Theme.border;
+        border-radius: root.bordered ? Theme.radius-lg : 0;
+        clip: true;
+
+        VerticalLayout {
+            padding: root.bordered ? 1px : 0;
+
+            for entry[index] in root.items: AccordionItem {
+                property <int> watched-index: root.open-index;
+                changed watched-index => {
+                    if !root.multiple {
+                        self.open = self.watched-index == index;
+                    }
+                }
+
+                title: entry.title;
+                icon: entry.icon;
+                size: root.size;
+                enabled: root.enabled;
+                last: index == root.items.length - 1;
+                open: root.open-index == index;
+                toggled(open) => {
+                    if !root.multiple {
+                        root.open-index = open ? index : -1;
+                    }
+                    root.toggled(index, open);
+                }
+
+                Text {
+                    text: entry.content;
+                    color: Theme.foreground;
+                    font-size: root.font-size;
+                    wrap: word-wrap;
+                }
+            }
+
+            @children
+        }
+    }
+}

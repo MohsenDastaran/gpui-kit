@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Label } from "../label.slint";
+import { Input } from "../input.slint";
+
+export component LabelExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Form labels"; variant: GroupBoxVariant.outline;
+        Label { text: "Email"; required: true; }
+        Input { placeholder: "you@example.com"; }
+    }
+
+}

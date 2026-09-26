@@ -1,0 +1,82 @@
+import { Theme } from "theme.slint";
+
+export struct DockTab {
+    title: string,
+}
+
+// A dock layout preview. Mirrors GPUI Component's `Dock` without drag-and-drop.
+export component Dock {
+    in property <[DockTab]> tabs;
+    in-out property <int> selected: 0;
+    in-out property <length> side: 200px;
+
+    HorizontalLayout {
+        spacing: 0;
+
+        Rectangle {
+            width: side;
+            background: Theme.sidebar;
+            border-width: 1px;
+            border-color: Theme.border;
+            VerticalLayout {
+                padding: 8px;
+                spacing: 4px;
+                Text {
+                    text: "Explorer";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    font-weight: 600;
+                }
+                @children
+            }
+        }
+
+        Rectangle {
+            width: 4px;
+            background: Theme.border;
+            TouchArea {
+                mouse-cursor: ew-resize;
+                moved => {
+                    if self.pressed {
+                        root.side = max(120px, root.side + (self.mouse-x - self.pressed-x));
+                    }
+                }
+            }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            HorizontalLayout {
+                height: 32px;
+                for tab[index] in tabs: Rectangle {
+                    background: selected == index ? Theme.background : Theme.muted;
+                    border-width: 1px;
+                    border-color: Theme.border;
+                    HorizontalLayout {
+                        padding-left: 12px;
+                        padding-right: 12px;
+                        Text {
+                            text: tab.title;
+                            color: Theme.foreground;
+                            font-size: Theme.font-size-xs;
+                            vertical-alignment: center;
+                        }
+                    }
+                    TouchArea {
+                        clicked => { root.selected = index; }
+                    }
+                }
+            }
+            Rectangle {
+                vertical-stretch: 1;
+                background: Theme.background;
+                Text {
+                    x: 16px;
+                    y: 16px;
+                    text: tabs.length > 0 ? tabs[selected].title : "";
+                    color: Theme.muted-foreground;
+                }
+            }
+        }
+    }
+}

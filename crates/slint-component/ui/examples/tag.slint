@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Tag, TagVariant } from "../tag.slint";
+import { Status } from "../theme.slint";
+
+export component TagExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Tags"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 8px;
+            Tag { text: "Rust"; icon: "code"; }
+            Tag { text: "Draft"; variant: TagVariant.outline; closable: true; }
+            Tag { text: "Live"; variant: TagVariant.status; status: Status.success; }
+        }
+    }
+
+}

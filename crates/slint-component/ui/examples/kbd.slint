@@ -1,0 +1,22 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Kbd, KbdSequence } from "../kbd.slint";
+
+export component KbdExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Shortcuts"; variant: GroupBoxVariant.outline;
+        KbdSequence {
+            Kbd { text: "⌘"; }
+            Kbd { text: "K"; }
+        }
+        KbdSequence {
+            Kbd { text: "Ctrl"; }
+            Kbd { text: "Shift"; }
+            Kbd { text: "P"; }
+        }
+    }
+
+}

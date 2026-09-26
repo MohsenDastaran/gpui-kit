@@ -1,0 +1,20 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { VirtualList, VirtualRow } from "../virtual-list.slint";
+
+export component VirtualListExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    VirtualList {
+        height: 280px;
+        items: [
+            { label: "Row 1" }, { label: "Row 2" }, { label: "Row 3" }, { label: "Row 4" },
+            { label: "Row 5" }, { label: "Row 6" }, { label: "Row 7" }, { label: "Row 8" },
+            { label: "Row 9" }, { label: "Row 10" }, { label: "Row 11" }, { label: "Row 12" },
+            { label: "Row 13" }, { label: "Row 14" }, { label: "Row 15" }, { label: "Row 16" },
+        ];
+    }
+
+}

@@ -1,0 +1,54 @@
+import { Theme } from "theme.slint";
+
+// A code editor look. Mirrors GPUI Component's `Editor` at a visual level:
+// line numbers and a monospace field. Syntax highlighting stays on the host.
+export component Editor {
+    in-out property <string> text;
+    in property <bool> enabled: true;
+    callback edited(text: string);
+
+
+    min-height: 160px;
+    preferred-height: 220px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.background;
+        clip: true;
+
+        HorizontalLayout {
+            Rectangle {
+                width: 44px;
+                background: Theme.muted.with-alpha(0.4);
+                VerticalLayout {
+                    padding-top: 8px;
+                    padding-right: 8px;
+                    Text {
+                        text: "1\n2\n3\n4\n5\n6\n7\n8\n9\n10";
+                        color: Theme.muted-foreground;
+                        font-family: Theme.mono-font-family;
+                        font-size: Theme.font-size-mono;
+                        horizontal-alignment: right;
+                    }
+                }
+            }
+
+            TextInput {
+                text <=> root.text;
+                enabled: root.enabled;
+                single-line: false;
+                wrap: no-wrap;
+                color: Theme.foreground;
+                font-family: Theme.mono-font-family;
+                font-size: Theme.font-size-mono;
+                selection-background-color: Theme.selection.with-alpha(0.35);
+                edited => {
+                    root.edited(self.text);
+                }
+            }
+        }
+    }
+}

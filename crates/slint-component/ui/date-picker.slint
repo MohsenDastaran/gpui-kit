@@ -1,0 +1,73 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Calendar } from "calendar.slint";
+
+// An input that opens a calendar. Mirrors GPUI Component's `DatePicker`.
+export component DatePicker {
+    in-out property <int> year: 2026;
+    in-out property <int> month: 9;
+    in-out property <int> day: 26;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(year: int, month: int, day: int);
+
+    height: Theme.control-height(size);
+    min-width: 180px;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: Theme.input;
+        background: Theme.background;
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.control-padding(size);
+        padding-right: Theme.control-padding(size);
+        spacing: 8px;
+        Text {
+            horizontal-stretch: 1;
+            text: "\{year}-\{month < 10 ? "0" : ""}\{month}-\{day < 10 ? "0" : ""}\{day}";
+            color: Theme.foreground;
+            font-size: Theme.control-font-size(size);
+            vertical-alignment: center;
+        }
+        Icon {
+            name: "calendar";
+            size: Theme.icon-size(size);
+            color: Theme.muted-foreground;
+        }
+    }
+
+    TouchArea {
+        clicked => {
+            pop.show();
+        }
+    }
+
+    pop := PopupWindow {
+        y: Theme.control-height(size) + 4px;
+        close-policy: close-on-click-outside;
+
+        Rectangle {
+            border-radius: Theme.radius-lg;
+            border-width: 1px;
+            border-color: Theme.border;
+            background: Theme.popover;
+            drop-shadow-blur: 12px;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-color: Theme.shadow;
+            VerticalLayout {
+                padding: 12px;
+                Calendar {
+                    year <=> root.year;
+                    month <=> root.month;
+                    selected-day <=> root.day;
+                    changed(y, m, d) => {
+                        root.changed(y, m, d);
+                        pop.close();
+                    }
+                }
+            }
+        }
+    }
+}

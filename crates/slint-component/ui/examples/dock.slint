@@ -1,0 +1,22 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Dock } from "../dock.slint";
+import { List } from "../list.slint";
+
+export component DockExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Dock {
+        height: 280px;
+        tabs: [{ title: "main.rs" }, { title: "lib.rs" }];
+        List {
+            items: [
+                { title: "src", description: "", icon: "folder" },
+                { title: "Cargo.toml", description: "", icon: "file" },
+            ];
+        }
+    }
+
+}

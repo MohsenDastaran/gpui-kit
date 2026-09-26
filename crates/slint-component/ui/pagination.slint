@@ -1,0 +1,67 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+
+// Page controls. Mirrors GPUI Component's `Pagination`.
+export component Pagination {
+    in-out property <int> page: 1;
+    in property <int> pages: 10;
+    in property <ControlSize> size: ControlSize.small;
+    callback changed(page: int);
+
+    function go(next: int) {
+        let clamped = clamp(next, 1, pages);
+        root.page = clamped;
+        root.changed(clamped);
+    }
+
+    HorizontalLayout {
+        spacing: 4px;
+        alignment: start;
+
+        Button {
+            icon: "chevron-left";
+            variant: ButtonVariant.ghost;
+            size: root.size;
+            enabled: page > 1;
+            accessible-label: "Previous page";
+            clicked => {
+                root.go(page - 1);
+            }
+        }
+
+        for n in [1, 2, 3]: Button {
+            text: "\{n}";
+            variant: page == n ? ButtonVariant.primary : ButtonVariant.ghost;
+            size: root.size;
+            clicked => {
+                root.go(n);
+            }
+        }
+
+        if pages > 5: Text {
+            text: "…";
+            color: Theme.muted-foreground;
+            vertical-alignment: center;
+        }
+
+        if pages > 3: Button {
+            text: "\{pages}";
+            variant: page == pages ? ButtonVariant.primary : ButtonVariant.ghost;
+            size: root.size;
+            clicked => {
+                root.go(pages);
+            }
+        }
+
+        Button {
+            icon: "chevron-right";
+            variant: ButtonVariant.ghost;
+            size: root.size;
+            enabled: page < pages;
+            accessible-label: "Next page";
+            clicked => {
+                root.go(page + 1);
+            }
+        }
+    }
+}

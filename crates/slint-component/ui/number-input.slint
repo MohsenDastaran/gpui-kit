@@ -1,0 +1,67 @@
+import { Theme, ControlSize, ButtonVariant } from "theme.slint";
+import { Button } from "button.slint";
+import { Input } from "input.slint";
+
+// A numeric field with steppers. Mirrors GPUI Component's `NumberInput`.
+export component NumberInput {
+    in-out property <float> value;
+    in property <float> minimum: -1000000000;
+    in property <float> maximum: 1000000000;
+    in property <float> step: 1;
+    in property <string> placeholder;
+    in property <string> prefix;
+    in property <string> suffix;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(value: float);
+
+    function apply(next: float) {
+        let clamped = clamp(next, minimum, maximum);
+        root.value = clamped;
+        field.text = "\{round(clamped * 100) / 100}";
+        root.changed(clamped);
+    }
+
+    height: Theme.control-height(size);
+    preferred-width: 160px;
+    horizontal-stretch: 1;
+
+    field := Input {
+        text: "\{round(root.value * 100) / 100}";
+        placeholder: root.placeholder;
+        prefix-text: root.prefix;
+        suffix-text: root.suffix;
+        enabled: root.enabled;
+        size: root.size;
+        accepted => {
+            root.apply(self.text.to-float());
+        }
+        edited => {
+            if self.text != "" && self.text != "-" && self.text != "." {
+                root.value = clamp(self.text.to-float(), root.minimum, root.maximum);
+                root.changed(root.value);
+            }
+        }
+
+        Button {
+            icon: "minus";
+            variant: ButtonVariant.ghost;
+            size: ControlSize.xsmall;
+            enabled: root.enabled && root.value > root.minimum;
+            accessible-label: "Decrease";
+            clicked => {
+                root.apply(root.value - root.step);
+            }
+        }
+        Button {
+            icon: "plus";
+            variant: ButtonVariant.ghost;
+            size: ControlSize.xsmall;
+            enabled: root.enabled && root.value < root.maximum;
+            accessible-label: "Increase";
+            clicked => {
+                root.apply(root.value + root.step);
+            }
+        }
+    }
+}

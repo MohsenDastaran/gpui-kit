@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { OtpInput } from "../otp-input.slint";
+
+export component OtpInputExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <string> code;
+    GroupBox { title: "Verification"; variant: GroupBoxVariant.outline;
+        OtpInput { value <=> root.code; }
+        Text { text: root.code == "" ? "Enter the 6-digit code." : "Code: \{root.code}"; color: Theme.muted-foreground; }
+    }
+
+}

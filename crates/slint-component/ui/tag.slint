@@ -1,0 +1,62 @@
+import { Theme, ControlSize, Status, ButtonVariant } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Button } from "button.slint";
+
+export enum TagVariant { default, secondary, outline, status }
+
+// A labeled chip that can be dismissed. Mirrors GPUI Component's `Tag`.
+export component Tag {
+    in property <string> text;
+    in property <string> icon;
+    in property <TagVariant> variant: TagVariant.default;
+    in property <Status> status: Status.default;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> closable;
+    callback closed();
+
+    private property <color> fill: variant == TagVariant.secondary ? Theme.secondary
+        : variant == TagVariant.outline ? transparent
+        : variant == TagVariant.status ? Theme.tint(Theme.status-color(status))
+        : Theme.muted;
+    private property <color> ink: variant == TagVariant.status ? Theme.status-color(status) : Theme.foreground;
+
+    height: Theme.control-height(size) - 8px;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: variant == TagVariant.outline ? 1px : 0;
+        border-color: Theme.border;
+        background: fill;
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.control-padding(size) - 2px;
+        padding-right: closable ? 4px : self.padding-left;
+        spacing: 4px;
+        alignment: center;
+
+        if icon != "": Icon {
+            name: icon;
+            size: Theme.icon-size(size) - 2px;
+            color: ink;
+        }
+
+        Text {
+            text: root.text;
+            color: ink;
+            font-size: Theme.control-font-size(size);
+            vertical-alignment: center;
+        }
+
+        if closable: Button {
+            icon: "x";
+            variant: ButtonVariant.ghost;
+            size: ControlSize.xsmall;
+            accessible-label: "Remove";
+            clicked => {
+                root.closed();
+            }
+        }
+    }
+}

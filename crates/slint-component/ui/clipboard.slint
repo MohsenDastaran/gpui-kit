@@ -1,0 +1,33 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+
+// A copy control. Mirrors GPUI Component's `Clipboard`. Slint cannot write
+// the system clipboard from `.slint`; the host wires `copy-requested`.
+export component Clipboard {
+    in property <string> value;
+    in property <ControlSize> size: ControlSize.xsmall;
+    callback copy-requested(value: string);
+
+    private property <bool> copied;
+
+    Button {
+        icon: copied ? "check" : "copy";
+        variant: ButtonVariant.ghost;
+        size: root.size;
+        accessible-label: copied ? "Copied" : "Copy";
+        clicked => {
+            root.copy-requested(root.value);
+            root.copied = true;
+            reset.running = true;
+        }
+    }
+
+    reset := Timer {
+        interval: 2s;
+        running: false;
+        triggered => {
+            self.running = false;
+            root.copied = false;
+        }
+    }
+}

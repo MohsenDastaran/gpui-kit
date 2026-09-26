@@ -1,0 +1,77 @@
+import { ButtonVariant, ControlSize } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+
+export component ButtonExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "Variants";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button { text: "Default"; }
+            Button { text: "Primary"; variant: ButtonVariant.primary; }
+            Button { text: "Secondary"; variant: ButtonVariant.secondary; }
+            Button { text: "Danger"; variant: ButtonVariant.danger; }
+            Button { text: "Warning"; variant: ButtonVariant.warning; }
+            Button { text: "Success"; variant: ButtonVariant.success; }
+            Button { text: "Info"; variant: ButtonVariant.info; }
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button { text: "Ghost"; variant: ButtonVariant.ghost; }
+            Button { text: "Link"; variant: ButtonVariant.link; }
+            Button { text: "Text"; variant: ButtonVariant.text; }
+        }
+    }
+
+    GroupBox {
+        title: "Outline";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button { text: "Primary"; variant: ButtonVariant.primary; outline: true; }
+            Button { text: "Secondary"; variant: ButtonVariant.secondary; outline: true; }
+            Button { text: "Danger"; variant: ButtonVariant.danger; outline: true; }
+            Button { text: "Warning"; variant: ButtonVariant.warning; outline: true; }
+            Button { text: "Success"; variant: ButtonVariant.success; outline: true; }
+            Button { text: "Info"; variant: ButtonVariant.info; outline: true; }
+        }
+    }
+
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            VerticalLayout { alignment: center; Button { text: "Extra small"; size: ControlSize.xsmall; } }
+            VerticalLayout { alignment: center; Button { text: "Small"; size: ControlSize.small; } }
+            VerticalLayout { alignment: center; Button { text: "Medium"; } }
+            VerticalLayout { alignment: center; Button { text: "Large"; size: ControlSize.large; } }
+        }
+    }
+
+    GroupBox {
+        title: "Icons and states";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button { text: "Search"; icon: "search"; }
+            Button { text: "Options"; suffix-icon: "chevron-down"; }
+            Button { icon: "settings"; variant: ButtonVariant.ghost; }
+            Button { icon: "plus"; variant: ButtonVariant.primary; }
+            Button { text: "Saving"; loading: true; }
+            Button { text: "Selected"; selected: true; }
+            Button { text: "Disabled"; enabled: false; }
+            Button { text: "Compact"; compact: true; }
+        }
+    }
+}

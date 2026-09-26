@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Combobox } from "../combobox.slint";
+
+export component ComboboxExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Combobox {
+        items: [
+            { label: "Button", value: "button" },
+            { label: "Input", value: "input" },
+            { label: "Dialog", value: "dialog" },
+        ];
+    }
+
+}

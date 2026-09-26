@@ -1,0 +1,37 @@
+import { Theme } from "theme.slint";
+
+// Split panes with a drag handle. Mirrors GPUI Component's `Resizable`.
+export component Resizable {
+    in-out property <length> split: 200px;
+    in property <length> minimum: 80px;
+
+    HorizontalLayout {
+        spacing: 0;
+
+        Rectangle {
+            width: split;
+            clip: true;
+            VerticalLayout {
+                @children
+            }
+        }
+
+        handle := Rectangle {
+            width: 6px;
+            background: Theme.border;
+            TouchArea {
+                mouse-cursor: ew-resize;
+                moved => {
+                    if self.pressed {
+                        root.split = max(minimum, root.split + (self.mouse-x - self.pressed-x));
+                    }
+                }
+            }
+        }
+
+        Rectangle {
+            horizontal-stretch: 1;
+            clip: true;
+        }
+    }
+}

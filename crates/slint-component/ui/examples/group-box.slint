@@ -1,0 +1,33 @@
+import { Theme, ButtonVariant } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+
+export component GroupBoxExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        Text { text: "Content without a visual container"; color: Theme.foreground; }
+    }
+
+    GroupBox {
+        title: "Account Settings";
+        variant: GroupBoxVariant.fill;
+        HorizontalLayout {
+            Text { text: "Make profile private"; color: Theme.foreground; vertical-alignment: center; }
+            Rectangle { }
+            Button { text: "Private"; }
+        }
+        HorizontalLayout {
+            alignment: start;
+            Button { text: "Save Changes"; variant: ButtonVariant.primary; }
+        }
+    }
+
+    GroupBox {
+        title: "Preferences";
+        variant: GroupBoxVariant.outline;
+        Text { text: "Content with a border and no background."; color: Theme.foreground; }
+    }
+}

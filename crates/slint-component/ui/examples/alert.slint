@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Alert } from "../alert.slint";
+import { Status } from "../theme.slint";
+
+export component AlertExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Alert { title: "Information"; message: "This is an informational message."; status: Status.info; }
+    Alert { title: "Success"; message: "Your changes were saved."; status: Status.success; closable: true; }
+    Alert { title: "Warning"; message: "Review these settings before continuing."; status: Status.warning; }
+    Alert { title: "Error"; message: "The request could not be completed."; status: Status.danger; }
+
+}

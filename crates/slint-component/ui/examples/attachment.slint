@@ -1,0 +1,15 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Attachment } from "../attachment.slint";
+
+export component AttachmentExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Files"; variant: GroupBoxVariant.outline;
+        Attachment { name: "design.pdf"; size: "240 KB"; }
+        Attachment { name: "photo.png"; size: "1.2 MB"; progress: 64; }
+    }
+
+}

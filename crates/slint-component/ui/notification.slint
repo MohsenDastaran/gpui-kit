@@ -1,0 +1,89 @@
+import { Theme, Status, ButtonVariant, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Button } from "button.slint";
+
+export struct Notice {
+    title: string,
+    message: string,
+    status: Status,
+}
+
+// A toast. Mirrors GPUI Component's `Notification`.
+export component Notification {
+    in property <string> title;
+    in property <string> message;
+    in property <Status> status: Status.info;
+    in property <bool> closable: true;
+    callback closed();
+
+    private property <color> tone: Theme.status-color(status);
+    private property <string> glyph: status == Status.success ? "circle-check"
+        : status == Status.warning ? "triangle-alert"
+        : status == Status.danger ? "circle-x"
+        : "info";
+
+    width: 320px;
+
+    Rectangle {
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.popover;
+        drop-shadow-blur: 16px;
+        drop-shadow-offset-y: 6px;
+        drop-shadow-color: Theme.shadow;
+
+        HorizontalLayout {
+            padding: 12px;
+            spacing: 10px;
+
+            Icon {
+                name: glyph;
+                size: 16px;
+                color: tone;
+            }
+
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 2px;
+                if title != "": Text {
+                    text: title;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    font-weight: 600;
+                }
+                if message != "": Text {
+                    text: message;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    wrap: word-wrap;
+                }
+            }
+
+            if closable: Button {
+                icon: "x";
+                variant: ButtonVariant.ghost;
+                size: ControlSize.xsmall;
+                accessible-label: "Dismiss";
+                clicked => {
+                    root.closed();
+                }
+            }
+        }
+    }
+}
+
+export component NotificationStack inherits VerticalLayout {
+    in-out property <[Notice]> items;
+    spacing: 8px;
+    alignment: start;
+
+    for item[index] in items: Notification {
+        title: item.title;
+        message: item.message;
+        status: item.status;
+        closed => {
+            root.items = root.items.length == 1 ? [] : root.items;
+        }
+    }
+}

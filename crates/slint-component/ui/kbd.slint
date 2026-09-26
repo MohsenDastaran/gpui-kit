@@ -1,0 +1,39 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A keyboard shortcut chip. Mirrors GPUI Component's `Kbd`.
+export component Kbd {
+    in property <string> text;
+    in property <ControlSize> size: ControlSize.medium;
+
+    horizontal-stretch: 0;
+    height: size == ControlSize.xsmall ? 16px
+        : size == ControlSize.small ? 18px
+        : size == ControlSize.large ? 24px
+        : 20px;
+
+    Rectangle {
+        border-radius: Theme.radius-sm;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.muted;
+    }
+
+    HorizontalLayout {
+        padding-left: 6px;
+        padding-right: 6px;
+        alignment: center;
+        Text {
+            text: root.text;
+            color: Theme.foreground;
+            font-family: Theme.mono-font-family;
+            font-size: Theme.control-font-size(size);
+            vertical-alignment: center;
+        }
+    }
+}
+
+export component KbdSequence inherits HorizontalLayout {
+    spacing: 4px;
+    alignment: start;
+    @children
+}

@@ -1,0 +1,34 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { AlertDialog } from "../alert-dialog.slint";
+import { ButtonVariant } from "../theme.slint";
+import { Button } from "../button.slint";
+
+export component AlertDialogExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <bool> open: true;
+    Rectangle {
+        height: 360px;
+        border-width: 1px;
+        border-color: Theme.border;
+        border-radius: Theme.radius-lg;
+        clip: true;
+        Button {
+            x: 16px; y: 16px;
+            text: "Open dialog";
+            clicked => { root.open = true; }
+        }
+        AlertDialog {
+            width: 100%; height: 100%;
+            open <=> root.open;
+            title: "Delete project?";
+            description: "This cannot be undone. The project and its files will be removed.";
+            confirm-text: "Delete";
+            destructive: true;
+        }
+    }
+
+}

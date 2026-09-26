@@ -1,0 +1,29 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+// A star rating. Mirrors GPUI Component's `Rating`.
+export component Rating {
+    in-out property <int> value: 0;
+    in property <int> max: 5;
+    in property <bool> read-only;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(value: int);
+
+    HorizontalLayout {
+        spacing: 2px;
+        alignment: start;
+
+        for _[index] in max: TouchArea {
+            enabled: !read-only;
+            clicked => {
+                root.value = index + 1;
+                root.changed(root.value);
+            }
+            Icon {
+                name: "star";
+                size: Theme.icon-size(size) + 2px;
+                color: index < value ? Theme.warning : Theme.muted-foreground.with-alpha(0.4);
+            }
+        }
+    }
+}

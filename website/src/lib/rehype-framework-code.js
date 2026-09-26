@@ -1,7 +1,8 @@
 import { SKIP, visit } from 'unist-util-visit';
+import { hasSlintExample } from './remark-slint-source.js';
 
-// Component pages carry one copy-paste block per framework. A ```slint fence
-// directly after a Rust fence becomes that example's Slint version; any other
+// Component pages carry one copy-paste block per framework. ```slint fences
+// directly after a Rust fence become that example's Slint version; any other
 // block is GPUI. A framework without a fence gets a visible placeholder, so the
 // page shows what is missing instead of silently hiding the example.
 
@@ -13,16 +14,18 @@ const COPY = {
   en: {
     label: 'Framework',
     missing: (name) => `No ${name} version of this example yet.`,
+    covered: (name) => `This example is GPUI-specific. The ${name} usage near the top of the page covers this component.`,
     status: (name) => `Showing ${name} code`,
   },
   'zh-CN': {
     label: '框架',
     missing: (name) => `此示例暂无 ${name} 版本。`,
+    covered: (name) => `此示例仅适用于 GPUI。页面上方的 ${name} 用法已涵盖该组件。`,
     status: (name) => `正在显示 ${name} 代码`,
   },
 };
 
-const COMPONENT_PAGE = /[\\/]component[\\/].+\.md$/;
+const COMPONENT_PAGE = /[\\/]component[\\/]([^\\/]+)\.md$/;
 
 const text = (value) => ({ type: 'text', value });
 const element = (tagName, properties, children = []) => ({ type: 'element', tagName, properties, children });
@@ -35,10 +38,11 @@ function isBlank(node) {
   return node.type === 'text' && !node.value.trim();
 }
 
-function missing(copy, framework) {
+function missing(copy, framework, covered) {
+  const message = covered ? copy.covered : copy.missing;
   return element('div', { className: ['framework-code__missing'], dataPagefindIgnore: '' }, [
     element('span', { className: ['framework-code__missing-name'] }, [text(NAMES[framework])]),
-    element('span', {}, [text(copy.missing(NAMES[framework]))]),
+    element('span', {}, [text(message(NAMES[framework]))]),
   ]);
 }
 
@@ -84,6 +88,8 @@ export function rehypeFrameworkCode() {
     const path = String(file?.path ?? file?.history?.[0] ?? '');
     if (!COMPONENT_PAGE.test(path)) return;
     const copy = /[\\/]zh-CN[\\/]/.test(path) ? COPY['zh-CN'] : COPY.en;
+    const slug = COMPONENT_PAGE.exec(path)?.[1];
+    const covered = { gpui: false, slint: Boolean(slug && hasSlintExample(slug)) };
 
     const blocks = [];
     visit(tree, 'element', (node, _index, parent) => {
@@ -103,9 +109,9 @@ export function rehypeFrameworkCode() {
         open?.parent === parent &&
         parent.children.slice(parent.children.indexOf(open.group) + 1, index).every(isBlank)
       ) {
-        open.slint.children = [node];
+        open.slint.children = open.filled ? [...open.slint.children, node] : [node];
+        open.filled = true;
         parent.children.splice(index, 1);
-        open = null;
         continue;
       }
 
@@ -113,7 +119,7 @@ export function rehypeFrameworkCode() {
         FRAMEWORKS.map((name) => [
           name,
           element('div', { className: ['framework-code__panel'], dataFrameworkPanel: name }, [
-            name === framework ? node : missing(copy, name),
+            name === framework ? node : missing(copy, name, covered[name]),
           ]),
         ]),
       );
@@ -123,7 +129,7 @@ export function rehypeFrameworkCode() {
         FRAMEWORKS.map((name) => panels[name]),
       );
       parent.children[index] = group;
-      open = framework === 'gpui' ? { group, parent, slint: panels.slint } : null;
+      open = framework === 'gpui' ? { group, parent, slint: panels.slint, filled: false } : null;
     }
 
     const title = tree.children.findIndex((node) => node.type === 'element' && node.tagName === 'h1');

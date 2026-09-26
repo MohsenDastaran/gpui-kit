@@ -1,0 +1,112 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+// A binary choice. Mirrors GPUI Component's `Checkbox`: a label, optional
+// description, indeterminate dash, sizes, and a disabled state.
+export component Checkbox {
+    in-out property <bool> checked;
+    in property <bool> indeterminate;
+    in property <string> label;
+    in property <string> description;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(checked: bool);
+
+    private property <length> box: size == ControlSize.xsmall ? 12px
+        : size == ControlSize.small ? 14px
+        : size == ControlSize.large ? 20px
+        : 16px;
+    private property <bool> on: checked || indeterminate;
+
+    function toggle() {
+        if !enabled {
+            return;
+        }
+        root.checked = !root.checked;
+        root.changed(root.checked);
+    }
+
+    accessible-role: checkbox;
+    accessible-label: label;
+    accessible-enabled: enabled;
+    accessible-checkable: true;
+    accessible-checked: checked;
+    accessible-action-default => {
+        root.toggle();
+    }
+
+    opacity: enabled ? 1 : 0.5;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+
+    HorizontalLayout {
+        spacing: Theme.spacing-sm;
+        alignment: start;
+
+        VerticalLayout {
+            alignment: center;
+        Rectangle {
+            width: box;
+            height: box;
+            border-radius: Theme.radius-sm;
+            border-width: 1px;
+            border-color: on ? Theme.primary : Theme.input;
+            background: on ? Theme.primary : Theme.background;
+            animate background { duration: 100ms; }
+
+            if on: Icon {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                name: indeterminate && !checked ? "minus" : "check";
+                size: box - 4px;
+                color: Theme.primary-foreground;
+            }
+        }
+        }
+
+        if label != "" || description != "": VerticalLayout {
+            alignment: center;
+            spacing: 2px;
+            if label != "": Text {
+                text: label;
+                color: Theme.foreground;
+                font-size: Theme.control-font-size(size);
+                vertical-alignment: center;
+            }
+            if description != "": Text {
+                text: description;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                wrap: word-wrap;
+            }
+        }
+    }
+
+    if focus.has-focus: Rectangle {
+        x: -2px;
+        y: -2px;
+        width: box + 4px;
+        height: parent.height + 4px;
+        border-radius: Theme.radius-sm + 2px;
+        border-width: 2px;
+        border-color: Theme.ring;
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == " " || event.text == "\n" {
+                root.toggle();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    touch := TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.toggle();
+        }
+    }
+}

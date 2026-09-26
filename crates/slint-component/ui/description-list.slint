@@ -1,0 +1,60 @@
+import { Theme } from "theme.slint";
+
+export struct DescriptionItem {
+    term: string,
+    detail: string,
+}
+
+export enum DescriptionLayout { vertical, horizontal }
+
+// Term/detail pairs. Mirrors GPUI Component's `DescriptionList`.
+export component DescriptionList {
+    in property <[DescriptionItem]> items;
+    in property <DescriptionLayout> layout: DescriptionLayout.vertical;
+    in property <bool> bordered;
+
+    VerticalLayout {
+        spacing: 0;
+
+        for item[index] in items: Rectangle {
+            border-width: bordered ? 1px : 0;
+            border-color: Theme.border;
+            background: bordered && mod(index, 2) == 1 ? Theme.muted.with-alpha(0.35) : transparent;
+
+            if layout == DescriptionLayout.vertical: VerticalLayout {
+                padding: bordered ? 12px : 8px;
+                spacing: 4px;
+                Text {
+                    text: item.term;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    font-weight: 500;
+                }
+                Text {
+                    text: item.detail;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    wrap: word-wrap;
+                }
+            }
+
+            if layout == DescriptionLayout.horizontal: HorizontalLayout {
+                padding: bordered ? 12px : 8px;
+                spacing: 16px;
+                Text {
+                    width: 140px;
+                    text: item.term;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-sm;
+                }
+                Text {
+                    horizontal-stretch: 1;
+                    text: item.detail;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    wrap: word-wrap;
+                }
+            }
+        }
+    }
+}

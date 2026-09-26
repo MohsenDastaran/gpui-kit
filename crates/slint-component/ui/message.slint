@@ -1,0 +1,52 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Button } from "button.slint";
+import { Avatar, AvatarSize } from "avatar.slint";
+
+export enum MessageRole { user, assistant }
+
+// One chat turn. Mirrors GPUI Component's `Message`.
+export component Message {
+    in property <MessageRole> role: MessageRole.assistant;
+    in property <string> author;
+    in property <string> body;
+    in property <string> initials;
+    callback copy-requested();
+
+    HorizontalLayout {
+        spacing: 10px;
+        padding: 8px;
+
+        Avatar {
+            initials: initials == "" ? (role == MessageRole.user ? "U" : "A") : initials;
+            size: AvatarSize.small;
+            fill: role == MessageRole.user ? Theme.primary : Theme.secondary;
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 4px;
+            HorizontalLayout {
+                Text {
+                    horizontal-stretch: 1;
+                    text: author == "" ? (role == MessageRole.user ? "You" : "Assistant") : author;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-xs;
+                    font-weight: 600;
+                }
+                Button {
+                    icon: "copy";
+                    variant: ButtonVariant.ghost;
+                    size: ControlSize.xsmall;
+                    clicked => { root.copy-requested(); }
+                }
+            }
+            Text {
+                text: body;
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                wrap: word-wrap;
+            }
+        }
+    }
+}

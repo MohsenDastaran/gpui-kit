@@ -1,0 +1,74 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A multi-line text field. Mirrors GPUI Component's `Textarea`: placeholder,
+// disabled, read-only, and an invalid state.
+export component Textarea {
+    in-out property <string> text;
+    in property <string> placeholder;
+    in property <bool> enabled: true;
+    in property <bool> read-only;
+    in property <bool> invalid;
+    in property <ControlSize> size: ControlSize.medium;
+    callback edited(text: string);
+
+    private property <bool> focused: field.has-focus && enabled;
+    private property <color> edge: invalid ? Theme.danger : focused ? Theme.ring : Theme.input;
+
+    min-height: 80px;
+    preferred-height: 120px;
+    preferred-width: 280px;
+    horizontal-stretch: 1;
+    opacity: enabled ? 1 : 0.5;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: edge;
+        background: enabled ? Theme.background : Theme.muted;
+    }
+
+    if focused: Rectangle {
+        x: -2px;
+        y: -2px;
+        width: parent.width + 4px;
+        height: parent.height + 4px;
+        border-radius: Theme.radius-md + 2px;
+        border-width: 2px;
+        border-color: edge.with-alpha(0.5);
+    }
+
+    VerticalLayout {
+        padding: Theme.control-padding(size);
+
+        Rectangle {
+            clip: true;
+            horizontal-stretch: 1;
+            vertical-stretch: 1;
+
+            Text {
+                width: 100%;
+                text: root.text == "" ? root.placeholder : "";
+                color: Theme.muted-foreground;
+                font-size: Theme.control-font-size(size);
+                wrap: word-wrap;
+            }
+
+            field := TextInput {
+                width: 100%;
+                height: 100%;
+                text <=> root.text;
+                enabled: root.enabled;
+                read-only: root.read-only;
+                single-line: false;
+                wrap: word-wrap;
+                color: Theme.foreground;
+                font-size: Theme.control-font-size(size);
+                selection-background-color: Theme.selection.with-alpha(0.35);
+                selection-foreground-color: Theme.foreground;
+                edited => {
+                    root.edited(self.text);
+                }
+            }
+        }
+    }
+}

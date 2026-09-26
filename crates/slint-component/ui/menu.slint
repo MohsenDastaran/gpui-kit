@@ -1,0 +1,86 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export struct MenuEntry {
+    label: string,
+    icon: string,
+    shortcut: string,
+    disabled: bool,
+    checked: bool,
+    separator: bool,
+}
+
+// A list of actions. Mirrors GPUI Component's `Menu`.
+export component Menu {
+    in property <[MenuEntry]> items;
+    callback chosen(index: int);
+
+    preferred-width: 220px;
+
+    Rectangle {
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.popover;
+        drop-shadow-blur: 12px;
+        drop-shadow-offset-y: 4px;
+        drop-shadow-color: Theme.shadow;
+
+        VerticalLayout {
+            padding: 4px;
+            for item[index] in items: Rectangle {
+                height: item.separator ? 9px : 32px;
+                border-radius: Theme.radius-sm;
+                background: !item.separator && touch.has-hover && !item.disabled ? Theme.accent : transparent;
+
+                if item.separator: Rectangle {
+                    y: 4px;
+                    height: 1px;
+                    background: Theme.border;
+                }
+
+                if !item.separator: HorizontalLayout {
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    spacing: 8px;
+                    opacity: item.disabled ? 0.45 : 1;
+
+                    if item.icon != "": Icon {
+                        name: item.icon;
+                        size: 14px;
+                        color: Theme.foreground;
+                    }
+
+                    Text {
+                        horizontal-stretch: 1;
+                        text: item.label;
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                        vertical-alignment: center;
+                    }
+
+                    if item.shortcut != "": Text {
+                        text: item.shortcut;
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-xs;
+                        font-family: Theme.mono-font-family;
+                        vertical-alignment: center;
+                    }
+
+                    if item.checked: Icon {
+                        name: "check";
+                        size: 14px;
+                        color: Theme.foreground;
+                    }
+                }
+
+                touch := TouchArea {
+                    enabled: !item.separator && !item.disabled;
+                    clicked => {
+                        root.chosen(index);
+                    }
+                }
+            }
+        }
+    }
+}

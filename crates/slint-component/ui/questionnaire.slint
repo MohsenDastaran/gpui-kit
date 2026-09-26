@@ -1,0 +1,63 @@
+import { Theme, ButtonVariant } from "theme.slint";
+import { Button } from "button.slint";
+import { RadioGroup } from "radio.slint";
+import { Progress } from "progress.slint";
+
+export struct Question {
+    prompt: string,
+    options: [string],
+}
+
+// A stepped form. Mirrors GPUI Component's `Questionnaire`.
+export component Questionnaire {
+    in property <[Question]> questions;
+    in-out property <int> step: 0;
+    in-out property <int> answer: 0;
+    callback finished();
+
+    private property <int> total: questions.length;
+
+    VerticalLayout {
+        spacing: 16px;
+
+        Progress {
+            value: total == 0 ? 0 : ((step + 1) * 100 / total);
+        }
+
+        if total > 0: Text {
+            text: questions[step].prompt;
+            color: Theme.foreground;
+            font-size: Theme.font-size-md;
+            font-weight: 600;
+            wrap: word-wrap;
+        }
+
+        if total > 0: RadioGroup {
+            options: questions[step].options;
+            selected <=> root.answer;
+        }
+
+        HorizontalLayout {
+            spacing: 8px;
+            Button {
+                text: "Back";
+                enabled: step > 0;
+                clicked => { root.step -= 1; }
+            }
+            Rectangle { horizontal-stretch: 1; }
+            Button {
+                text: step + 1 >= total ? "Finish" : "Next";
+                variant: ButtonVariant.primary;
+                enabled: total > 0;
+                clicked => {
+                    if step + 1 >= total {
+                        root.finished();
+                    } else {
+                        root.step += 1;
+                        root.answer = 0;
+                    }
+                }
+            }
+        }
+    }
+}

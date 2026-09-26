@@ -1,0 +1,150 @@
+// Design tokens for the Slint components, mapped from `tokens/tokens.json`.
+// Copy this file with any component; every component reads it and nothing
+// else. Switch palettes with `Theme.dark = true;`.
+
+export enum ControlSize { xsmall, small, medium, large }
+
+export enum ButtonVariant { default, primary, secondary, danger, warning, success, info, ghost, link, text }
+
+export enum Status { default, info, success, warning, danger }
+
+export global Theme {
+    in-out property <bool> dark: false;
+
+    // colors.light / colors.dark
+    out property <color> background: dark ? #0a0a0a : #ffffff;
+    out property <color> foreground: dark ? #fafafa : #0a0a0a;
+    out property <color> surface: dark ? #0a0a0a : #ffffff;
+    out property <color> primary: dark ? #fafafa : #171717;
+    out property <color> primary-foreground: dark ? #171717 : #fafafa;
+    out property <color> secondary: dark ? #262626 : #e5e5e5;
+    out property <color> secondary-foreground: dark ? #fafafa : #171717;
+    out property <color> muted: dark ? #262626 : #f5f5f5;
+    out property <color> muted-foreground: dark ? #a3a3a3 : #737373;
+    out property <color> accent: dark ? #262626 : #f5f5f5;
+    out property <color> accent-foreground: dark ? #fafafa : #171717;
+    out property <color> destructive: dark ? #f87171 : #ef4444;
+    out property <color> destructive-foreground: dark ? #dc2626 : #fafafa;
+    out property <color> border: dark ? #262626 : #e5e5e5;
+    out property <color> input: dark ? #2f2f2f : #e5e5e5;
+    out property <color> ring: dark ? #737373 : #a3a3a3;
+    out property <color> selection: dark ? #1d4ed8 : #55a0fc;
+
+    // Status colors from GPUI Component's default theme.
+    out property <color> info: dark ? #22d3ee : #06b6d4;
+    out property <color> success: dark ? #4ade80 : #22c55e;
+    out property <color> warning: dark ? #facc15 : #eab308;
+    out property <color> danger: destructive;
+
+    // Chart series, from GPUI Component's default theme.
+    out property <color> chart-1: dark ? #2662d9 : #e76e50;
+    out property <color> chart-2: dark ? #2eb88a : #2a9d90;
+    out property <color> chart-3: dark ? #e88c30 : #274754;
+    out property <color> chart-4: dark ? #af57db : #e8c468;
+    out property <color> chart-5: dark ? #e23670 : #f4a462;
+
+    out property <color> popover: dark ? #171717 : #ffffff;
+    out property <color> sidebar: dark ? #111111 : #fafafa;
+    out property <color> overlay: dark ? #000000a0 : #0000004d;
+    out property <color> shadow: dark ? #00000080 : #0000001f;
+
+    // spacing
+    out property <length> spacing-xxs: 2px;
+    out property <length> spacing-xs: 4px;
+    out property <length> spacing-sm: 8px;
+    out property <length> spacing-md: 12px;
+    out property <length> spacing-lg: 16px;
+    out property <length> spacing-xl: 24px;
+    out property <length> spacing-xxl: 32px;
+
+    // radius
+    out property <length> radius-sm: 3px;
+    out property <length> radius-md: 6px;
+    out property <length> radius-lg: 8px;
+    out property <length> radius-xl: 12px;
+
+    // typography
+    out property <length> font-size-xs: 12px;
+    out property <length> font-size-sm: 14px;
+    out property <length> font-size-md: 16px;
+    out property <length> font-size-lg: 18px;
+    out property <length> font-size-xl: 20px;
+    out property <length> font-size-mono: 13px;
+    out property <string> mono-font-family: "JetBrains Mono";
+
+    // Hover and pressed shades of a filled surface.
+    public pure function hovered(fill: color) -> color {
+        return dark ? fill.brighter(0.15) : fill.darker(0.06);
+    }
+
+    public pure function pressed(fill: color) -> color {
+        return dark ? fill.brighter(0.3) : fill.darker(0.12);
+    }
+
+    // The tinted background of a status-colored surface.
+    public pure function tint(fill: color) -> color {
+        return fill.with-alpha(dark ? 0.18 : 0.12);
+    }
+
+    public pure function control-height(size: ControlSize) -> length {
+        if size == ControlSize.xsmall {
+            return 20px;
+        }
+        if size == ControlSize.small {
+            return 24px;
+        }
+        if size == ControlSize.large {
+            return 40px;
+        }
+        return 32px;
+    }
+
+    public pure function control-padding(size: ControlSize) -> length {
+        if size == ControlSize.xsmall {
+            return 6px;
+        }
+        if size == ControlSize.small {
+            return 8px;
+        }
+        if size == ControlSize.large {
+            return 16px;
+        }
+        return 12px;
+    }
+
+    public pure function control-font-size(size: ControlSize) -> length {
+        if size == ControlSize.xsmall || size == ControlSize.small {
+            return 12px;
+        }
+        if size == ControlSize.large {
+            return 16px;
+        }
+        return 14px;
+    }
+
+    public pure function icon-size(size: ControlSize) -> length {
+        if size == ControlSize.xsmall {
+            return 12px;
+        }
+        if size == ControlSize.large {
+            return 18px;
+        }
+        return 16px;
+    }
+
+    public pure function status-color(status: Status) -> color {
+        if status == Status.info {
+            return info;
+        }
+        if status == Status.success {
+            return success;
+        }
+        if status == Status.warning {
+            return warning;
+        }
+        if status == Status.danger {
+            return danger;
+        }
+        return foreground;
+    }
+}

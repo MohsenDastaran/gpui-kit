@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { StatusBar } from "../status-bar.slint";
+
+export component StatusBarExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Rectangle {
+        height: 80px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        VerticalLayout {
+            Rectangle { vertical-stretch: 1; }
+            StatusBar { left: "main • slint-component"; right: "Ln 12, Col 4  UTF-8"; }
+        }
+    }
+
+}

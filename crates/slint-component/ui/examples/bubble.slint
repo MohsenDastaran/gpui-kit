@@ -1,0 +1,14 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Bubble } from "../bubble.slint";
+import { MessageRole } from "../message.slint";
+
+export component BubbleExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Bubble { role: MessageRole.assistant; text: "Ready when you are."; time: "9:41"; }
+    Bubble { role: MessageRole.user; text: "Show me the login block."; time: "9:42"; }
+
+}

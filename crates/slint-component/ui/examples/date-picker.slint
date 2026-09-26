@@ -1,0 +1,14 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { DatePicker } from "../date-picker.slint";
+
+export component DatePickerExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Date"; variant: GroupBoxVariant.outline;
+        DatePicker { }
+    }
+
+}

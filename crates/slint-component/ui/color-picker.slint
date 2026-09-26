@@ -1,0 +1,43 @@
+import { Theme } from "theme.slint";
+
+export struct Swatch {
+    name: string,
+    fill: color,
+}
+
+// A swatch palette plus hex field. Mirrors GPUI Component's `ColorPicker`.
+export component ColorPicker {
+    in property <[Swatch]> swatches;
+    in-out property <color> value: #171717;
+    callback changed(value: color);
+
+    VerticalLayout {
+        spacing: 12px;
+
+        Rectangle {
+            height: 48px;
+            border-radius: Theme.radius-md;
+            background: value;
+            border-width: 1px;
+            border-color: Theme.border;
+        }
+
+        HorizontalLayout {
+            spacing: 8px;
+            for swatch in swatches: Rectangle {
+                width: 24px;
+                height: 24px;
+                border-radius: 12px;
+                background: swatch.fill;
+                border-width: value == swatch.fill ? 2px : 1px;
+                border-color: value == swatch.fill ? Theme.ring : Theme.border;
+                TouchArea {
+                    clicked => {
+                        root.value = swatch.fill;
+                        root.changed(swatch.fill);
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,50 @@
+import { Theme } from "theme.slint";
+
+// A vertical scroll area with an overlay scrollbar. Mirrors GPUI Component's
+// `Scrollable`: the bar stays thin and widens while the pointer is over it.
+export component Scrollable {
+    in-out property <length> viewport-y <=> flick.viewport-y;
+    out property <length> viewport-height <=> flick.viewport-height;
+
+    private property <length> overflow: max(0px, flick.viewport-height - flick.height);
+    private property <length> thumb-height: overflow > 0 ? max(24px, flick.height * flick.height / flick.viewport-height) : 0;
+
+    VerticalLayout {
+        flick := Flickable {
+            viewport-width: self.width;
+            @children
+        }
+    }
+
+    if overflow > 0: bar := Rectangle {
+        x: parent.width - self.width - 2px;
+        y: 2px;
+        width: bar-touch.has-hover || bar-touch.pressed ? 8px : 6px;
+        height: parent.height - 4px;
+        animate width { duration: 120ms; }
+
+        thumb := Rectangle {
+            y: (-flick.viewport-y) / overflow * (parent.height - self.height);
+            height: thumb-height;
+            border-radius: self.width / 2;
+            background: Theme.muted-foreground.with-alpha(bar-touch.has-hover || bar-touch.pressed ? 0.6 : 0.35);
+        }
+
+        bar-touch := TouchArea {
+            property <length> grab-viewport-y;
+            pointer-event(event) => {
+                if event.kind == PointerEventKind.down {
+                    self.grab-viewport-y = flick.viewport-y;
+                }
+            }
+            moved => {
+                if self.pressed {
+                    flick.viewport-y = clamp(
+                        self.grab-viewport-y - (self.mouse-y - self.pressed-y) * overflow / (parent.height - thumb-height),
+                        -overflow,
+                        0px);
+                }
+            }
+        }
+    }
+}

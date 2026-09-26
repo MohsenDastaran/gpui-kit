@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { TextView, TextHeading, TextParagraph, TextCode } from "../text-view.slint";
+
+export component TextViewExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    TextView {
+        TextHeading { text: "Getting started"; }
+        TextParagraph { text: "Copy a component into your project and import it from its .slint file."; }
+        TextCode { text: "import { Button } from \"button.slint\";"; }
+    }
+
+}

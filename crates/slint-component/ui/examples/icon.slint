@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Icon } from "../icon.slint";
+
+export component IconExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Icons"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 12px;
+            Icon { name: "search"; }
+            Icon { name: "settings"; }
+            Icon { name: "star"; color: Theme.warning; }
+            Icon { name: "loader-circle"; spinning: true; }
+        }
+    }
+
+}

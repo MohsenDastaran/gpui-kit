@@ -1,0 +1,17 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Questionnaire } from "../questionnaire.slint";
+
+export component QuestionnaireExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Questionnaire {
+        questions: [
+            { prompt: "How often do you ship?", options: ["Daily", "Weekly", "Monthly"] },
+            { prompt: "Primary toolkit?", options: ["GPUI", "Slint", "Other"] },
+        ];
+    }
+
+}

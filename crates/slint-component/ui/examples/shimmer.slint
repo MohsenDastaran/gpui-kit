@@ -1,0 +1,130 @@
+import { Theme } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Icon } from "../icon.slint";
+import { ShimmerText } from "../shimmer.slint";
+
+export component ShimmerExample inherits VerticalLayout {
+    in-out property <bool> generating: true;
+
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "Basic";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 32px;
+            alignment: start;
+            ShimmerText { text: "Thinking…"; }
+            ShimmerText { text: "Generating a response…"; color: Theme.muted-foreground; }
+            ShimmerText { text: "Loading project data…"; font-size: Theme.font-size-md; font-weight: 500; }
+        }
+    }
+
+    GroupBox {
+        title: "Timing, spread and color";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 32px;
+            alignment: start;
+            ShimmerText { text: "Indexing files…"; duration: 3s; highlight-color: Theme.primary; color: Theme.muted-foreground; spread: 0.45; reverse: true; }
+            ShimmerText { text: "Loading a narrow label…"; color: Theme.muted-foreground; spread: 0.15; }
+            ShimmerText { text: "Loading a broad label…"; color: Theme.muted-foreground; spread: 0.7; }
+            ShimmerText { text: "Fixed-width highlight…"; color: Theme.muted-foreground; spread-width: 48px; }
+        }
+    }
+
+    GroupBox {
+        title: "Play once";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 16px;
+            alignment: start;
+            finalizing := ShimmerText {
+                text: "Finalizing…";
+                color: Theme.muted-foreground;
+                reverse: true;
+                once: true;
+                duration: 1.5s;
+                vertical-stretch: 0;
+            }
+            Button {
+                text: "Replay";
+                icon: "refresh-cw";
+                clicked => {
+                    finalizing.restart();
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "In context";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 12px;
+            alignment: start;
+            Rectangle {
+                width: 32px;
+                height: 32px;
+                border-radius: 16px;
+                background: Theme.muted;
+                Icon { name: "bot"; color: Theme.muted-foreground; }
+            }
+            VerticalLayout {
+                alignment: center;
+                if root.generating: ShimmerText {
+                    text: "The assistant is thinking…";
+                    color: Theme.muted-foreground;
+                }
+                if !root.generating: Text {
+                    text: "Here is a summary of the three open issues in the release milestone.";
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                }
+            }
+        }
+        HorizontalLayout {
+            spacing: 12px;
+            alignment: start;
+            Rectangle {
+                width: 260px;
+                height: 52px;
+                border-width: 1px;
+                border-color: Theme.border;
+                border-radius: Theme.radius-lg;
+                HorizontalLayout {
+                    padding-left: 12px;
+                    padding-right: 12px;
+                    spacing: 12px;
+                    VerticalLayout {
+                        alignment: center;
+                        Icon { name: "file-text"; color: Theme.muted-foreground; }
+                    }
+                    VerticalLayout {
+                        alignment: center;
+                        spacing: 2px;
+                        if root.generating: ShimmerText { text: "transcript.pdf"; font-weight: 500; }
+                        if !root.generating: Text { text: "transcript.pdf"; color: Theme.foreground; font-size: Theme.font-size-sm; font-weight: 500; }
+                        Text {
+                            text: root.generating ? "Processing document…" : "PDF · 2.4 MB";
+                            color: Theme.muted-foreground;
+                            font-size: Theme.font-size-xs;
+                        }
+                    }
+                }
+            }
+            VerticalLayout {
+                alignment: center;
+                Button {
+                    text: root.generating ? "Finish" : "Generate again";
+                    clicked => {
+                        root.generating = !root.generating;
+                    }
+                }
+            }
+        }
+    }
+}

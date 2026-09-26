@@ -1,0 +1,13 @@
+[package]
+name = "slint-component-check"
+description = "Type-checks Slint component examples with the same Slint compiler the gallery builds with."
+version = "0.1.0"
+publish = false
+edition = "2024"
+
+# Separate from the gallery crate: its build script compiles every example, so
+# one broken file would stop this checker from building.
+[workspace]
+
+[dependencies]
+slint-build = "=1.17.1"

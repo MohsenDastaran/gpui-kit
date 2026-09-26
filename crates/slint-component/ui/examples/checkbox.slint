@@ -1,0 +1,26 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Checkbox } from "../checkbox.slint";
+import { ControlSize } from "../theme.slint";
+
+export component CheckboxExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Basic"; variant: GroupBoxVariant.outline;
+        Checkbox { label: "Accept terms and conditions"; checked: true; }
+        Checkbox { label: "Receive product updates"; description: "Occasional emails about new releases."; }
+        Checkbox { label: "Indeterminate"; indeterminate: true; }
+        Checkbox { label: "Disabled"; enabled: false; }
+    }
+    GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 16px;
+            Checkbox { label: "XS"; size: ControlSize.xsmall; checked: true; }
+            Checkbox { label: "SM"; size: ControlSize.small; checked: true; }
+            Checkbox { label: "MD"; checked: true; }
+            Checkbox { label: "LG"; size: ControlSize.large; checked: true; }
+        }
+    }
+
+}

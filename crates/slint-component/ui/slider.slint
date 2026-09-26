@@ -1,0 +1,109 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A numeric range control. Mirrors GPUI Component's `Slider`: a 0–100 value
+// by default, step, disabled, and click-or-drag on the track.
+export component Slider {
+    in-out property <float> value: 50;
+    in property <float> minimum: 0;
+    in property <float> maximum: 100;
+    in property <float> step: 1;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(value: float);
+
+    private property <length> track-h: size == ControlSize.xsmall ? 4px
+        : size == ControlSize.large ? 8px
+        : 6px;
+    private property <length> thumb: size == ControlSize.xsmall ? 12px
+        : size == ControlSize.large ? 18px
+        : 16px;
+    private property <float> span: max(0.0001, maximum - minimum);
+    private property <float> fraction: clamp((value - minimum) / span, 0, 1);
+
+    function apply(at: length) {
+        if !enabled || root.width <= 0 {
+            return;
+        }
+        let raw = minimum + (at / root.width) * span;
+        let stepped = step > 0 ? round(raw / step) * step : raw;
+        let next = clamp(stepped, minimum, maximum);
+        if next != root.value {
+            root.value = next;
+            root.changed(next);
+        }
+    }
+
+    accessible-role: slider;
+    accessible-enabled: enabled;
+    accessible-value: "\{round(value)}";
+    accessible-value-minimum: minimum;
+    accessible-value-maximum: maximum;
+    height: max(thumb, 24px);
+    min-width: 80px;
+    horizontal-stretch: 1;
+    opacity: enabled ? 1 : 0.5;
+
+    Rectangle {
+        y: (parent.height - self.height) / 2;
+        height: track-h;
+        border-radius: self.height / 2;
+        background: Theme.secondary;
+
+        Rectangle {
+            width: parent.width * fraction;
+            height: 100%;
+            border-radius: parent.border-radius;
+            background: Theme.primary;
+        }
+    }
+
+    Rectangle {
+        x: parent.width * fraction - thumb / 2;
+        y: (parent.height - self.height) / 2;
+        width: thumb;
+        height: thumb;
+        border-radius: self.width / 2;
+        background: Theme.background;
+        border-width: 2px;
+        border-color: Theme.primary;
+    }
+
+    if focus.has-focus: Rectangle {
+        x: parent.width * fraction - thumb / 2 - 3px;
+        y: (parent.height - thumb) / 2 - 3px;
+        width: thumb + 6px;
+        height: thumb + 6px;
+        border-radius: self.width / 2;
+        border-width: 2px;
+        border-color: Theme.ring;
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == Key.RightArrow || event.text == Key.UpArrow {
+                root.value = min(maximum, value + step);
+                root.changed(root.value);
+                return accept;
+            }
+            if event.text == Key.LeftArrow || event.text == Key.DownArrow {
+                root.value = max(minimum, value - step);
+                root.changed(root.value);
+                return accept;
+            }
+            reject
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.apply(self.mouse-x);
+        }
+        moved => {
+            if self.pressed {
+                root.apply(self.mouse-x);
+            }
+        }
+    }
+}

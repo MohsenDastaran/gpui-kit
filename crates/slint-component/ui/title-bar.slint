@@ -1,0 +1,48 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+
+// A custom window chrome. Mirrors GPUI Component's `TitleBar`.
+export component TitleBar {
+    in property <string> title: "Application";
+    callback close-clicked();
+    callback minimize-clicked();
+    callback zoom-clicked();
+
+    height: 36px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        background: Theme.sidebar;
+        border-width: 0;
+    }
+
+    HorizontalLayout {
+        padding-left: 12px;
+        padding-right: 12px;
+        spacing: 8px;
+
+        HorizontalLayout {
+            spacing: 6px;
+            alignment: center;
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: #ff5f57; TouchArea { clicked => { root.close-clicked(); } } }
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: #febc2e; TouchArea { clicked => { root.minimize-clicked(); } } }
+            Rectangle { width: 12px; height: 12px; border-radius: 6px; background: #28c840; TouchArea { clicked => { root.zoom-clicked(); } } }
+        }
+
+        Text {
+            horizontal-stretch: 1;
+            text: title;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+            font-weight: 560;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+
+        Button {
+            icon: "ellipsis";
+            variant: ButtonVariant.ghost;
+            size: ControlSize.xsmall;
+        }
+    }
+}

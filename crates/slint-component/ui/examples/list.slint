@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { List } from "../list.slint";
+
+export component ListExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    List {
+        items: [
+            { title: "Inbox", description: "12 unread", icon: "inbox" },
+            { title: "Sent", description: "On this device", icon: "send" },
+            { title: "Archive", description: "Last 30 days", icon: "folder" },
+        ];
+        selected: 0;
+    }
+
+}

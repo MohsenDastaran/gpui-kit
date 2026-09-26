@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { FocusTrap } from "../focus-trap.slint";
+import { Button } from "../button.slint";
+import { Input } from "../input.slint";
+
+export component FocusTrapExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    FocusTrap {
+        Input { placeholder: "First field"; }
+        Input { placeholder: "Second field"; }
+        Button { text: "Submit"; }
+    }
+
+}

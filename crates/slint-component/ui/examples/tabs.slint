@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Tabs, TabsVariant } from "../tabs.slint";
+
+export component TabsExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Tabs {
+        items: [
+            { label: "Account", icon: "user", disabled: false },
+            { label: "Password", icon: "lock", disabled: false },
+            { label: "Billing", icon: "circle", disabled: true },
+        ];
+        Text { text: "Account settings live here."; color: Theme.foreground; }
+    }
+
+}

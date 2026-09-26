@@ -1,0 +1,22 @@
+import { Theme } from "theme.slint";
+
+// Highlighted text. Mirrors GPUI Component's `Marker`.
+export component Marker inherits Text {
+    color: Theme.foreground;
+    font-size: Theme.font-size-sm;
+}
+
+export component MarkerHighlight inherits Rectangle {
+    in property <string> text;
+    border-radius: Theme.radius-sm;
+    background: Theme.warning.with-alpha(0.35);
+    HorizontalLayout {
+        padding-left: 2px;
+        padding-right: 2px;
+        Text {
+            text: root.text;
+            color: Theme.foreground;
+            font-size: Theme.font-size-sm;
+        }
+    }
+}

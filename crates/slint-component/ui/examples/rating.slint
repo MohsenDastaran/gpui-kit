@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Rating } from "../rating.slint";
+
+export component RatingExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <int> stars: 4;
+    GroupBox { title: "Rate this"; variant: GroupBoxVariant.outline;
+        Rating { value <=> root.stars; }
+        Text { text: "\{root.stars} of 5"; color: Theme.muted-foreground; }
+    }
+
+}

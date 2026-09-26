@@ -1,0 +1,82 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+
+export struct Slide {
+    title: string,
+    body: string,
+}
+
+// A slide show. Mirrors GPUI Component's `Carousel`.
+export component Carousel {
+    in property <[Slide]> slides;
+    in-out property <int> index: 0;
+
+    function go(delta: int) {
+        if slides.length == 0 {
+            return;
+        }
+        root.index = mod(index + delta + slides.length, slides.length);
+    }
+
+    min-height: 180px;
+
+    Rectangle {
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.muted;
+        clip: true;
+
+        VerticalLayout {
+            padding: 24px;
+            spacing: 8px;
+            alignment: center;
+            Text {
+                text: slides.length > 0 ? slides[index].title : "";
+                color: Theme.foreground;
+                font-size: Theme.font-size-lg;
+                font-weight: 600;
+                horizontal-alignment: center;
+            }
+            Text {
+                text: slides.length > 0 ? slides[index].body : "";
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-sm;
+                wrap: word-wrap;
+                horizontal-alignment: center;
+            }
+        }
+
+        HorizontalLayout {
+            y: parent.height - 40px;
+            padding-left: 12px;
+            padding-right: 12px;
+            Button {
+                icon: "chevron-left";
+                variant: ButtonVariant.ghost;
+                size: ControlSize.small;
+                clicked => { root.go(-1); }
+            }
+            HorizontalLayout {
+                horizontal-stretch: 1;
+                spacing: 6px;
+                alignment: center;
+                for _[i] in slides: Rectangle {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: 4px;
+                    background: i == index ? Theme.primary : Theme.border;
+                    TouchArea {
+                        clicked => { root.index = i; }
+                    }
+                }
+            }
+            Button {
+                icon: "chevron-right";
+                variant: ButtonVariant.ghost;
+                size: ControlSize.small;
+                clicked => { root.go(1); }
+            }
+        }
+    }
+}

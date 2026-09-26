@@ -1,0 +1,27 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Avatar, AvatarGroup, AvatarSize } from "../avatar.slint";
+
+export component AvatarExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 12px; alignment: start;
+            Avatar { initials: "XS"; size: AvatarSize.xsmall; }
+            Avatar { initials: "SM"; size: AvatarSize.small; }
+            Avatar { initials: "MD"; }
+            Avatar { initials: "LG"; size: AvatarSize.large; }
+            Avatar { initials: "XL"; size: AvatarSize.xlarge; }
+        }
+    }
+    GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
+        AvatarGroup {
+            Avatar { initials: "YK"; }
+            Avatar { initials: "AL"; fill: Theme.primary; }
+            Avatar { initials: "MJ"; }
+        }
+    }
+
+}

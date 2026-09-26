@@ -1,0 +1,115 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export struct SelectItem {
+    label: string,
+    value: string,
+}
+
+// A closed list of options. Mirrors GPUI Component's `Select`: a trigger
+// styled like an input and a popover list with a check on the selected row.
+export component Select {
+    in property <[SelectItem]> items;
+    in-out property <int> selected: -1;
+    in property <string> placeholder: "Select…";
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(index: int);
+
+    private property <string> label: selected >= 0 && selected < items.length ? items[selected].label : placeholder;
+
+    height: Theme.control-height(size);
+    min-width: 160px;
+    horizontal-stretch: 1;
+    opacity: enabled ? 1 : 0.5;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: Theme.input;
+        background: Theme.background;
+    }
+
+    HorizontalLayout {
+        padding-left: Theme.control-padding(size);
+        padding-right: Theme.control-padding(size);
+        spacing: 8px;
+
+        Text {
+            horizontal-stretch: 1;
+            text: label;
+            color: selected >= 0 ? Theme.foreground : Theme.muted-foreground;
+            font-size: Theme.control-font-size(size);
+            overflow: elide;
+            vertical-alignment: center;
+        }
+
+        Icon {
+            name: "chevrons-up-down";
+            size: Theme.icon-size(size);
+            color: Theme.muted-foreground;
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            list.show();
+        }
+    }
+
+    list := PopupWindow {
+        x: 0;
+        y: root.height + 4px;
+        width: root.width;
+        close-policy: close-on-click-outside;
+
+        Rectangle {
+            border-radius: Theme.radius-lg;
+            border-width: 1px;
+            border-color: Theme.border;
+            background: Theme.popover;
+            drop-shadow-blur: 12px;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-color: Theme.shadow;
+
+            VerticalLayout {
+                padding: 4px;
+                for item[index] in root.items: Rectangle {
+                    border-radius: Theme.radius-sm;
+                    background: touch.has-hover || root.selected == index ? Theme.accent : transparent;
+
+                    HorizontalLayout {
+                        padding-left: 8px;
+                        padding-right: 8px;
+                        padding-top: 6px;
+                        padding-bottom: 6px;
+                        spacing: 8px;
+
+                        Text {
+                            horizontal-stretch: 1;
+                            text: item.label;
+                            color: Theme.foreground;
+                            font-size: Theme.font-size-sm;
+                            vertical-alignment: center;
+                        }
+
+                        if root.selected == index: Icon {
+                            name: "check";
+                            size: 14px;
+                            color: Theme.foreground;
+                        }
+                    }
+
+                    touch := TouchArea {
+                        clicked => {
+                            root.selected = index;
+                            root.changed(index);
+                            list.close();
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

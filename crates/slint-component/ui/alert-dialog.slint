@@ -1,0 +1,43 @@
+import { Theme, ButtonVariant } from "theme.slint";
+import { Button } from "button.slint";
+import { Dialog, DialogFooter } from "dialog.slint";
+
+// A confirmation dialog. Mirrors GPUI Component's `AlertDialog`.
+export component AlertDialog {
+    in-out property <bool> open;
+    in property <string> title;
+    in property <string> description;
+    in property <string> cancel-text: "Cancel";
+    in property <string> confirm-text: "Continue";
+    in property <bool> destructive;
+    callback cancelled();
+    callback confirmed();
+
+    Dialog {
+        open <=> root.open;
+        title: root.title;
+        description: root.description;
+        closed => {
+            root.cancelled();
+        }
+
+        DialogFooter {
+            Button {
+                text: cancel-text;
+                variant: ButtonVariant.ghost;
+                clicked => {
+                    root.open = false;
+                    root.cancelled();
+                }
+            }
+            Button {
+                text: confirm-text;
+                variant: destructive ? ButtonVariant.danger : ButtonVariant.primary;
+                clicked => {
+                    root.open = false;
+                    root.confirmed();
+                }
+            }
+        }
+    }
+}

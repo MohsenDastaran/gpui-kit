@@ -1,0 +1,52 @@
+import { Theme, ButtonVariant } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Button } from "button.slint";
+
+// An empty-state panel. Mirrors GPUI Component's `Empty`.
+export component Empty inherits VerticalLayout {
+    in property <string> icon: "inbox";
+    in property <string> title;
+    in property <string> description;
+    in property <string> action;
+    callback clicked();
+
+    padding: 32px;
+    spacing: 8px;
+    alignment: center;
+
+    Icon {
+        name: icon;
+        size: 32px;
+        color: Theme.muted-foreground;
+    }
+
+    if title != "": Text {
+        text: title;
+        color: Theme.foreground;
+        font-size: Theme.font-size-md;
+        font-weight: 600;
+        horizontal-alignment: center;
+    }
+
+    if description != "": Text {
+        text: description;
+        color: Theme.muted-foreground;
+        font-size: Theme.font-size-sm;
+        wrap: word-wrap;
+        horizontal-alignment: center;
+    }
+
+    if action != "": HorizontalLayout {
+        alignment: center;
+        padding-top: 8px;
+        Button {
+            text: action;
+            variant: ButtonVariant.primary;
+            clicked => {
+                root.clicked();
+            }
+        }
+    }
+
+    @children
+}

@@ -1,0 +1,152 @@
+import { Theme, ControlSize, ButtonVariant } from "theme.slint";
+import { Icon } from "icon.slint";
+
+// A push button. Mirrors GPUI Component's `Button`: variants, outline, sizes,
+// leading and trailing icons, a loading spinner, and a selected state.
+export component Button {
+    in property <string> text;
+    in property <string> icon;
+    in property <string> suffix-icon;
+    in property <ButtonVariant> variant: ButtonVariant.default;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> outline;
+    in property <bool> compact;
+    in property <bool> enabled: true;
+    in property <bool> loading;
+    in property <bool> selected;
+    out property <bool> has-hover: touch.has-hover;
+    out property <bool> pressed: touch.pressed;
+    callback clicked();
+
+    private property <bool> interactive: enabled && !loading;
+    private property <bool> icon-only: text == "";
+    private property <bool> transparent-fill: variant == ButtonVariant.ghost || variant == ButtonVariant.link || variant == ButtonVariant.text;
+    private property <color> status-fill: variant == ButtonVariant.danger ? Theme.danger
+        : variant == ButtonVariant.warning ? Theme.warning
+        : variant == ButtonVariant.success ? Theme.success
+        : variant == ButtonVariant.info ? Theme.info
+        : variant == ButtonVariant.primary ? Theme.primary
+        : variant == ButtonVariant.secondary ? Theme.secondary
+        : Theme.background;
+    private property <bool> status-variant: variant == ButtonVariant.danger || variant == ButtonVariant.warning || variant == ButtonVariant.success || variant == ButtonVariant.info;
+    private property <color> ink: variant == ButtonVariant.link ? Theme.primary
+        : variant == ButtonVariant.text ? Theme.foreground.with-alpha(0.9)
+        : variant == ButtonVariant.ghost || variant == ButtonVariant.default ? Theme.foreground
+        : outline ? (variant == ButtonVariant.secondary ? Theme.secondary-foreground : status-fill)
+        : variant == ButtonVariant.primary ? Theme.primary-foreground
+        : variant == ButtonVariant.secondary ? Theme.secondary-foreground
+        : #ffffff;
+    private property <color> fill: transparent-fill ? transparent
+        : outline ? transparent
+        : status-fill;
+    private property <color> hover-fill: variant == ButtonVariant.ghost ? Theme.accent
+        : transparent-fill ? transparent
+        : outline ? (status-variant || variant == ButtonVariant.primary ? status-fill.with-alpha(0.1) : Theme.accent)
+        : variant == ButtonVariant.default ? Theme.accent
+        : Theme.hovered(status-fill);
+    private property <color> press-fill: variant == ButtonVariant.ghost ? Theme.hovered(Theme.accent)
+        : transparent-fill ? transparent
+        : outline ? (status-variant || variant == ButtonVariant.primary ? status-fill.with-alpha(0.18) : Theme.hovered(Theme.accent))
+        : variant == ButtonVariant.default ? Theme.hovered(Theme.accent)
+        : Theme.pressed(status-fill);
+    private property <color> border-tone: transparent-fill ? transparent
+        : variant == ButtonVariant.default ? Theme.input
+        : variant == ButtonVariant.secondary ? Theme.border
+        : outline && status-variant ? status-fill.with-alpha(0.6)
+        : status-fill;
+
+    accessible-role: button;
+    accessible-label: text;
+    accessible-enabled: interactive;
+    accessible-action-default => {
+        root.clicked();
+    }
+
+    height: Theme.control-height(size);
+    min-width: icon-only ? self.height : 0;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    opacity: enabled ? 1 : 0.5;
+
+    background := Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: transparent-fill ? 0 : 1px;
+        border-color: border-tone;
+        background: !interactive ? fill
+            : touch.pressed ? press-fill
+            : touch.has-hover || selected ? hover-fill
+            : fill;
+        animate background { duration: 100ms; }
+    }
+
+    if focus.has-focus: Rectangle {
+        x: -2px;
+        y: -2px;
+        width: parent.width + 4px;
+        height: parent.height + 4px;
+        border-radius: Theme.radius-md + 2px;
+        border-width: 2px;
+        border-color: Theme.ring;
+    }
+
+    HorizontalLayout {
+        padding-left: icon-only || variant == ButtonVariant.link || variant == ButtonVariant.text ? 0 : (compact ? Theme.control-padding(size) / 2 : Theme.control-padding(size));
+        padding-right: self.padding-left;
+        spacing: size == ControlSize.xsmall ? 4px : 6px;
+        alignment: center;
+
+        if loading || icon != "": VerticalLayout {
+            alignment: center;
+            Icon {
+                name: loading ? "loader-circle" : icon;
+                spinning: loading;
+                color: ink;
+                size: Theme.icon-size(size);
+            }
+        }
+
+        if !icon-only: Rectangle {
+            label := Text {
+                text: root.text;
+                color: ink;
+                font-size: Theme.control-font-size(size);
+                font-weight: 500;
+                vertical-alignment: center;
+            }
+
+            if variant == ButtonVariant.link && touch.has-hover: Rectangle {
+                y: (parent.height + label.preferred-height) / 2 - 1px;
+                height: 1px;
+                background: ink;
+            }
+        }
+
+        if suffix-icon != "": VerticalLayout {
+            alignment: center;
+            Icon {
+                name: suffix-icon;
+                color: ink;
+                size: Theme.icon-size(size);
+            }
+        }
+    }
+
+    focus := FocusScope {
+        enabled: interactive;
+        key-pressed(event) => {
+            if event.text == " " || event.text == "\n" {
+                root.clicked();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    touch := TouchArea {
+        enabled: interactive;
+        mouse-cursor: variant == ButtonVariant.link ? pointer : default;
+        clicked => {
+            root.clicked();
+        }
+    }
+}

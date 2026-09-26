@@ -1,0 +1,14 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { ImageView } from "../image.slint";
+
+export component ImageExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Placeholder"; variant: GroupBoxVariant.outline;
+        ImageView { height: 160px; }
+    }
+
+}

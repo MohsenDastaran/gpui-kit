@@ -31,5 +31,9 @@ gpui-kit.d.ts
 crates/story-web/www/dist/
 crates/story-web/www/bun.lockb
 crates/base/examples/wasm/www/dist/
+crates/slint-component/www/dist/
+crates/slint-component/target/
+crates/slint-component/check/target/
+crates/slint-component/.tmp/
 .worktrees
 __pycache__/

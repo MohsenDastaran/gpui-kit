@@ -1,0 +1,90 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Avatar, AvatarSize } from "avatar.slint";
+
+export struct SidebarItem {
+    label: string,
+    icon: string,
+}
+
+// An application sidebar. Mirrors GPUI Component's `Sidebar`.
+export component Sidebar {
+    in property <[SidebarItem]> items;
+    in-out property <int> selected: 0;
+    in-out property <bool> collapsed;
+    callback changed(index: int);
+
+    width: collapsed ? 56px : 220px;
+    animate width { duration: 160ms; }
+    horizontal-stretch: 0;
+
+    Rectangle {
+        background: Theme.sidebar;
+        border-width: 1px;
+        border-color: Theme.border;
+    }
+
+    VerticalLayout {
+        padding: 12px;
+        spacing: 4px;
+
+        HorizontalLayout {
+            spacing: 8px;
+            if !collapsed: Text {
+                horizontal-stretch: 1;
+                text: "Workspace";
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                font-weight: 600;
+                vertical-alignment: center;
+            }
+            TouchArea {
+                clicked => { root.collapsed = !root.collapsed; }
+                Icon {
+                    name: "panel-left";
+                    size: 16px;
+                    color: Theme.muted-foreground;
+                }
+            }
+        }
+
+        for item[index] in items: Rectangle {
+            border-radius: Theme.radius-md;
+            background: selected == index ? Theme.accent : (touch.has-hover ? Theme.accent.with-alpha(0.4) : transparent);
+            HorizontalLayout {
+                padding: 8px;
+                spacing: 10px;
+                Icon {
+                    name: item.icon;
+                    size: 16px;
+                    color: Theme.foreground;
+                }
+                if !collapsed: Text {
+                    text: item.label;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    vertical-alignment: center;
+                }
+            }
+            touch := TouchArea {
+                clicked => {
+                    root.selected = index;
+                    root.changed(index);
+                }
+            }
+        }
+
+        Rectangle { vertical-stretch: 1; }
+
+        HorizontalLayout {
+            spacing: 8px;
+            Avatar { initials: "YK"; size: AvatarSize.small; }
+            if !collapsed: Text {
+                text: "You";
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

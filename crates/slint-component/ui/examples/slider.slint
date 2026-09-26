@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Slider } from "../slider.slint";
+
+export component SliderExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <float> volume: 42;
+    GroupBox { title: "Volume"; variant: GroupBoxVariant.outline;
+        Slider { value <=> root.volume; }
+        Text { text: "\{round(root.volume)}%"; color: Theme.muted-foreground; }
+    }
+
+}

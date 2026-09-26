@@ -1,0 +1,108 @@
+import { Theme, ButtonVariant, ControlSize } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Input } from "../input.slint";
+
+export component InputExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "Basic";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 12px;
+            name := Input {
+                placeholder: "Enter your name...";
+            }
+            Input {
+                text: "John Doe";
+            }
+        }
+        Text {
+            text: name.text == "" ? "Type to see the value." : "Hello, \{name.text}!";
+            color: Theme.muted-foreground;
+        }
+    }
+
+    GroupBox {
+        title: "Prefix, suffix and clear button";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 12px;
+            Input {
+                placeholder: "Search...";
+                prefix-icon: "search";
+                cleanable: true;
+            }
+            Input {
+                placeholder: "Username";
+                prefix-icon: "user";
+                Button {
+                    icon: "info";
+                    variant: ButtonVariant.ghost;
+                    size: ControlSize.xsmall;
+                    accessible-label: "About usernames";
+                }
+            }
+            Input {
+                text: "1,280.00";
+                prefix-text: "$";
+                suffix-text: "USD";
+                horizontal-alignment: TextHorizontalAlignment.right;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Password";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 12px;
+            Input {
+                text: "password123";
+                prefix-icon: "lock";
+                masked: true;
+                mask-toggle: true;
+            }
+            Input {
+                placeholder: "Clears on Escape";
+                text: "Press Escape";
+                clean-on-escape: true;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 12px;
+            VerticalLayout { alignment: center; Input { placeholder: "Large"; size: ControlSize.large; } }
+            VerticalLayout { alignment: center; Input { placeholder: "Medium"; } }
+            VerticalLayout { alignment: center; Input { placeholder: "Small"; size: ControlSize.small; } }
+            VerticalLayout { alignment: center; Input { placeholder: "Extra small"; size: ControlSize.xsmall; } }
+        }
+    }
+
+    GroupBox {
+        title: "States";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 12px;
+            Input {
+                text: "Disabled";
+                enabled: false;
+            }
+            Input {
+                text: "Read-only, still selectable";
+                read-only: true;
+            }
+            Input {
+                text: "not-an-email";
+                invalid: true;
+            }
+        }
+    }
+}

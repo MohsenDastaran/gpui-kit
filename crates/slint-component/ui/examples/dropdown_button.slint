@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { DropdownButton } from "../dropdown_button.slint";
+
+export component DropdownButtonExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    DropdownButton {
+        text: "Actions";
+        items: [
+            { label: "Edit", icon: "pencil", shortcut: "", disabled: false, checked: false, separator: false },
+            { label: "Duplicate", icon: "copy", shortcut: "", disabled: false, checked: false, separator: false },
+            { label: "Delete", icon: "trash", shortcut: "", disabled: false, checked: false, separator: false },
+        ];
+    }
+
+}

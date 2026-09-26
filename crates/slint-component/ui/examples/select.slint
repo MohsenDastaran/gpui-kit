@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Select } from "../select.slint";
+
+export component SelectExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Framework"; variant: GroupBoxVariant.outline;
+        Select {
+            placeholder: "Choose a framework";
+            items: [{ label: "GPUI", value: "gpui" }, { label: "Slint", value: "slint" }, { label: "egui", value: "egui" }];
+            selected: 0;
+        }
+    }
+
+}

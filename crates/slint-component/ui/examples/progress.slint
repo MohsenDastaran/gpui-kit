@@ -1,0 +1,151 @@
+import { Theme, ControlSize, Status } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Progress, ProgressCircle } from "../progress.slint";
+
+export component ProgressExample inherits VerticalLayout {
+    in-out property <float> value: 45;
+    in-out property <bool> loading;
+
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "Progress";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button {
+                text: "Loading";
+                selected: root.loading;
+                clicked => {
+                    root.loading = !root.loading;
+                }
+            }
+            Button {
+                icon: "minus";
+                enabled: root.value > 0;
+                clicked => {
+                    root.value = max(0, root.value - 10);
+                }
+            }
+            Button {
+                icon: "plus";
+                enabled: root.value < 100;
+                clicked => {
+                    root.value = min(100, root.value + 10);
+                }
+            }
+        }
+        VerticalLayout {
+            spacing: 8px;
+            HorizontalLayout {
+                Text {
+                    text: root.loading ? "Preparing upload…" : "Uploading report.pdf";
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    horizontal-stretch: 1;
+                }
+                Text {
+                    text: root.loading ? "" : "\{round(root.value)}%";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-sm;
+                }
+            }
+            Progress {
+                value: root.value;
+                loading: root.loading;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Values";
+        variant: GroupBoxVariant.outline;
+        Progress { value: 0; }
+        Progress { value: 25; }
+        Progress { value: 75; }
+        Progress { value: 100; }
+    }
+
+    GroupBox {
+        title: "Sizes and status colors";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 24px;
+            VerticalLayout {
+                spacing: 12px;
+                alignment: center;
+                Progress { value: 50; size: ControlSize.xsmall; }
+                Progress { value: 50; size: ControlSize.small; }
+                Progress { value: 50; }
+                Progress { value: 50; size: ControlSize.large; }
+            }
+            VerticalLayout {
+                spacing: 12px;
+                alignment: center;
+                Progress { value: 30; status: Status.info; }
+                Progress { value: 60; status: Status.success; }
+                Progress { value: 45; status: Status.warning; }
+                Progress { value: 80; status: Status.danger; }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Progress circle";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 16px;
+            alignment: start;
+            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.xsmall; } }
+            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.small; } }
+            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; } }
+            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.large; } }
+            VerticalLayout { alignment: center; ProgressCircle { value: 75; status: Status.success; size: ControlSize.large; } }
+            VerticalLayout { alignment: center; ProgressCircle { value: 40; status: Status.warning; size: ControlSize.large; } }
+            VerticalLayout { alignment: center; ProgressCircle { loading: true; size: ControlSize.large; } }
+            ProgressCircle {
+                value: root.value;
+                loading: root.loading;
+                width: 80px;
+                VerticalLayout {
+                    alignment: center;
+                    spacing: 2px;
+                    Text {
+                        text: root.loading ? "…" : "\{round(root.value)}%";
+                        color: Theme.primary;
+                        font-size: Theme.font-size-sm;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                    }
+                    Text {
+                        text: "Loading";
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-xs;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            VerticalLayout {
+                alignment: center;
+                ProgressCircle {
+                    value: root.value;
+                    loading: root.loading;
+                }
+            }
+            Text {
+                text: root.loading ? "Initializing…" : "Downloading…";
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                vertical-alignment: center;
+            }
+        }
+    }
+}

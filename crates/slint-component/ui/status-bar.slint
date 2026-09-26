@@ -1,0 +1,38 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+
+// A window footer. Mirrors GPUI Component's `StatusBar`.
+export component StatusBar {
+    in property <string> left: "main";
+    in property <string> right: "UTF-8";
+
+    height: 24px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        background: Theme.sidebar;
+        border-width: 1px;
+        border-color: Theme.border;
+    }
+
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 8px;
+        spacing: 12px;
+
+        Icon { name: "code"; size: 12px; color: Theme.muted-foreground; }
+        Text {
+            horizontal-stretch: 1;
+            text: left;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+            vertical-alignment: center;
+        }
+        Text {
+            text: right;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+            vertical-alignment: center;
+        }
+    }
+}

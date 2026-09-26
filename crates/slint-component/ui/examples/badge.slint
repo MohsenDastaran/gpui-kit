@@ -1,0 +1,21 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Badge, BadgeVariant } from "../badge.slint";
+import { Status } from "../theme.slint";
+
+export component BadgeExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Variants"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 8px;
+            Badge { text: "Default"; }
+            Badge { text: "Secondary"; variant: BadgeVariant.secondary; }
+            Badge { text: "Outline"; variant: BadgeVariant.outline; }
+            Badge { text: "Info"; variant: BadgeVariant.status; status: Status.info; }
+            Badge { text: "9"; variant: BadgeVariant.status; status: Status.danger; }
+        }
+    }
+
+}

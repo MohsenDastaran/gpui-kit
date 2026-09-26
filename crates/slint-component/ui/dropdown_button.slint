@@ -1,0 +1,35 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+import { Menu, MenuEntry } from "menu.slint";
+
+// A button that opens a menu. Mirrors GPUI Component's `DropdownButton`.
+export component DropdownButton {
+    in property <string> text;
+    in property <ButtonVariant> variant: ButtonVariant.default;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <[MenuEntry]> items;
+    callback chosen(index: int);
+
+    Button {
+        text: root.text;
+        variant: root.variant;
+        size: root.size;
+        suffix-icon: "chevron-down";
+        clicked => {
+            menu.show();
+        }
+    }
+
+    menu := PopupWindow {
+        y: Theme.control-height(size) + 4px;
+        close-policy: close-on-click-outside;
+
+        Menu {
+            items: root.items;
+            chosen(index) => {
+                root.chosen(index);
+                menu.close();
+            }
+        }
+    }
+}

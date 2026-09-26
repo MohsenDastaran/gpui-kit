@@ -4,6 +4,7 @@ import {
     nextTick,
     onBeforeUnmount,
     onMounted,
+    reactive,
     shallowRef,
     watch,
 } from "vue";
@@ -17,6 +18,9 @@ const props = defineProps<{
     pathname: string;
     baseUrl: string;
     devVersion?: string;
+    /** Frameworks besides GPUI with a live example of this component. */
+    frameworks?: string[];
+    lang?: 'en' | 'zh-CN';
 }>();
 
 const isDev = props.devVersion !== undefined;
@@ -30,6 +34,11 @@ const component = computed(() => {
     const match = props.pathname.match(
         /\/(?:component|base\/primitives)\/([^/]+)$/,
     );
+    return match?.[1] === "index" ? undefined : match?.[1];
+});
+
+const pageSlug = computed(() => {
+    const match = props.pathname.match(/\/component\/([^/]+)$/);
     return match?.[1] === "index" ? undefined : match?.[1];
 });
 
@@ -86,10 +95,84 @@ const src = computed(() => {
     return `${base}/gallery?story=${encodeURIComponent(storyName.value ?? '')}`;
 });
 
-const windowTitle = computed(() =>
-    storyName.value
-        ? `${storyName.value} — ${kind.value === "base" ? "gpui-base" : "gpui-component"}`
-        : "",
+// Every framework the selector offers, with where its live example is served.
+// GPUI is the fallback: base primitives and pages without a selector show it.
+interface Framework {
+    name: string;
+    live: string;
+    library: string;
+    src: () => string | undefined;
+}
+
+const frameworkList: Record<string, Framework> = {
+    gpui: {
+        name: "GPUI",
+        live: "Rust & WASM",
+        library: kind.value === "base" ? "gpui-base" : "gpui-component",
+        src: () => src.value,
+    },
+    slint: {
+        name: "Slint",
+        live: "Slint & WASM",
+        library: "Slint",
+        src: () => {
+            if (!pageSlug.value) return undefined;
+            const base = props.baseUrl.replace(/\/$/, '');
+            return `${base}/slint-gallery?component=${encodeURIComponent(pageSlug.value)}`;
+        },
+    },
+};
+
+const readFramework = () => {
+    const value = document.documentElement.dataset.framework ?? "gpui";
+    return value in frameworkList ? value : "gpui";
+};
+
+const selected = shallowRef("gpui");
+const framework = computed(() =>
+    kind.value === "component" ? selected.value : "gpui",
+);
+const available = computed(
+    () =>
+        framework.value === "gpui" ||
+        (props.frameworks ?? []).includes(framework.value),
+);
+const active = computed(() => frameworkList[framework.value]);
+
+// A frame stays mounted once opened, so switching back is instant.
+const opened = reactive(new Set<string>());
+const loaded = reactive(new Set<string>());
+watch(
+    [framework, available],
+    ([name, ready]) => {
+        if (ready) opened.add(name);
+    },
+    { immediate: true },
+);
+
+const frames = computed(() =>
+    [...opened]
+        .map((name) => ({ name, src: frameworkList[name].src() }))
+        .filter((frame): frame is { name: string; src: string } => Boolean(frame.src)),
+);
+
+const windowTitle = computed(() => {
+    if (!storyName.value) return "";
+    const title = framework.value === "gpui"
+        ? storyName.value
+        : titleCase(pageSlug.value ?? "");
+    return `${title} — ${active.value.library}`;
+});
+
+const missingLabel = computed(() =>
+    props.lang === "zh-CN"
+        ? `此组件暂无 ${active.value.name} 示例。`
+        : `No ${active.value.name} example for this component yet.`,
+);
+const loadingLabel = computed(() =>
+    props.lang === "zh-CN"
+        ? `正在加载 ${active.value.name} 示例…`
+        : `Loading the ${active.value.name} example…`,
 );
 
 const target = shallowRef<HTMLElement>();
@@ -115,7 +198,10 @@ const createTargetAfterDescription = async () => {
 
     const mountPoint = document.createElement("div");
     mountPoint.className = "component-example-mount";
-    if (description?.tagName === "P") {
+    const selector = document.querySelector<HTMLElement>(".doc-content .framework-bar");
+    if (selector) {
+        selector.after(mountPoint);
+    } else if (description?.tagName === "P") {
         description.after(mountPoint);
     } else {
         title.after(mountPoint);
@@ -123,8 +209,21 @@ const createTargetAfterDescription = async () => {
     target.value = mountPoint;
 };
 
-onMounted(createTargetAfterDescription);
+let observer: MutationObserver | undefined;
+
+onMounted(() => {
+    selected.value = readFramework();
+    observer = new MutationObserver(() => {
+        selected.value = readFramework();
+    });
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-framework"],
+    });
+    createTargetAfterDescription();
+});
 onBeforeUnmount(() => {
+    observer?.disconnect();
     target.value?.remove();
     setZoomed(false);
 });
@@ -138,10 +237,11 @@ onBeforeUnmount(() => {
         <section
             class="component-example"
             :class="`component-example--${kind}`"
+            data-pagefind-ignore
         >
             <div class="component-example__label">
                 <span>Example</span>
-                <span class="component-example__live">Rust &amp; WASM</span>
+                <span class="component-example__live">{{ active.live }}</span>
             </div>
             <div class="mac-window" :class="{ 'mac-window--zoomed': zoomed }">
                 <div class="mac-window__bar">
@@ -162,12 +262,32 @@ onBeforeUnmount(() => {
                         @click="setZoomed(!zoomed)"
                     />
                 </div>
-                <iframe
-                    :key="src"
-                    :src="src"
-                    :title="`${component} interactive example`"
-                    allow="cross-origin-isolated"
-                />
+                <div class="component-example__frames">
+                    <iframe
+                        v-for="frame in frames"
+                        v-show="available && frame.name === framework"
+                        :key="frame.src"
+                        :src="frame.src"
+                        :class="`component-example__frame--${frame.name}`"
+                        :title="`${component} interactive example (${frameworkList[frame.name].name})`"
+                        allow="cross-origin-isolated"
+                        @load="loaded.add(frame.name)"
+                    />
+                    <div
+                        v-if="available && !loaded.has(framework)"
+                        class="component-example__status"
+                        role="status"
+                    >
+                        <span class="component-example__spinner" aria-hidden="true" />
+                        {{ loadingLabel }}
+                    </div>
+                    <div
+                        v-if="!available"
+                        class="component-example__status component-example__status--missing"
+                    >
+                        {{ missingLabel }}
+                    </div>
+                </div>
             </div>
         </section>
     </Teleport>

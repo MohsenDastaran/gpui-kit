@@ -1,0 +1,39 @@
+import { Theme } from "theme.slint";
+import { Dialog } from "dialog.slint";
+import { NotificationStack, Notice } from "notification.slint";
+
+// Window chrome that hosts overlays. Mirrors GPUI Component's `Root`.
+export component Root {
+    in-out property <bool> dialog-open;
+    in property <string> dialog-title;
+    in property <string> dialog-description;
+    in-out property <[Notice]> notices;
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.background;
+
+        VerticalLayout {
+            @children
+        }
+
+        if dialog-open: Dialog {
+            width: 100%;
+            height: 100%;
+            open <=> root.dialog-open;
+            title: dialog-title;
+            description: dialog-description;
+        }
+
+        VerticalLayout {
+            x: parent.width - 336px;
+            y: 16px;
+            width: 320px;
+            alignment: start;
+            NotificationStack {
+                items <=> root.notices;
+            }
+        }
+    }
+}

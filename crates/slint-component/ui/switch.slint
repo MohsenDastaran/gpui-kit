@@ -1,0 +1,102 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// An on/off switch. Mirrors GPUI Component's `Switch`: a label, sizes, and a
+// sliding thumb.
+export component Switch {
+    in-out property <bool> checked;
+    in property <string> label;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(checked: bool);
+
+    private property <length> track-w: size == ControlSize.xsmall ? 28px
+        : size == ControlSize.small ? 32px
+        : size == ControlSize.large ? 44px
+        : 36px;
+    private property <length> track-h: size == ControlSize.xsmall ? 16px
+        : size == ControlSize.small ? 18px
+        : size == ControlSize.large ? 24px
+        : 20px;
+    private property <length> thumb: track-h - 4px;
+
+    function toggle() {
+        if !enabled {
+            return;
+        }
+        root.checked = !root.checked;
+        root.changed(root.checked);
+    }
+
+    accessible-role: switch;
+    accessible-label: label;
+    accessible-enabled: enabled;
+    accessible-checkable: true;
+    accessible-checked: checked;
+    accessible-action-default => {
+        root.toggle();
+    }
+
+    opacity: enabled ? 1 : 0.5;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        spacing: Theme.spacing-sm;
+        alignment: start;
+
+        VerticalLayout {
+            alignment: center;
+        track := Rectangle {
+            width: track-w;
+            height: track-h;
+            border-radius: self.height / 2;
+            background: checked ? Theme.primary : Theme.input;
+            animate background { duration: 120ms; }
+
+            Rectangle {
+                x: checked ? parent.width - thumb - 2px : 2px;
+                y: 2px;
+                width: thumb;
+                height: thumb;
+                border-radius: self.width / 2;
+                background: Theme.background;
+                animate x { duration: 120ms; easing: ease-out; }
+            }
+        }
+        }
+
+        if label != "": Text {
+            text: label;
+            color: Theme.foreground;
+            font-size: Theme.control-font-size(size);
+            vertical-alignment: center;
+        }
+    }
+
+    if focus.has-focus: Rectangle {
+        x: -2px;
+        y: -2px;
+        width: track-w + 4px;
+        height: parent.height + 4px;
+        border-radius: Theme.radius-md;
+        border-width: 2px;
+        border-color: Theme.ring;
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == " " || event.text == "\n" {
+                root.toggle();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.toggle();
+        }
+    }
+}

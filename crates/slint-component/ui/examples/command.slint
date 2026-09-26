@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Command } from "../command.slint";
+
+export component CommandExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Command {
+        items: [
+            { label: "New file", icon: "file", shortcut: "⌘N", group: "File" },
+            { label: "Open settings", icon: "settings", shortcut: "⌘,", group: "App" },
+            { label: "Toggle theme", icon: "sun", shortcut: "⌘D", group: "App" },
+        ];
+    }
+
+}

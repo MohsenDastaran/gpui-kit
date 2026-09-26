@@ -1,0 +1,14 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Notification } from "../notification.slint";
+import { Status } from "../theme.slint";
+
+export component NotificationExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Notification { title: "Saved"; message: "Your profile was updated."; status: Status.success; }
+    Notification { title: "Heads up"; message: "A new version is available."; status: Status.info; }
+
+}

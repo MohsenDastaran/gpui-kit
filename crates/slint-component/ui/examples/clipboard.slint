@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Clipboard } from "../clipboard.slint";
+import { Input } from "../input.slint";
+
+export component ClipboardExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Copy"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 8px;
+            Input { text: "gpui-kit"; }
+            Clipboard { value: "gpui-kit"; }
+        }
+    }
+
+}

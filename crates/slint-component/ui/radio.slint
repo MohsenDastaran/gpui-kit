@@ -1,0 +1,120 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// One option in a mutually exclusive set. Mirrors GPUI Component's `Radio`:
+// a label, sizes, and a disabled state. Pair with `RadioGroup` or bind
+// `checked` yourself.
+export component Radio {
+    in-out property <bool> checked;
+    in property <string> label;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(checked: bool);
+
+    private property <length> disc: size == ControlSize.xsmall ? 12px
+        : size == ControlSize.small ? 14px
+        : size == ControlSize.large ? 20px
+        : 16px;
+
+    function select() {
+        if !enabled || checked {
+            return;
+        }
+        root.checked = true;
+        root.changed(true);
+    }
+
+    accessible-role: radio-button;
+    accessible-label: label;
+    accessible-enabled: enabled;
+    accessible-checkable: true;
+    accessible-checked: checked;
+    accessible-action-default => {
+        root.select();
+    }
+
+    opacity: enabled ? 1 : 0.5;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        spacing: Theme.spacing-sm;
+        alignment: start;
+
+        VerticalLayout {
+            alignment: center;
+        Rectangle {
+            width: disc;
+            height: disc;
+            border-radius: self.width / 2;
+            border-width: 1px;
+            border-color: checked ? Theme.primary : Theme.input;
+            background: Theme.background;
+
+            if checked: Rectangle {
+                x: (parent.width - self.width) / 2;
+                y: (parent.height - self.height) / 2;
+                width: disc / 2;
+                height: disc / 2;
+                border-radius: self.width / 2;
+                background: Theme.primary;
+            }
+        }
+        }
+
+        if label != "": Text {
+            text: label;
+            color: Theme.foreground;
+            font-size: Theme.control-font-size(size);
+            vertical-alignment: center;
+        }
+    }
+
+    if focus.has-focus: Rectangle {
+        x: -2px;
+        y: -2px;
+        width: disc + 4px;
+        height: parent.height + 4px;
+        border-radius: Theme.radius-md;
+        border-width: 2px;
+        border-color: Theme.ring;
+    }
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == " " || event.text == "\n" {
+                root.select();
+                return accept;
+            }
+            reject
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            root.select();
+        }
+    }
+}
+
+// A vertical stack of radios that keep a single selected index.
+export component RadioGroup inherits VerticalLayout {
+    in property <[string]> options;
+    in-out property <int> selected: 0;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback changed(index: int);
+
+    spacing: Theme.spacing-sm;
+
+    for option[index] in options: Radio {
+        label: option;
+        checked: root.selected == index;
+        enabled: root.enabled;
+        size: root.size;
+        changed => {
+            root.selected = index;
+            root.changed(index);
+        }
+    }
+}

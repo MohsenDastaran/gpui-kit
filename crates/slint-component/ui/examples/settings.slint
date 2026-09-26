@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Settings } from "../settings.slint";
+
+export component SettingsExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Settings {
+        rows: [
+            { title: "Dark mode", description: "Use the dark palette.", checked: false },
+            { title: "Notifications", description: "Show desktop alerts.", checked: true },
+            { title: "Sounds", description: "Play a sound for new messages.", checked: false },
+        ];
+    }
+
+}

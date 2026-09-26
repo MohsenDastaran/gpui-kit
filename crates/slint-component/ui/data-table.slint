@@ -1,0 +1,392 @@
+import { Theme, ControlSize, Status } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export enum ColumnSort { default, ascending, descending }
+
+// A column of a `DataTable`. `width: 0` fills the remaining space (100px
+// minimum); `sortable` shows the sort indicator and makes the header cycle
+// Default → Descending → Ascending.
+export struct DataTableColumn {
+    key: string,
+    title: string,
+    width: length,
+    align: TextHorizontalAlignment,
+    sortable: bool,
+    resizable: bool,
+}
+
+// A cell value. `status` colors the text (e.g. gains and losses).
+export struct DataTableCell {
+    text: string,
+    status: Status,
+}
+
+export struct DataTableRow {
+    id: string,
+    cells: [DataTableCell],
+}
+
+component TableScrollbar {
+    in property <bool> vertical: true;
+    in property <length> content-size;
+    in property <length> visible-size;
+    in-out property <length> offset;
+    out property <bool> active: touch.has-hover || touch.pressed;
+
+    private property <length> overflow: max(0px, content-size - visible-size);
+    private property <length> track: vertical ? self.height : self.width;
+    private property <length> thumb: overflow > 0 ? max(24px, track * visible-size / content-size) : 0;
+    private property <length> thumb-offset: overflow > 0 ? (-offset) / overflow * (track - thumb) : 0;
+
+    visible: overflow > 0;
+
+    Rectangle {
+        x: vertical ? 0 : thumb-offset;
+        y: vertical ? thumb-offset : 0;
+        width: vertical ? parent.width : thumb;
+        height: vertical ? thumb : parent.height;
+        border-radius: min(self.width, self.height) / 2;
+        background: Theme.muted-foreground.with-alpha(active ? 0.6 : 0.35);
+    }
+
+    touch := TouchArea {
+        property <length> grab-offset;
+        pointer-event(event) => {
+            if event.kind == PointerEventKind.down {
+                self.grab-offset = root.offset;
+            }
+        }
+        moved => {
+            if self.pressed && overflow > 0 {
+                root.offset = clamp(
+                    self.grab-offset - (vertical ? self.mouse-y - self.pressed-y : self.mouse-x - self.pressed-x) * overflow / (track - thumb),
+                    -overflow,
+                    0px);
+            }
+        }
+    }
+}
+
+// A data table for large, interactive data sets. Mirrors GPUI Component's
+// `DataTable`: typed columns and rows, a fixed header over a virtualized body
+// (only the visible rows are instantiated, so thousands of rows stay cheap),
+// sortable and resizable columns, row selection with the keyboard
+// (Up/Down, Home/End, PageUp/PageDown, Escape), stripes, borders and sizes.
+// Sorting is owned by the application, as in GPUI's `perform_sort`: handle
+// `sort-changed` and either reorder `rows` or pass the display order in
+// `row-order` (indices into `rows`; empty means the natural order).
+export component DataTable inherits Rectangle {
+    in-out property <[DataTableColumn]> columns;
+    in property <[DataTableRow]> rows;
+    in property <[int]> row-order;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> stripe;
+    in property <bool> bordered: true;
+    in property <bool> row-selectable: true;
+    in property <bool> col-resizable: true;
+    in property <string> empty-text: "No data";
+    // The selected row as a display index, or -1.
+    in-out property <int> selected-row: -1;
+    in-out property <int> sort-column: -1;
+    in-out property <ColumnSort> sort: ColumnSort.default;
+    out property <int> first-visible-row: first-row;
+    out property <int> row-count: row-order.length > 0 ? row-order.length : rows.length;
+    callback sort-changed(/* column */ int, ColumnSort);
+    callback row-selected(/* display index */ int);
+    callback row-double-clicked(/* display index */ int);
+
+    // The index into `rows` shown at a display position.
+    public pure function data-index(display-index: int) -> int {
+        return row-order.length > 0 ? row-order[display-index] : display-index;
+    }
+
+    public function scroll-to-row(display-index: int) {
+        if display-index * row-height < -body.viewport-y {
+            body.viewport-y = -display-index * row-height;
+        } else if (display-index + 1) * row-height > -body.viewport-y + body.height {
+            body.viewport-y = -((display-index + 1) * row-height - body.height);
+        }
+    }
+
+    public function clear-selection() {
+        root.selected-row = -1;
+    }
+
+    function select(display-index: int) {
+        if !row-selectable || row-count == 0 {
+            return;
+        }
+        root.selected-row = clamp(display-index, 0, row-count - 1);
+        root.scroll-to-row(root.selected-row);
+        root.row-selected(root.selected-row);
+    }
+
+    function toggle-sort(column: int) {
+        let next = sort-column != column || sort == ColumnSort.default ? ColumnSort.descending
+            : sort == ColumnSort.descending ? ColumnSort.ascending
+            : ColumnSort.default;
+        root.sort-column = column;
+        root.sort = next;
+        root.sort-changed(column, next);
+    }
+
+    private property <length> row-height: size == ControlSize.xsmall ? 26px : size == ControlSize.small ? 30px : size == ControlSize.large ? 40px : 32px;
+    private property <length> cell-padding: size == ControlSize.xsmall ? 4px : size == ControlSize.small ? 6px : size == ControlSize.large ? 12px : 8px;
+    private property <length> content-width: max(body.width, header-row.min-width);
+    private property <int> page-rows: max(1, floor(body.height / row-height));
+    private property <int> visible-count: min(row-count, ceil(body.height / row-height) + 1);
+    private property <int> first-row: clamp(floor(-body.viewport-y / row-height), 0, max(0, row-count - visible-count));
+
+    accessible-role: table;
+
+    background: Theme.background;
+    border-radius: bordered ? Theme.radius-md : 0;
+    border-width: bordered ? 1px : 0;
+    border-color: Theme.border;
+    clip: true;
+
+    VerticalLayout {
+        padding: root.border-width;
+
+        header := Rectangle {
+            height: row-height + 1px;
+            background: Theme.muted.with-alpha(0.5);
+            clip: true;
+
+            header-row := HorizontalLayout {
+                x: body.viewport-x;
+                width: content-width;
+                height: row-height;
+
+                for column[c] in columns: head := Rectangle {
+                    min-width: column.width > 0 ? column.width : 100px;
+                    preferred-width: self.min-width;
+                    max-width: column.width > 0 ? column.width : 100000px;
+                    horizontal-stretch: column.width > 0 ? 0 : 1;
+                    background: column.sortable && head-touch.pressed ? Theme.muted
+                        : column.sortable && head-touch.has-hover ? Theme.muted.with-alpha(0.8)
+                        : transparent;
+                    animate background { duration: 100ms; }
+
+                    head-touch := TouchArea {
+                        enabled: column.sortable;
+                        clicked => {
+                            root.toggle-sort(c);
+                        }
+                    }
+
+                    HorizontalLayout {
+                        padding-left: cell-padding;
+                        padding-right: cell-padding;
+                        spacing: 4px;
+                        alignment: column.align == TextHorizontalAlignment.right ? end : column.align == TextHorizontalAlignment.center ? center : start;
+
+                        Text {
+                            text: column.title;
+                            color: Theme.muted-foreground;
+                            font-size: Theme.font-size-sm;
+                            font-weight: 500;
+                            vertical-alignment: center;
+                            overflow: elide;
+                        }
+
+                        if column.sortable: VerticalLayout {
+                            alignment: center;
+                            Icon {
+                                name: sort-column == c && sort == ColumnSort.ascending ? "arrow-up"
+                                    : sort-column == c && sort == ColumnSort.descending ? "arrow-down"
+                                    : "chevrons-up-down";
+                                size: 12px;
+                                color: sort-column == c && sort != ColumnSort.default ? Theme.foreground : Theme.muted-foreground.with-alpha(0.7);
+                            }
+                        }
+                    }
+
+                    if col-resizable && column.resizable: Rectangle {
+                        x: parent.width - self.width / 2 - 1px;
+                        width: 8px;
+                        height: parent.height;
+
+                        Rectangle {
+                            x: (parent.width - self.width) / 2;
+                            width: resize-touch.has-hover || resize-touch.pressed ? 2px : 1px;
+                            height: resize-touch.has-hover || resize-touch.pressed ? parent.height : parent.height * 0.5;
+                            background: resize-touch.has-hover || resize-touch.pressed ? Theme.ring : Theme.border;
+                        }
+
+                        resize-touch := TouchArea {
+                            property <length> start-width;
+                            property <length> start-x;
+                            mouse-cursor: col-resize;
+                            pointer-event(event) => {
+                                if event.kind == PointerEventKind.down {
+                                    self.start-width = head.width;
+                                    self.start-x = self.absolute-position.x + self.mouse-x;
+                                }
+                            }
+                            moved => {
+                                if self.pressed {
+                                    root.columns[c].width = max(48px, self.start-width + self.absolute-position.x + self.mouse-x - self.start-x);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                y: parent.height - 1px;
+                width: parent.width;
+                height: 1px;
+                background: Theme.border;
+            }
+        }
+
+        Rectangle {
+            body := Flickable {
+                viewport-width: content-width;
+                viewport-height: row-count * row-height;
+                interactive: false;
+
+                for k in visible-count: row := Rectangle {
+                    property <int> display-index: first-row + k;
+                    property <DataTableRow> data: rows[root.data-index(display-index)];
+                    property <bool> selected: row-selectable && display-index == selected-row;
+
+                    y: display-index * row-height;
+                    width: content-width;
+                    height: row-height;
+                    background: selected ? Theme.selection.with-alpha(Theme.dark ? 0.2 : 0.15)
+                        : row-touch.has-hover && row-selectable ? Theme.muted.with-alpha(0.8)
+                        : stripe && mod(display-index, 2) == 1 ? Theme.muted.with-alpha(0.5)
+                        : transparent;
+
+                    row-touch := TouchArea {
+                        clicked => {
+                            focus.focus();
+                            root.select(row.display-index);
+                        }
+                        double-clicked => {
+                            root.row-double-clicked(row.display-index);
+                        }
+                    }
+
+                    HorizontalLayout {
+                        height: row-height - 1px;
+                        for column[c] in columns: Rectangle {
+                            min-width: column.width > 0 ? column.width : 100px;
+                            preferred-width: self.min-width;
+                            max-width: column.width > 0 ? column.width : 100000px;
+                            horizontal-stretch: column.width > 0 ? 0 : 1;
+
+                            HorizontalLayout {
+                                padding-left: cell-padding;
+                                padding-right: cell-padding;
+                                Text {
+                                    text: row.data.cells[c].text;
+                                    color: Theme.status-color(row.data.cells[c].status);
+                                    font-size: Theme.font-size-sm;
+                                    horizontal-alignment: column.align;
+                                    vertical-alignment: center;
+                                    overflow: elide;
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        y: parent.height - 1px;
+                        width: parent.width;
+                        height: 1px;
+                        background: Theme.border.with-alpha(0.7);
+                    }
+                }
+            }
+
+            if row-count == 0: Text {
+                text: empty-text;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-sm;
+            }
+
+            // Wheel and trackpad scrolling; the rows handle clicks.
+            TouchArea {
+                scroll-event(event) => {
+                    body.viewport-y = clamp(body.viewport-y + event.delta-y, min(0px, body.height - body.viewport-height), 0px);
+                    body.viewport-x = clamp(body.viewport-x + event.delta-x, min(0px, body.width - body.viewport-width), 0px);
+                    accept
+                }
+                clicked => {
+                    focus.focus();
+                }
+                // Let clicks through to the rows below.
+                enabled: row-count == 0;
+            }
+
+            vbar := TableScrollbar {
+                vertical: true;
+                x: parent.width - self.width - 2px;
+                y: 2px;
+                width: self.active ? 8px : 6px;
+                height: parent.height - 4px;
+                content-size: body.viewport-height;
+                visible-size: body.height;
+                offset <=> body.viewport-y;
+                animate width { duration: 120ms; }
+            }
+
+            hbar := TableScrollbar {
+                vertical: false;
+                x: 2px;
+                y: parent.height - self.height - 2px;
+                width: parent.width - 12px;
+                height: self.active ? 8px : 6px;
+                content-size: body.viewport-width;
+                visible-size: body.width;
+                offset <=> body.viewport-x;
+                animate height { duration: 120ms; }
+            }
+
+            focus := FocusScope {
+                x: 0;
+                y: 0;
+                width: 0;
+                height: 0;
+                key-pressed(event) => {
+                    if !row-selectable || row-count == 0 {
+                        return reject;
+                    }
+                    if event.text == Key.DownArrow {
+                        root.select(selected-row < 0 ? 0 : selected-row + 1);
+                        return accept;
+                    }
+                    if event.text == Key.UpArrow {
+                        root.select(selected-row < 0 ? 0 : selected-row - 1);
+                        return accept;
+                    }
+                    if event.text == Key.Home {
+                        root.select(0);
+                        return accept;
+                    }
+                    if event.text == Key.End {
+                        root.select(row-count - 1);
+                        return accept;
+                    }
+                    if event.text == Key.PageDown {
+                        root.select(max(0, selected-row) + page-rows);
+                        return accept;
+                    }
+                    if event.text == Key.PageUp {
+                        root.select(max(0, selected-row) - page-rows);
+                        return accept;
+                    }
+                    if event.text == Key.Escape {
+                        root.clear-selection();
+                        return accept;
+                    }
+                    reject
+                }
+            }
+        }
+    }
+}

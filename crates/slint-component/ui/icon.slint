@@ -1,0 +1,119 @@
+// Lucide icons by name. Copy `icon.slint` with the `icons/` folder, and add
+// an SVG plus a line below for every icon your application uses.
+
+import { Theme } from "theme.slint";
+
+export component Icon {
+    in property <string> name;
+    in property <color> color: Theme.foreground;
+    in property <length> size: 16px;
+    // Rotates continuously; use with `loader-circle`.
+    in property <bool> spinning;
+
+    width: size;
+    height: size;
+    accessible-role: image;
+
+    Image {
+        width: size;
+        height: size;
+        colorize: color;
+        image-fit: contain;
+        transform-rotation: spinning ? mod(animation-tick(), 800ms) / 800ms * 360deg : 0deg;
+        source: name == "activity" ? @image-url("icons/activity.svg") :
+            name == "arrow-down" ? @image-url("icons/arrow-down.svg") :
+            name == "arrow-left" ? @image-url("icons/arrow-left.svg") :
+            name == "arrow-right" ? @image-url("icons/arrow-right.svg") :
+            name == "arrow-up" ? @image-url("icons/arrow-up.svg") :
+            name == "bell" ? @image-url("icons/bell.svg") :
+            name == "bold" ? @image-url("icons/bold.svg") :
+            name == "bookmark" ? @image-url("icons/bookmark.svg") :
+            name == "bot" ? @image-url("icons/bot.svg") :
+            name == "box" ? @image-url("icons/box.svg") :
+            name == "calendar" ? @image-url("icons/calendar.svg") :
+            name == "chart-column" ? @image-url("icons/chart-column.svg") :
+            name == "chart-line" ? @image-url("icons/chart-line.svg") :
+            name == "check" ? @image-url("icons/check.svg") :
+            name == "chevron-down" ? @image-url("icons/chevron-down.svg") :
+            name == "chevron-left" ? @image-url("icons/chevron-left.svg") :
+            name == "chevron-right" ? @image-url("icons/chevron-right.svg") :
+            name == "chevrons-up-down" ? @image-url("icons/chevrons-up-down.svg") :
+            name == "chevron-up" ? @image-url("icons/chevron-up.svg") :
+            name == "circle-alert" ? @image-url("icons/circle-alert.svg") :
+            name == "circle-check" ? @image-url("icons/circle-check.svg") :
+            name == "circle" ? @image-url("icons/circle.svg") :
+            name == "circle-x" ? @image-url("icons/circle-x.svg") :
+            name == "clock" ? @image-url("icons/clock.svg") :
+            name == "code" ? @image-url("icons/code.svg") :
+            name == "command" ? @image-url("icons/command.svg") :
+            name == "copy" ? @image-url("icons/copy.svg") :
+            name == "cpu" ? @image-url("icons/cpu.svg") :
+            name == "database" ? @image-url("icons/database.svg") :
+            name == "download" ? @image-url("icons/download.svg") :
+            name == "ellipsis" ? @image-url("icons/ellipsis.svg") :
+            name == "ellipsis-vertical" ? @image-url("icons/ellipsis-vertical.svg") :
+            name == "external-link" ? @image-url("icons/external-link.svg") :
+            name == "eye-off" ? @image-url("icons/eye-off.svg") :
+            name == "eye" ? @image-url("icons/eye.svg") :
+            name == "file" ? @image-url("icons/file.svg") :
+            name == "file-text" ? @image-url("icons/file-text.svg") :
+            name == "folder-open" ? @image-url("icons/folder-open.svg") :
+            name == "folder" ? @image-url("icons/folder.svg") :
+            name == "funnel" ? @image-url("icons/funnel.svg") :
+            name == "gauge" ? @image-url("icons/gauge.svg") :
+            name == "github" ? @image-url("icons/github.svg") :
+            name == "globe" ? @image-url("icons/globe.svg") :
+            name == "grip-vertical" ? @image-url("icons/grip-vertical.svg") :
+            name == "hash" ? @image-url("icons/hash.svg") :
+            name == "heart" ? @image-url("icons/heart.svg") :
+            name == "house" ? @image-url("icons/house.svg") :
+            name == "image" ? @image-url("icons/image.svg") :
+            name == "inbox" ? @image-url("icons/inbox.svg") :
+            name == "info" ? @image-url("icons/info.svg") :
+            name == "italic" ? @image-url("icons/italic.svg") :
+            name == "keyboard" ? @image-url("icons/keyboard.svg") :
+            name == "layers" ? @image-url("icons/layers.svg") :
+            name == "layout-dashboard" ? @image-url("icons/layout-dashboard.svg") :
+            name == "list" ? @image-url("icons/list.svg") :
+            name == "loader-circle" ? @image-url("icons/loader-circle.svg") :
+            name == "lock" ? @image-url("icons/lock.svg") :
+            name == "log-out" ? @image-url("icons/log-out.svg") :
+            name == "mail" ? @image-url("icons/mail.svg") :
+            name == "maximize-2" ? @image-url("icons/maximize-2.svg") :
+            name == "menu" ? @image-url("icons/menu.svg") :
+            name == "message-circle" ? @image-url("icons/message-circle.svg") :
+            name == "mic" ? @image-url("icons/mic.svg") :
+            name == "minimize-2" ? @image-url("icons/minimize-2.svg") :
+            name == "minus" ? @image-url("icons/minus.svg") :
+            name == "moon" ? @image-url("icons/moon.svg") :
+            name == "palette" ? @image-url("icons/palette.svg") :
+            name == "panel-left" ? @image-url("icons/panel-left.svg") :
+            name == "paperclip" ? @image-url("icons/paperclip.svg") :
+            name == "pause" ? @image-url("icons/pause.svg") :
+            name == "pencil" ? @image-url("icons/pencil.svg") :
+            name == "play" ? @image-url("icons/play.svg") :
+            name == "plus" ? @image-url("icons/plus.svg") :
+            name == "refresh-cw" ? @image-url("icons/refresh-cw.svg") :
+            name == "search" ? @image-url("icons/search.svg") :
+            name == "send" ? @image-url("icons/send.svg") :
+            name == "settings" ? @image-url("icons/settings.svg") :
+            name == "share-2" ? @image-url("icons/share-2.svg") :
+            name == "sparkles" ? @image-url("icons/sparkles.svg") :
+            name == "square" ? @image-url("icons/square.svg") :
+            name == "star" ? @image-url("icons/star.svg") :
+            name == "sun" ? @image-url("icons/sun.svg") :
+            name == "table" ? @image-url("icons/table.svg") :
+            name == "terminal" ? @image-url("icons/terminal.svg") :
+            name == "thumbs-down" ? @image-url("icons/thumbs-down.svg") :
+            name == "thumbs-up" ? @image-url("icons/thumbs-up.svg") :
+            name == "trash" ? @image-url("icons/trash.svg") :
+            name == "triangle-alert" ? @image-url("icons/triangle-alert.svg") :
+            name == "underline" ? @image-url("icons/underline.svg") :
+            name == "upload" ? @image-url("icons/upload.svg") :
+            name == "users" ? @image-url("icons/users.svg") :
+            name == "user" ? @image-url("icons/user.svg") :
+            name == "x" ? @image-url("icons/x.svg") :
+            name == "zap" ? @image-url("icons/zap.svg") :
+            @image-url("");
+    }
+}

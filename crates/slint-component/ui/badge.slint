@@ -1,0 +1,52 @@
+import { Theme, ControlSize, Status } from "theme.slint";
+
+export enum BadgeVariant { default, secondary, outline, status }
+
+// A compact count or status chip. Mirrors GPUI Component's `Badge`: variants,
+// status colors, and a circular `dot` mode for overlaying an avatar or icon.
+export component Badge {
+    in property <string> text;
+    in property <BadgeVariant> variant: BadgeVariant.default;
+    in property <Status> status: Status.default;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> dot;
+
+    private property <color> fill: variant == BadgeVariant.secondary ? Theme.secondary
+        : variant == BadgeVariant.outline ? transparent
+        : variant == BadgeVariant.status ? Theme.status-color(status)
+        : Theme.primary;
+    private property <color> ink: variant == BadgeVariant.outline ? Theme.foreground
+        : variant == BadgeVariant.secondary ? Theme.secondary-foreground
+        : variant == BadgeVariant.status && status == Status.default ? Theme.primary-foreground
+        : variant == BadgeVariant.status ? #ffffff
+        : Theme.primary-foreground;
+
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    min-width: dot ? (size == ControlSize.xsmall ? 6px : 8px) : 0;
+    height: dot ? self.min-width
+        : size == ControlSize.xsmall ? 16px
+        : size == ControlSize.small ? 18px
+        : size == ControlSize.large ? 24px
+        : 20px;
+
+    Rectangle {
+        border-radius: parent.height / 2;
+        border-width: variant == BadgeVariant.outline ? 1px : 0;
+        border-color: Theme.border;
+        background: fill;
+    }
+
+    if !dot: HorizontalLayout {
+        padding-left: size == ControlSize.xsmall ? 5px : 7px;
+        padding-right: self.padding-left;
+        alignment: center;
+        Text {
+            text: root.text;
+            color: ink;
+            font-size: size == ControlSize.xsmall ? 10px : Theme.font-size-xs;
+            font-weight: 500;
+            vertical-alignment: center;
+        }
+    }
+}

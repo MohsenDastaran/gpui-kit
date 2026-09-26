@@ -1,0 +1,73 @@
+import { Theme } from "theme.slint";
+
+// Richer hover content. Mirrors GPUI Component's `HoverCard`.
+export component HoverCard {
+    in property <string> title;
+    in property <string> description;
+    in property <duration> delay: 280ms;
+
+    private property <bool> hovering;
+
+    min-width: host.preferred-width;
+    min-height: host.preferred-height;
+
+    host := TouchArea {
+        changed has-hover => {
+            root.hovering = self.has-hover;
+            if self.has-hover {
+                wait.running = true;
+            } else {
+                wait.running = false;
+                card.close();
+            }
+        }
+        VerticalLayout {
+            @children
+        }
+    }
+
+    wait := Timer {
+        interval: delay;
+        running: false;
+        triggered => {
+            self.running = false;
+            if root.hovering {
+                card.show();
+            }
+        }
+    }
+
+    card := PopupWindow {
+        x: 0;
+        y: host.height + 8px;
+        width: 240px;
+        close-policy: no-auto-close;
+
+        Rectangle {
+            border-radius: Theme.radius-lg;
+            border-width: 1px;
+            border-color: Theme.border;
+            background: Theme.popover;
+            drop-shadow-blur: 12px;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-color: Theme.shadow;
+
+            VerticalLayout {
+                padding: 12px;
+                spacing: 6px;
+                if title != "": Text {
+                    text: title;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    font-weight: 600;
+                }
+                if description != "": Text {
+                    text: description;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    wrap: word-wrap;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,74 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Input } from "input.slint";
+import { Kbd } from "kbd.slint";
+
+export struct CommandItem {
+    label: string,
+    icon: string,
+    shortcut: string,
+    group: string,
+}
+
+// A command palette. Mirrors GPUI Component's `Command`.
+export component Command {
+    in property <[CommandItem]> items;
+    in-out property <string> query;
+    in-out property <int> active: 0;
+    callback chosen(index: int);
+
+    preferred-width: 420px;
+
+    Rectangle {
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.popover;
+        drop-shadow-blur: 20px;
+        drop-shadow-offset-y: 8px;
+        drop-shadow-color: Theme.shadow;
+
+        VerticalLayout {
+            Input {
+                text <=> root.query;
+                placeholder: "Type a command…";
+                prefix-icon: "search";
+                appearance: false;
+            }
+
+            Rectangle { height: 1px; background: Theme.border; }
+
+            VerticalLayout {
+                padding: 4px;
+                for item[index] in items: Rectangle {
+                    visible: true;
+                    border-radius: Theme.radius-sm;
+                    background: active == index ? Theme.accent : transparent;
+                    HorizontalLayout {
+                        padding: 8px;
+                        spacing: 8px;
+                        Icon {
+                            name: item.icon;
+                            size: 14px;
+                            color: Theme.foreground;
+                        }
+                        Text {
+                            horizontal-stretch: 1;
+                            text: item.label;
+                            color: Theme.foreground;
+                            font-size: Theme.font-size-sm;
+                            vertical-alignment: center;
+                        }
+                        if item.shortcut != "": Kbd { text: item.shortcut; }
+                    }
+                    TouchArea {
+                        clicked => {
+                            root.active = index;
+                            root.chosen(index);
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

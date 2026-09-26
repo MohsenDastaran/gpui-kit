@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Form, FormField } from "../form.slint";
+import { Input } from "../input.slint";
+import { ButtonVariant } from "../theme.slint";
+import { Button } from "../button.slint";
+
+export component FormExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Form {
+        FormField { label: "Name"; required: true; Input { placeholder: "Ada Lovelace"; } }
+        FormField { label: "Email"; description: "We will never share this."; Input { placeholder: "ada@example.com"; } }
+        Button { text: "Save"; variant: ButtonVariant.primary; }
+    }
+
+}

@@ -1,0 +1,34 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A framed row of inputs and buttons. Mirrors GPUI Component's `InputGroup`:
+// children sit in one bordered track so an `Input` can set `appearance: false`.
+export component InputGroup {
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> invalid;
+
+    height: Theme.control-height(size);
+    preferred-width: 280px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: invalid ? Theme.danger : Theme.input;
+        background: Theme.background;
+        clip: true;
+    }
+
+    HorizontalLayout {
+        padding-left: 2px;
+        padding-right: 2px;
+        spacing: 0;
+        alignment: start;
+        @children
+    }
+}
+
+export component InputGroupAddon inherits HorizontalLayout {
+    padding-left: 8px;
+    padding-right: 8px;
+    alignment: center;
+}

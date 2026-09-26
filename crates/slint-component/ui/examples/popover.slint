@@ -1,0 +1,17 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Popover } from "../popover.slint";
+import { Button } from "../button.slint";
+
+export component PopoverExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Click"; variant: GroupBoxVariant.outline;
+        Popover {
+            Button { text: "Open popover"; }
+        }
+    }
+
+}

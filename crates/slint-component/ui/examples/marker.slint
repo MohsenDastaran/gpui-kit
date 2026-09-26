@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Marker, MarkerHighlight } from "../marker.slint";
+
+export component MarkerExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    HorizontalLayout { spacing: 4px;
+        Marker { text: "Search found"; }
+        MarkerHighlight { text: "12 matches"; }
+        Marker { text: "in this file."; }
+    }
+
+}

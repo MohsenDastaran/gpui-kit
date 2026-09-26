@@ -1,0 +1,29 @@
+import { Theme } from "theme.slint";
+
+// Read-only rich-ish text. Mirrors GPUI Component's `TextView` for headings,
+// paragraphs, and inline code.
+export component TextView inherits VerticalLayout {
+    spacing: 10px;
+
+    @children
+}
+
+export component TextHeading inherits Text {
+    in property <int> level: 2;
+    color: Theme.foreground;
+    font-size: level == 1 ? Theme.font-size-xl : Theme.font-size-lg;
+    font-weight: 650;
+    wrap: word-wrap;
+}
+
+export component TextParagraph inherits Text {
+    color: Theme.foreground;
+    font-size: Theme.font-size-sm;
+    wrap: word-wrap;
+}
+
+export component TextCode inherits Text {
+    color: Theme.foreground;
+    font-family: Theme.mono-font-family;
+    font-size: Theme.font-size-mono;
+}

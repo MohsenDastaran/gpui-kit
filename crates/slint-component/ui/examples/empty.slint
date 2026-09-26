@@ -1,0 +1,17 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Empty } from "../empty.slint";
+
+export component EmptyExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Empty {
+        icon: "inbox";
+        title: "No messages";
+        description: "When someone writes to you, it will show up here.";
+        action: "Compose";
+    }
+
+}

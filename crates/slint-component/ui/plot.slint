@@ -1,0 +1,41 @@
+import { Theme } from "theme.slint";
+import { ChartPoint, BarChart, ChartLegend } from "chart.slint";
+
+// Lower-level plot surface. Mirrors GPUI Component's `Plot` as a framed
+// chart with axes.
+export component Plot {
+    in property <[ChartPoint]> points;
+    in property <string> x-label;
+    in property <string> y-label;
+
+    min-height: 200px;
+
+    Rectangle {
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border;
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 8px;
+
+            if y-label != "": Text {
+                text: y-label;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+            }
+
+            BarChart {
+                vertical-stretch: 1;
+                points: root.points;
+            }
+
+            if x-label != "": Text {
+                text: x-label;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: center;
+            }
+        }
+    }
+}

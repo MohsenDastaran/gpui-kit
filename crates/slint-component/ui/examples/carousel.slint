@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Carousel } from "../carousel.slint";
+
+export component CarouselExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Carousel {
+        height: 200px;
+        slides: [
+            { title: "Welcome", body: "A desktop component gallery." },
+            { title: "Copy", body: "Take the .slint files you need." },
+            { title: "Theme", body: "Everything reads Theme tokens." },
+        ];
+    }
+
+}

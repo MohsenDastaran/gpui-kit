@@ -1,0 +1,70 @@
+import { Theme } from "theme.slint";
+
+// Loading text with a moving highlight. Mirrors GPUI Component's `ShimmerText`:
+// the text stays readable and owns layout while a theme-aware band sweeps
+// across it; `duration`, `highlight-color`, `spread` (relative half-width, or
+// `spread-width` for a fixed one), `reverse` and `once` configure the motion.
+// Call `restart()` to replay a `once` sweep.
+export component ShimmerText {
+    in property <string> text;
+    in property <color> color: Theme.foreground;
+    in property <length> font-size: Theme.font-size-sm;
+    in property <int> font-weight: 400;
+    in property <TextWrap> wrap: TextWrap.no-wrap;
+    in property <TextOverflow> overflow: TextOverflow.elide;
+    in property <TextHorizontalAlignment> horizontal-alignment: TextHorizontalAlignment.left;
+    in property <duration> duration: 2s;
+    in property <color> highlight-color: Theme.dark ? Theme.foreground.mix(root.color, 0.6) : Theme.background.mix(root.color, 0.7);
+    in property <float> spread: 0.3;
+    in property <length> spread-width;
+    in property <bool> reverse;
+    in property <bool> once;
+
+    private property <duration> started;
+    private property <bool> finished;
+    private property <duration> sweep: max(1ms, duration);
+    private property <float> progress: finished ? 1
+        : once ? min(1, (animation-tick() - started) / sweep)
+        : mod(animation-tick() - started, sweep) / sweep;
+    private property <float> half-width: spread-width > 0 ? max(1px, spread-width) / max(1px, label.width)
+        : clamp(spread, 0.05, 1);
+    private property <float> travel: -half-width + progress * (1 + 2 * half-width);
+    private property <float> band: reverse ? 1 - travel : travel;
+
+    public function restart() {
+        root.started = animation-tick();
+        root.finished = false;
+    }
+
+    init => {
+        root.restart();
+    }
+
+    accessible-role: AccessibleRole.text;
+    accessible-label: root.text;
+
+    VerticalLayout {
+        label := Text {
+            text: root.text;
+            font-size: root.font-size;
+            font-weight: root.font-weight;
+            wrap: root.wrap;
+            overflow: root.overflow;
+            horizontal-alignment: root.horizontal-alignment;
+            color: finished ? root.color : @linear-gradient(90deg,
+                root.color 0%,
+                root.color clamp(band - half-width, 0, 1) * 100%,
+                root.highlight-color clamp(band, 0, 1) * 100%,
+                root.color clamp(band + half-width, 0, 1) * 100%,
+                root.color 100%);
+        }
+    }
+
+    Timer {
+        interval: root.sweep;
+        running: root.once && !root.finished;
+        triggered => {
+            root.finished = true;
+        }
+    }
+}

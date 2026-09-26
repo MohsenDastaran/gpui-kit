@@ -1,0 +1,17 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Radio, RadioGroup } from "../radio.slint";
+
+export component RadioExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
+        RadioGroup { options: ["Email", "SMS", "Push"]; selected: 0; }
+    }
+    GroupBox { title: "Standalone"; variant: GroupBoxVariant.outline;
+        Radio { label: "Disabled"; enabled: false; }
+    }
+
+}

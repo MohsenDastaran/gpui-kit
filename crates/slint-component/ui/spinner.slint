@@ -1,0 +1,29 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+// An indeterminate loading indicator. Mirrors GPUI Component's `Spinner`: a
+// continuously rotating icon (`loader-circle` by default) with a color and
+// sizes from 12px to 24px; set `width` for a custom size.
+export component Spinner {
+    in property <string> icon: "loader-circle";
+    in property <color> color: Theme.foreground;
+    in property <ControlSize> size: ControlSize.medium;
+
+    accessible-role: progress-indicator;
+    accessible-label: "Loading";
+
+    width: size == ControlSize.xsmall ? 12px
+        : size == ControlSize.small ? 14px
+        : size == ControlSize.large ? 24px
+        : 16px;
+    height: self.width;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+
+    Icon {
+        name: root.icon;
+        color: root.color;
+        size: min(root.width, root.height);
+        spinning: true;
+    }
+}

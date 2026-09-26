@@ -1,0 +1,15 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Resizable } from "../resizable.slint";
+
+export component ResizableExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Resizable {
+        height: 200px;
+        Text { text: "Left pane"; color: Theme.foreground; }
+    }
+
+}

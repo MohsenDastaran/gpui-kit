@@ -1,0 +1,15 @@
+import { Theme } from "theme.slint";
+
+// A loading placeholder. Mirrors GPUI Component's `Skeleton`: a pulsing
+// muted block. Compose several for a card or list preview.
+export component Skeleton {
+    in property <length> radius: Theme.radius-md;
+
+    min-height: 12px;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        border-radius: radius;
+        background: Theme.muted.with-alpha(0.55 + 0.35 * abs(sin(mod(animation-tick(), 1400ms) / 1400ms * 360deg)));
+    }
+}

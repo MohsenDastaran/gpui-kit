@@ -1,0 +1,22 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Sidebar } from "../sidebar.slint";
+
+export component SidebarExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Rectangle {
+        height: 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        Sidebar {
+            height: 100%;
+            items: [
+                { label: "Home", icon: "house" },
+                { label: "Inbox", icon: "inbox" },
+                { label: "Settings", icon: "settings" },
+            ];
+        }
+    }
+
+}

@@ -1,0 +1,166 @@
+import { Theme, ButtonVariant, ControlSize } from "../theme.slint";
+import { Accordion, AccordionItem } from "../accordion.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+
+export component AccordionExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <string> last-toggle: "Click a section title to toggle it.";
+    private property <int> notifications: 3;
+
+    GroupBox {
+        title: "Single";
+        variant: GroupBoxVariant.outline;
+        Accordion {
+            open-index: 0;
+            items: [
+                { title: "What is GPUI Kit?", content: "A Rust desktop application framework built on GPUI, with styled components inspired by macOS and Windows controls." },
+                { title: "Which platforms are supported?", content: "macOS on Apple silicon and Intel, Linux on x86_64, and Windows on x86_64." },
+                { title: "Can I restyle the components?", content: "Yes. Every component reads semantic theme tokens, so switching the palette restyles the whole application." },
+            ];
+            toggled(index, open) => {
+                root.last-toggle = open ? "Section \{index + 1} opened." : "Section \{index + 1} closed.";
+            }
+        }
+        Text {
+            text: root.last-toggle;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+        }
+    }
+
+    GroupBox {
+        title: "Multiple";
+        variant: GroupBoxVariant.outline;
+        Accordion {
+            multiple: true;
+            open-index: 0;
+            items: [
+                { title: "Shipping", content: "Orders ship within two business days from our warehouse." },
+                { title: "Returns", content: "Return any unused item within 30 days for a full refund." },
+                { title: "Warranty", content: "Hardware is covered for two years against manufacturing defects." },
+            ];
+        }
+    }
+
+    GroupBox {
+        title: "Icons and custom content";
+        variant: GroupBoxVariant.outline;
+        Accordion {
+            AccordionItem {
+                title: "Notifications";
+                icon: "bell";
+                open: true;
+                VerticalLayout {
+                    spacing: 8px;
+                    Text {
+                        text: root.notifications == 0 ? "You're all caught up." : "\{root.notifications} unread notifications.";
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        alignment: start;
+                        Button {
+                            text: "Mark all as read";
+                            size: ControlSize.small;
+                            enabled: root.notifications > 0;
+                            clicked => {
+                                root.notifications = 0;
+                            }
+                        }
+                        Button {
+                            text: "Simulate new";
+                            size: ControlSize.small;
+                            variant: ButtonVariant.ghost;
+                            icon: "plus";
+                            clicked => {
+                                root.notifications += 1;
+                            }
+                        }
+                    }
+                }
+            }
+            AccordionItem {
+                title: "Settings";
+                icon: "settings";
+                Text {
+                    text: "Preferences for appearance, keyboard shortcuts, and updates.";
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    wrap: word-wrap;
+                }
+            }
+            AccordionItem {
+                title: "Nested sections";
+                icon: "layers";
+                last: true;
+                Accordion {
+                    size: ControlSize.small;
+                    items: [
+                        { title: "Child section 1", content: "Content of the first child section." },
+                        { title: "Child section 2", content: "Content of the second child section." },
+                    ];
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 16px;
+            Accordion {
+                size: ControlSize.xsmall;
+                open-index: 0;
+                items: [
+                    { title: "Extra small", content: "Compact rows for dense panels." },
+                    { title: "Second section", content: "Content." },
+                ];
+            }
+            Accordion {
+                size: ControlSize.small;
+                open-index: 0;
+                items: [
+                    { title: "Small", content: "Rows for sidebars and inspectors." },
+                    { title: "Second section", content: "Content." },
+                ];
+            }
+            Accordion {
+                size: ControlSize.large;
+                open-index: 0;
+                items: [
+                    { title: "Large", content: "Roomy rows for settings pages." },
+                    { title: "Second section", content: "Content." },
+                ];
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Borderless and disabled";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 24px;
+            Accordion {
+                bordered: false;
+                open-index: 0;
+                items: [
+                    { title: "Borderless", content: "Items are still separated by a line." },
+                    { title: "Second section", content: "Content." },
+                ];
+            }
+            Accordion {
+                enabled: false;
+                items: [
+                    { title: "Disabled section", content: "Content." },
+                    { title: "Another disabled section", content: "Content." },
+                ];
+            }
+        }
+    }
+}

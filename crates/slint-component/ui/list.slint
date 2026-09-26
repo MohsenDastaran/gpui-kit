@@ -1,0 +1,51 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export struct ListEntry {
+    title: string,
+    description: string,
+    icon: string,
+}
+
+// A selectable list. Mirrors GPUI Component's `List`.
+export component List {
+    in property <[ListEntry]> items;
+    in-out property <int> selected: -1;
+    callback changed(index: int);
+
+    VerticalLayout {
+        spacing: 2px;
+        for item[index] in items: Rectangle {
+            border-radius: Theme.radius-md;
+            background: selected == index ? Theme.accent : (touch.has-hover ? Theme.accent.with-alpha(0.5) : transparent);
+            HorizontalLayout {
+                padding: 8px;
+                spacing: 10px;
+                if item.icon != "": Icon {
+                    name: item.icon;
+                    size: 16px;
+                    color: Theme.foreground;
+                }
+                VerticalLayout {
+                    Text {
+                        text: item.title;
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                        font-weight: 500;
+                    }
+                    if item.description != "": Text {
+                        text: item.description;
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-xs;
+                    }
+                }
+            }
+            touch := TouchArea {
+                clicked => {
+                    root.selected = index;
+                    root.changed(index);
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,63 @@
+import { Theme } from "theme.slint";
+import { Placement } from "tooltip.slint";
+
+// A click-opened panel. Mirrors GPUI Component's `Popover`.
+export component Popover {
+    in property <Placement> placement: Placement.bottom;
+    in-out property <bool> open;
+
+    min-width: host.preferred-width;
+    min-height: host.preferred-height;
+
+    host := TouchArea {
+        clicked => {
+            panel.show();
+            root.open = true;
+        }
+        VerticalLayout {
+            @children
+        }
+    }
+
+    panel := PopupWindow {
+        x: placement == Placement.right ? host.width + 8px
+            : placement == Placement.left ? -220px
+            : 0;
+        y: placement == Placement.bottom ? host.height + 8px
+            : placement == Placement.top ? -8px
+            : 0;
+        width: 220px;
+        close-policy: close-on-click-outside;
+
+        Rectangle {
+            border-radius: Theme.radius-lg;
+            border-width: 1px;
+            border-color: Theme.border;
+            background: Theme.popover;
+            drop-shadow-blur: 12px;
+            drop-shadow-offset-y: 4px;
+            drop-shadow-color: Theme.shadow;
+
+            VerticalLayout {
+                padding: 12px;
+                spacing: 8px;
+                Text {
+                    text: "Popover";
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                }
+                Text {
+                    text: "Click outside to close.";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    wrap: word-wrap;
+                }
+            }
+        }
+    }
+}
+
+export component PopoverContent inherits VerticalLayout {
+    spacing: 8px;
+    @children
+}

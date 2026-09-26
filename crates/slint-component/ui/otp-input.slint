@@ -1,0 +1,69 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A one-time-password field. Mirrors GPUI Component's `OtpInput`: a row of
+// single-character cells that share one string value.
+export component OtpInput {
+    in-out property <string> value;
+    in property <int> length: 6;
+    in property <bool> masked;
+    in property <bool> enabled: true;
+    in property <ControlSize> size: ControlSize.medium;
+    callback completed(value: string);
+
+    private property <length> cell: Theme.control-height(size);
+
+    function digit(index: int) -> string {
+        return "";
+    }
+
+    height: cell;
+    horizontal-stretch: 0;
+
+    HorizontalLayout {
+        spacing: 8px;
+
+        for _[index] in length: Rectangle {
+            width: cell;
+            height: cell;
+            border-radius: Theme.radius-md;
+            border-width: 1px;
+            border-color: field.has-focus && index == min(value.character-count, length - 1) ? Theme.ring : Theme.input;
+            background: Theme.background;
+
+            Text {
+                width: 100%;
+                height: 100%;
+                text: root.digit(index) == "" ? "" : (root.masked ? "•" : root.digit(index));
+                color: Theme.foreground;
+                font-size: Theme.control-font-size(size);
+                font-weight: 600;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+        }
+    }
+
+    field := TextInput {
+        x: 0;
+        y: 0;
+        width: 1px;
+        height: 1px;
+        opacity: 0;
+        text <=> root.value;
+        enabled: root.enabled;
+        single-line: true;
+        input-type: InputType.text;
+        edited => {
+            if self.text.character-count >= root.length {
+                root.completed(self.text);
+            }
+        }
+    }
+
+    TouchArea {
+        enabled: root.enabled;
+        clicked => {
+            field.focus();
+        }
+    }
+}

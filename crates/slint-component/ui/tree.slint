@@ -1,0 +1,55 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export struct TreeNode {
+    label: string,
+    depth: int,
+    folder: bool,
+    expanded: bool,
+}
+
+// A file tree. Mirrors GPUI Component's `Tree` with a flattened model.
+export component Tree {
+    in-out property <[TreeNode]> items;
+    in-out property <int> selected: -1;
+    callback changed(index: int);
+
+    VerticalLayout {
+        spacing: 0;
+        for item[index] in items: Rectangle {
+            background: selected == index ? Theme.accent : (touch.has-hover ? Theme.accent.with-alpha(0.4) : transparent);
+            HorizontalLayout {
+                padding-left: 8px + item.depth * 16px;
+                padding-right: 8px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                spacing: 6px;
+
+                if item.folder: Icon {
+                    name: item.expanded ? "chevron-down" : "chevron-right";
+                    size: 12px;
+                    color: Theme.muted-foreground;
+                }
+
+                Icon {
+                    name: item.folder ? (item.expanded ? "folder-open" : "folder") : "file";
+                    size: 14px;
+                    color: Theme.foreground;
+                }
+
+                Text {
+                    text: item.label;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    vertical-alignment: center;
+                }
+            }
+            touch := TouchArea {
+                clicked => {
+                    root.selected = index;
+                    root.changed(index);
+                }
+            }
+        }
+    }
+}

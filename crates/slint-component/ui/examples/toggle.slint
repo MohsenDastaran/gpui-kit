@@ -1,0 +1,21 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Toggle, ToggleGroup } from "../toggle.slint";
+
+export component ToggleExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Toggle"; variant: GroupBoxVariant.outline;
+        HorizontalLayout { spacing: 8px;
+            Toggle { icon: "bold"; }
+            Toggle { icon: "italic"; selected: true; }
+            Toggle { icon: "underline"; }
+        }
+    }
+    GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
+        ToggleGroup { options: [{ text: "Day", icon: "sun" }, { text: "Week", icon: "" }, { text: "Month", icon: "" }]; }
+    }
+
+}

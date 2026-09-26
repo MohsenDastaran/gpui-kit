@@ -1,0 +1,28 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Root } from "../root.slint";
+import { Button } from "../button.slint";
+import { Status } from "../theme.slint";
+
+export component RootExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    private property <bool> dialog-open;
+    Rectangle {
+        height: 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        Root {
+            width: 100%; height: 100%;
+            dialog-open <=> root.dialog-open;
+            dialog-title: "Confirm";
+            dialog-description: "Apply these changes?";
+            notices: [{ title: "Synced", message: "All changes are saved.", status: Status.success }];
+            VerticalLayout {
+                padding: 16px;
+                Button { text: "Open dialog"; clicked => { root.dialog-open = true; } }
+            }
+        }
+    }
+
+}

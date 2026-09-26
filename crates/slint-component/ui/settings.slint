@@ -1,0 +1,46 @@
+import { Theme } from "theme.slint";
+import { Switch } from "switch.slint";
+
+export struct SettingRow {
+    title: string,
+    description: string,
+    checked: bool,
+}
+
+// A settings page. Mirrors GPUI Component's `Settings`.
+export component Settings {
+    in-out property <[SettingRow]> rows;
+    callback changed(index: int, checked: bool);
+
+    VerticalLayout {
+        spacing: 0;
+        for row[index] in rows: HorizontalLayout {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            spacing: 16px;
+
+            VerticalLayout {
+                horizontal-stretch: 1;
+                Text {
+                    text: row.title;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    font-weight: 500;
+                }
+                Text {
+                    text: row.description;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    wrap: word-wrap;
+                }
+            }
+
+            Switch {
+                checked: row.checked;
+                changed(on) => {
+                    root.changed(index, on);
+                }
+            }
+        }
+    }
+}

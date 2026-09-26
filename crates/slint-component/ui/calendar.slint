@@ -1,0 +1,125 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+
+// A month grid. Mirrors GPUI Component's `Calendar`.
+export component Calendar {
+    in-out property <int> year: 2026;
+    in-out property <int> month: 9;
+    in-out property <int> selected-day: 26;
+    callback changed(year: int, month: int, day: int);
+
+    private property <[string]> weekdays: ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+    private property <[string]> months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+
+    public pure function days-in-month(y: int, m: int) -> int {
+        if m == 2 {
+            return (mod(y, 4) == 0 && (mod(y, 100) != 0 || mod(y, 400) == 0)) ? 29 : 28;
+        }
+        if m == 4 || m == 6 || m == 9 || m == 11 {
+            return 30;
+        }
+        return 31;
+    }
+
+    // Sakamoto: weekday of day 1 (0 = Sunday).
+    public pure function month-offset(m: int) -> int {
+        if m == 1 { return 0; }
+        if m == 2 { return 3; }
+        if m == 3 { return 2; }
+        if m == 4 { return 5; }
+        if m == 5 { return 0; }
+        if m == 6 { return 3; }
+        if m == 7 { return 5; }
+        if m == 8 { return 1; }
+        if m == 9 { return 4; }
+        if m == 10 { return 6; }
+        if m == 11 { return 2; }
+        return 4;
+    }
+
+    public pure function first-weekday(y: int, m: int) -> int {
+        let yy = m < 3 ? y - 1 : y;
+        return mod(yy + floor(yy / 4) - floor(yy / 100) + floor(yy / 400) + month-offset(m) + 1, 7);
+    }
+
+    function shift(delta: int) {
+        let next = month + delta;
+        if next < 1 {
+            root.month = 12;
+            root.year -= 1;
+        } else if next > 12 {
+            root.month = 1;
+            root.year += 1;
+        } else {
+            root.month = next;
+        }
+    }
+
+    preferred-width: 280px;
+
+    VerticalLayout {
+        spacing: 8px;
+
+        HorizontalLayout {
+            Button {
+                icon: "chevron-left";
+                variant: ButtonVariant.ghost;
+                size: ControlSize.xsmall;
+                clicked => { root.shift(-1); }
+            }
+            Text {
+                horizontal-stretch: 1;
+                text: "\{months[month - 1]} \{year}";
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                font-weight: 600;
+                horizontal-alignment: center;
+                vertical-alignment: center;
+            }
+            Button {
+                icon: "chevron-right";
+                variant: ButtonVariant.ghost;
+                size: ControlSize.xsmall;
+                clicked => { root.shift(1); }
+            }
+        }
+
+        HorizontalLayout {
+            for day in weekdays: Text {
+                width: 36px;
+                text: day;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: center;
+            }
+        }
+
+        for week in 6: HorizontalLayout {
+            for col in 7: Rectangle {
+                property <int> cell: week * 7 + col - first-weekday(year, month) + 1;
+                width: 36px;
+                height: 32px;
+                border-radius: Theme.radius-md;
+                background: cell == selected-day ? Theme.primary : (touch.has-hover && cell >= 1 && cell <= days-in-month(year, month) ? Theme.accent : transparent);
+
+                if cell >= 1 && cell <= days-in-month(year, month): Text {
+                    width: 100%;
+                    height: 100%;
+                    text: "\{cell}";
+                    color: cell == selected-day ? Theme.primary-foreground : Theme.foreground;
+                    font-size: Theme.font-size-sm;
+                    horizontal-alignment: center;
+                    vertical-alignment: center;
+                }
+
+                touch := TouchArea {
+                    enabled: cell >= 1 && cell <= days-in-month(year, month);
+                    clicked => {
+                        root.selected-day = cell;
+                        root.changed(year, month, cell);
+                    }
+                }
+            }
+        }
+    }
+}

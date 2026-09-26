@@ -1,0 +1,18 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Scrollable } from "../scrollable.slint";
+
+export component ScrollableExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Scrollable {
+        height: 200px;
+        VerticalLayout {
+            padding: 8px; spacing: 8px;
+            for i in 20: Text { text: "Row \{i + 1}"; color: Theme.foreground; }
+        }
+    }
+
+}

@@ -1,0 +1,19 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { DescriptionList, DescriptionLayout } from "../description-list.slint";
+
+export component DescriptionListExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    DescriptionList {
+        bordered: true;
+        items: [
+            { term: "Name", detail: "Ada Lovelace" },
+            { term: "Role", detail: "Mathematician" },
+            { term: "Born", detail: "1815" },
+        ];
+    }
+
+}

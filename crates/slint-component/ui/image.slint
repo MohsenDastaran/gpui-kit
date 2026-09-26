@@ -1,0 +1,43 @@
+import { Theme } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export enum ImageFit { cover, contain, fill }
+
+// A framed picture. Mirrors GPUI Component's `Image`: source, fit, and
+// radius. Without a source it shows a placeholder.
+export component ImageView {
+    in property <image> source;
+    in property <ImageFit> fit: ImageFit.cover;
+    in property <length> radius: Theme.radius-md;
+
+    min-width: 80px;
+    min-height: 80px;
+    preferred-width: 240px;
+    preferred-height: 160px;
+
+    Rectangle {
+        border-radius: radius;
+        background: Theme.muted;
+        clip: true;
+        border-width: 1px;
+        border-color: Theme.border;
+
+        if source.width > 0: Image {
+            width: 100%;
+            height: 100%;
+            source: root.source;
+            image-fit: fit == ImageFit.contain ? contain
+                : fit == ImageFit.fill ? fill
+                : cover;
+        }
+
+        if source.width == 0: VerticalLayout {
+            alignment: center;
+            Icon {
+                name: "image";
+                size: 28px;
+                color: Theme.muted-foreground;
+            }
+        }
+    }
+}

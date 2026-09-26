@@ -1,0 +1,182 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A static table. Mirrors GPUI Component's `Table`: a bordered, rounded
+// surface that stacks a `TableHeader`, a `TableBody`, an optional
+// `TableFooter` and a `TableCaption`. Rows are `TableRow`s of `TableHead` or
+// `TableCell`; cells share the row width equally (100px minimum) unless given
+// an explicit `width`, and align their content with `align`. Set `index` on
+// body rows so they draw the row separator, and `striped` for alternating
+// backgrounds. `bordered: false` removes the outer border and radius.
+export component Table inherits Rectangle {
+    in property <bool> bordered: true;
+
+    accessible-role: table;
+
+    background: Theme.background;
+    border-radius: bordered ? Theme.radius-md : 0;
+    border-width: bordered ? 1px : 0;
+    border-color: Theme.border;
+    clip: true;
+
+    VerticalLayout {
+        padding: root.border-width;
+        @children
+    }
+}
+
+// The header section of a `Table`: a muted band with a bottom separator.
+export component TableHeader inherits Rectangle {
+    background: Theme.muted.with-alpha(0.5);
+
+    VerticalLayout {
+        padding-bottom: 1px;
+        @children
+    }
+
+    Rectangle {
+        y: parent.height - 1px;
+        width: parent.width;
+        height: 1px;
+        background: Theme.border.with-alpha(0.7);
+    }
+}
+
+// The body section of a `Table`, wrapping data rows.
+export component TableBody inherits VerticalLayout { }
+
+// The footer section of a `Table`: a muted band with a top separator.
+export component TableFooter inherits Rectangle {
+    background: Theme.muted.with-alpha(0.5);
+
+    VerticalLayout {
+        padding-top: 1px;
+        @children
+    }
+
+    Rectangle {
+        y: 0;
+        width: parent.width;
+        height: 1px;
+        background: Theme.border.with-alpha(0.7);
+    }
+}
+
+// A row of a `Table`. Rows after the first (`index > 0`) draw a top
+// separator; with `striped`, odd rows get the even-row background.
+export component TableRow inherits Rectangle {
+    in property <int> index;
+    in property <bool> striped;
+
+    background: striped && mod(index, 2) == 1 ? Theme.muted.with-alpha(0.5) : transparent;
+
+    HorizontalLayout {
+        padding-top: index > 0 ? 1px : 0;
+        @children
+    }
+
+    if index > 0: Rectangle {
+        y: 0;
+        width: parent.width;
+        height: 1px;
+        background: Theme.border.with-alpha(0.7);
+    }
+}
+
+// A header cell. Shows `text` in the muted header style, or custom children.
+export component TableHead inherits Rectangle {
+    in property <string> text;
+    in property <TextHorizontalAlignment> align: TextHorizontalAlignment.left;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <int> col-span: 1;
+
+    private property <length> padding-x: size == ControlSize.xsmall ? 4px : size == ControlSize.small ? 6px : size == ControlSize.large ? 12px : 8px;
+    private property <length> padding-y: size == ControlSize.xsmall ? 2px : size == ControlSize.small ? 3px : size == ControlSize.large ? 8px : 4px;
+
+    accessible-role: AccessibleRole.text;
+    accessible-label: text;
+
+    min-width: 100px * col-span;
+    preferred-width: self.min-width;
+    horizontal-stretch: col-span;
+
+    HorizontalLayout {
+        padding-left: padding-x;
+        padding-right: padding-x;
+        padding-top: padding-y;
+        padding-bottom: padding-y;
+        spacing: 6px;
+        alignment: align == TextHorizontalAlignment.right ? end : align == TextHorizontalAlignment.center ? center : start;
+
+        if text != "": Text {
+            text: root.text;
+            min-height: 20px;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-sm;
+            font-weight: 500;
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        @children
+    }
+}
+
+// A data cell. Shows `text`, or custom children (badges, icons, buttons).
+export component TableCell inherits Rectangle {
+    in property <string> text;
+    in property <TextHorizontalAlignment> align: TextHorizontalAlignment.left;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <int> col-span: 1;
+    in property <color> text-color: Theme.foreground;
+    in property <bool> mono;
+
+    private property <length> padding-x: size == ControlSize.xsmall ? 4px : size == ControlSize.small ? 6px : size == ControlSize.large ? 12px : 8px;
+    private property <length> padding-y: size == ControlSize.xsmall ? 2px : size == ControlSize.small ? 3px : size == ControlSize.large ? 8px : 4px;
+
+    accessible-role: AccessibleRole.text;
+    accessible-label: text;
+
+    min-width: 100px * col-span;
+    preferred-width: self.min-width;
+    horizontal-stretch: col-span;
+
+    HorizontalLayout {
+        padding-left: padding-x;
+        padding-right: padding-x;
+        padding-top: padding-y;
+        padding-bottom: padding-y;
+        spacing: 6px;
+        alignment: align == TextHorizontalAlignment.right ? end : align == TextHorizontalAlignment.center ? center : start;
+
+        if text != "": Text {
+            text: root.text;
+            min-height: 20px;
+            color: root.text-color;
+            font-size: mono ? Theme.font-size-mono : Theme.font-size-sm;
+            font-family: mono ? Theme.mono-font-family : "";
+            vertical-alignment: center;
+            overflow: elide;
+        }
+        @children
+    }
+}
+
+// A caption below the table body, centered in the muted style.
+export component TableCaption inherits HorizontalLayout {
+    in property <string> text;
+    in property <ControlSize> size: ControlSize.medium;
+
+    padding-left: size == ControlSize.xsmall ? 4px : size == ControlSize.small ? 6px : size == ControlSize.large ? 12px : 8px;
+    padding-right: self.padding-left;
+    padding-top: size == ControlSize.xsmall ? 2px : size == ControlSize.small ? 3px : size == ControlSize.large ? 8px : 4px;
+    padding-bottom: self.padding-top;
+
+    Text {
+        text: root.text;
+        min-height: 20px;
+        color: Theme.muted-foreground;
+        font-size: Theme.font-size-sm;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+        wrap: word-wrap;
+    }
+}

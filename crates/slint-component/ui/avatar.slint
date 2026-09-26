@@ -1,0 +1,53 @@
+import { Theme, ControlSize } from "theme.slint";
+
+export enum AvatarSize { xsmall, small, medium, large, xlarge }
+
+// A user portrait. Mirrors GPUI Component's `Avatar`: an image, initials
+// fallback, and sizes. `AvatarGroup` overlaps a row of avatars.
+export component Avatar {
+    in property <image> source;
+    in property <string> initials;
+    in property <AvatarSize> size: AvatarSize.medium;
+    in property <color> fill: Theme.secondary;
+
+    private property <length> edge: size == AvatarSize.xsmall ? 20px
+        : size == AvatarSize.small ? 24px
+        : size == AvatarSize.large ? 40px
+        : size == AvatarSize.xlarge ? 56px
+        : 32px;
+
+    width: edge;
+    height: edge;
+    horizontal-stretch: 0;
+
+    Rectangle {
+        border-radius: self.width / 2;
+        background: fill;
+        clip: true;
+
+        if source.width > 0: Image {
+            width: 100%;
+            height: 100%;
+            source: root.source;
+            image-fit: cover;
+        }
+
+        if source.width == 0 && initials != "": Text {
+            width: 100%;
+            height: 100%;
+            text: initials;
+            color: Theme.secondary-foreground;
+            font-size: edge * 0.38;
+            font-weight: 600;
+            horizontal-alignment: center;
+            vertical-alignment: center;
+        }
+    }
+}
+
+export component AvatarGroup inherits HorizontalLayout {
+    in property <int> max: 5;
+    spacing: -8px;
+    alignment: start;
+    @children
+}

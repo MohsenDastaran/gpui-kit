@@ -1,0 +1,43 @@
+import { Theme } from "theme.slint";
+import { Avatar, AvatarSize } from "avatar.slint";
+import { MessageRole } from "message.slint";
+
+// A chat bubble. Mirrors GPUI Component's `Bubble`.
+export component Bubble {
+    in property <MessageRole> role: MessageRole.assistant;
+    in property <string> text;
+    in property <string> time;
+
+    HorizontalLayout {
+        spacing: 8px;
+        alignment: role == MessageRole.user ? end : start;
+
+        if role == MessageRole.assistant: Avatar { initials: "A"; size: AvatarSize.xsmall; }
+
+        VerticalLayout {
+            alignment: start;
+            max-width: 320px;
+            Rectangle {
+                border-radius: Theme.radius-lg;
+                background: role == MessageRole.user ? Theme.primary : Theme.muted;
+                HorizontalLayout {
+                    padding: 10px;
+                    Text {
+                        text: root.text;
+                        color: role == MessageRole.user ? Theme.primary-foreground : Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+            if time != "": Text {
+                text: time;
+                color: Theme.muted-foreground;
+                font-size: 10px;
+                horizontal-alignment: role == MessageRole.user ? right : left;
+            }
+        }
+
+        if role == MessageRole.user: Avatar { initials: "U"; size: AvatarSize.xsmall; fill: Theme.primary; }
+    }
+}

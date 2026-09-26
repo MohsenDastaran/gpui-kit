@@ -1,0 +1,76 @@
+import { Theme, Status, ButtonVariant, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+import { Button } from "button.slint";
+
+// A callout for user attention. Mirrors GPUI Component's `Alert`: status
+// variants, an optional title, a closable banner, and custom icons.
+export component Alert {
+    in property <string> title;
+    in property <string> message;
+    in property <Status> status: Status.info;
+    in property <string> icon;
+    in property <bool> closable;
+    in property <bool> banner;
+    in-out property <bool> open: true;
+    callback closed();
+
+    private property <color> tone: Theme.status-color(status);
+    private property <string> glyph: icon != "" ? icon
+        : status == Status.success ? "circle-check"
+        : status == Status.warning ? "triangle-alert"
+        : status == Status.danger ? "circle-x"
+        : "info";
+
+    visible: root.open;
+    horizontal-stretch: 1;
+
+    Rectangle {
+        border-radius: banner ? 0 : Theme.radius-lg;
+        border-width: 1px;
+        border-color: tone.with-alpha(0.35);
+        background: Theme.tint(tone);
+    }
+
+    HorizontalLayout {
+        padding: banner ? 12px : 16px;
+        spacing: 12px;
+
+        VerticalLayout {
+            alignment: start;
+            Icon {
+                name: glyph;
+                size: 16px;
+                color: tone;
+            }
+        }
+
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 4px;
+            if title != "": Text {
+                text: title;
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                font-weight: 600;
+            }
+            if message != "": Text {
+                text: message;
+                color: Theme.foreground;
+                font-size: Theme.font-size-sm;
+                wrap: word-wrap;
+            }
+            @children
+        }
+
+        if closable: Button {
+            icon: "x";
+            variant: ButtonVariant.ghost;
+            size: ControlSize.xsmall;
+            accessible-label: "Dismiss";
+            clicked => {
+                root.open = false;
+                root.closed();
+            }
+        }
+    }
+}

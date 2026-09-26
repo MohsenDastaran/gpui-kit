@@ -1,0 +1,69 @@
+import { Theme } from "theme.slint";
+
+export struct ChartPoint {
+    label: string,
+    value: float,
+}
+
+// Simple charts. Mirrors GPUI Component's `Chart` for bar and legend.
+export component BarChart {
+    in property <[ChartPoint]> points;
+    in property <length> bar-width: 28px;
+
+    min-height: 180px;
+    horizontal-stretch: 1;
+
+    VerticalLayout {
+        spacing: 8px;
+
+        HorizontalLayout {
+            spacing: 12px;
+            alignment: end;
+            padding-bottom: 4px;
+            for point[index] in points: VerticalLayout {
+                spacing: 6px;
+                alignment: end;
+                Rectangle {
+                    width: bar-width;
+                    height: max(4px, 120px * clamp(point.value / 100, 0, 1));
+                    border-radius: Theme.radius-sm;
+                    background: index == 0 ? Theme.chart-1
+                        : index == 1 ? Theme.chart-2
+                        : index == 2 ? Theme.chart-3
+                        : index == 3 ? Theme.chart-4
+                        : Theme.chart-5;
+                }
+                Text {
+                    text: point.label;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+    }
+}
+
+export component ChartLegend inherits HorizontalLayout {
+    in property <[ChartPoint]> points;
+    spacing: 12px;
+    for point[index] in points: HorizontalLayout {
+        spacing: 6px;
+        Rectangle {
+            y: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+            background: index == 0 ? Theme.chart-1
+                : index == 1 ? Theme.chart-2
+                : index == 2 ? Theme.chart-3
+                : index == 3 ? Theme.chart-4
+                : Theme.chart-5;
+        }
+        Text {
+            text: "\{point.label}  \{round(point.value)}";
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+        }
+    }
+}

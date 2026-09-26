@@ -1,0 +1,45 @@
+import { Theme } from "theme.slint";
+
+// A content container. Mirrors GPUI Component's `Card`: optional title,
+// description, header and footer slots, and a bordered surface.
+export component Card inherits VerticalLayout {
+    in property <string> title;
+    in property <string> description;
+
+    spacing: 0;
+
+    Rectangle {
+        border-radius: Theme.radius-lg;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.background;
+
+        VerticalLayout {
+            padding: 16px;
+            spacing: 12px;
+
+            if title != "" || description != "": VerticalLayout {
+                spacing: 4px;
+                if title != "": Text {
+                    text: title;
+                    color: Theme.foreground;
+                    font-size: Theme.font-size-md;
+                    font-weight: 600;
+                }
+                if description != "": Text {
+                    text: description;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-sm;
+                    wrap: word-wrap;
+                }
+            }
+
+            @children
+        }
+    }
+}
+
+export component CardFooter inherits HorizontalLayout {
+    spacing: 8px;
+    alignment: end;
+}

@@ -12,7 +12,7 @@ The site is already Astro at <https://gpui-kit.com> (`website/`, English and zh-
 - [x] 2. GPUI catalog you can copy from the site
 - [x] 3. Design tokens (GPUI)
 - [x] 4. Framework selector on the website
-- [ ] 5. Write Slint components (one per GPUI component)
+- [x] 5. Write Slint components (one per GPUI component)
 - [ ] 6. Add blocks (Login, Dashboard, Settings)
 - [ ] 7. Starter templates
 - [ ] 8. Deploy & launch
@@ -30,7 +30,7 @@ website/                         # existing Astro site
 crates/
 ├── base/                        # gpui-base (real dependency, never copied)
 ├── component/                   # GPUI copy sources
-└── slint-component/             # hand-written Slint (placeholder today)
+└── slint-component/             # hand-written Slint catalog + WASM gallery
 templates/                       # phase 7 apps people copy
 tokens/
 ├── tokens.json
@@ -91,13 +91,15 @@ Built on the existing Astro site. The GPUI Kit docs stay as they are (usage, API
 
 ## 5. Write Slint components
 
-1. Hand-write a matching component in `crates/slint-component/` for every catalog entry, each as a `.slint` file plus an optional Rust wrapper.
-2. Match the GPUI surface where Slint allows it (button variant and size, input placeholder, and so on).
-3. Write how `tokens/tokens.json` maps to Slint (global properties, colors, spacing) and apply that mapping.
-4. Compile and render each component in a small Slint test app.
-5. Fill the Slint block on the website for every catalog component, in both locales. Put a ```` ```slint ```` fence directly after the Rust fence it matches; the site pairs the two under the selector.
+`crates/slint-component/` is a standalone crate (excluded from the GPUI Kit workspace) so Slint never enters the GPUI lockfile.
 
-**Done when:** the site shows working GPUI and Slint source for the whole catalog, and each Slint file renders in the test app.
+1. Every catalog slug has a hand-written `ui/<slug>.slint` and an interactive `ui/examples/<slug>.slint`. Copy those files into a Slint app; there is no installer.
+2. `ui/theme.slint` maps `tokens/tokens.json` (see `tokens/README.md`). Components read `Theme` and nothing else.
+3. `scripts/check.sh` type-checks each example with the gallery's Slint version. The gallery window (`ui/gallery.slint`) shows one example, chosen by page slug.
+4. The website live example follows the selector (`ComponentExample.vue`): GPUI stays at `/gallery`, Slint loads `/slint-gallery?component=<slug>`. Another framework later adds a source in the same map. Both iframes stay mounted after first open, so switching back is instant.
+5. `remark-slint-source.js` fills the Import and Usage Slint panels from those files, in both locales. Remaining GPUI-only samples say the Slint usage at the top of the page covers the component.
+
+**Done when:** every catalog page shows Slint source under the selector, and selecting Slint shows the Slint WASM example.
 
 ---
 

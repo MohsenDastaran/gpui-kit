@@ -1,0 +1,15 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Editor } from "../editor.slint";
+
+export component EditorExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    Editor {
+        height: 200px;
+        text: "fn main() {\n    println!(\"hello\");\n}\n";
+    }
+
+}

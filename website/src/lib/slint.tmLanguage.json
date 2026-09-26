@@ -1,0 +1,134 @@
+{
+  "name": "slint",
+  "displayName": "Slint",
+  "scopeName": "source.slint",
+  "fileTypes": ["slint"],
+  "patterns": [{ "include": "#main" }],
+  "repository": {
+    "main": {
+      "patterns": [
+        { "include": "#comments" },
+        { "include": "#strings" },
+        { "include": "#image-url" },
+        { "include": "#declarations" },
+        { "include": "#property-declaration" },
+        { "include": "#keywords" },
+        { "include": "#numbers" },
+        { "include": "#colors" },
+        { "include": "#element" },
+        { "include": "#binding" },
+        { "include": "#function-call" },
+        { "include": "#operators" }
+      ]
+    },
+    "comments": {
+      "patterns": [
+        { "name": "comment.line.double-slash.slint", "match": "//.*$" },
+        { "name": "comment.block.slint", "begin": "/\\*", "end": "\\*/" }
+      ]
+    },
+    "strings": {
+      "name": "string.quoted.double.slint",
+      "begin": "\"",
+      "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.slint", "match": "\\\\[\\\\\"nt]" },
+        {
+          "name": "meta.interpolation.slint",
+          "begin": "\\\\\\{",
+          "end": "\\}",
+          "beginCaptures": { "0": { "name": "punctuation.section.interpolation.begin.slint" } },
+          "endCaptures": { "0": { "name": "punctuation.section.interpolation.end.slint" } },
+          "patterns": [{ "include": "#main" }]
+        }
+      ]
+    },
+    "image-url": {
+      "match": "(@(?:image-url|linear-gradient|radial-gradient|conic-gradient|tr|children))\\b",
+      "captures": { "1": { "name": "support.function.builtin.slint" } }
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "match": "\\b(component|struct|enum|global)\\s+([A-Za-z_][\\w-]*)",
+          "captures": {
+            "1": { "name": "storage.type.slint" },
+            "2": { "name": "entity.name.type.slint" }
+          }
+        },
+        {
+          "match": "\\b(inherits)\\s+([A-Za-z_][\\w-]*)",
+          "captures": {
+            "1": { "name": "storage.modifier.slint" },
+            "2": { "name": "entity.other.inherited-class.slint" }
+          }
+        },
+        {
+          "match": "\\b(callback|function)\\s+([A-Za-z_][\\w-]*)",
+          "captures": {
+            "1": { "name": "storage.type.function.slint" },
+            "2": { "name": "entity.name.function.slint" }
+          }
+        }
+      ]
+    },
+    "property-declaration": {
+      "match": "\\b(property)\\s*(<)([^>]+)(>)\\s*([A-Za-z_][\\w-]*)",
+      "captures": {
+        "1": { "name": "storage.type.slint" },
+        "2": { "name": "punctuation.definition.typeparameters.begin.slint" },
+        "3": { "name": "entity.name.type.slint" },
+        "4": { "name": "punctuation.definition.typeparameters.end.slint" },
+        "5": { "name": "variable.other.property.slint" }
+      }
+    },
+    "keywords": {
+      "patterns": [
+        {
+          "name": "keyword.control.slint",
+          "match": "\\b(import|from|export|if|else|for|in|return|animate|states|transitions|when|out|in-out)\\b"
+        },
+        {
+          "name": "storage.modifier.slint",
+          "match": "\\b(private|public|pure|protected)\\b"
+        },
+        {
+          "name": "variable.language.slint",
+          "match": "\\b(root|self|parent)\\b"
+        },
+        {
+          "name": "constant.language.slint",
+          "match": "\\b(true|false|transparent)\\b"
+        }
+      ]
+    },
+    "numbers": {
+      "name": "constant.numeric.slint",
+      "match": "(?<![\\w-])-?\\d+(?:\\.\\d+)?(?:px|phx|pt|in|mm|cm|rem|ms|s|deg|rad|turn|%)?\\b"
+    },
+    "colors": {
+      "name": "constant.other.color.slint",
+      "match": "#[0-9a-fA-F]{3,8}\\b"
+    },
+    "element": {
+      "match": "(?:([a-z_][\\w-]*)\\s*(:=)\\s*)?\\b([A-Z][\\w-]*)(?=\\s*\\{)",
+      "captures": {
+        "1": { "name": "variable.other.object.slint" },
+        "2": { "name": "keyword.operator.assignment.slint" },
+        "3": { "name": "entity.name.tag.slint" }
+      }
+    },
+    "binding": {
+      "match": "\\b([a-z_][\\w-]*)\\s*(?=:(?!=)|<=>|=>|\\()",
+      "captures": { "1": { "name": "variable.other.property.slint" } }
+    },
+    "function-call": {
+      "match": "\\b([a-z_][\\w-]*)(?=\\()",
+      "captures": { "1": { "name": "entity.name.function.slint" } }
+    },
+    "operators": {
+      "name": "keyword.operator.slint",
+      "match": "<=>|=>|:=|==|!=|<=|>=|&&|\\|\\||[+\\-*/!<>?:=]"
+    }
+  }
+}

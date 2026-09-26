@@ -1,0 +1,282 @@
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
+
+export struct StepperItem {
+    label: string,
+    description: string,
+    icon: string,
+    disabled: bool,
+}
+
+component StepperIndicator {
+    in property <string> icon;
+    in property <int> number;
+    in property <bool> checked;
+    in property <bool> has-hover;
+    in property <bool> pressed;
+    in property <bool> focused;
+    in property <ControlSize> size;
+
+    width: size == ControlSize.xsmall ? 8px
+        : size == ControlSize.small ? 18px
+        : size == ControlSize.large ? 32px
+        : 24px;
+    height: self.width;
+
+    Rectangle {
+        border-radius: root.width / 2;
+        background: checked ? Theme.primary
+            : pressed ? Theme.pressed(Theme.secondary)
+            : has-hover ? Theme.hovered(Theme.secondary)
+            : Theme.secondary;
+        animate background { duration: 100ms; }
+    }
+
+    if focused: Rectangle {
+        x: -2px;
+        y: -2px;
+        width: parent.width + 4px;
+        height: parent.height + 4px;
+        border-radius: self.width / 2;
+        border-width: 2px;
+        border-color: Theme.ring;
+    }
+
+    if size != ControlSize.xsmall && icon != "": Icon {
+        name: root.icon;
+        color: checked ? Theme.primary-foreground : Theme.secondary-foreground;
+        size: size == ControlSize.small ? 12px : size == ControlSize.large ? 18px : 14px;
+    }
+
+    if size != ControlSize.xsmall && icon == "": Text {
+        text: root.number;
+        color: checked ? Theme.primary-foreground : Theme.secondary-foreground;
+        font-size: size == ControlSize.large ? Theme.font-size-sm : Theme.font-size-xs;
+        font-weight: 500;
+    }
+}
+
+component StepperTrigger {
+    in property <StepperItem> item;
+    in property <int> index;
+    in property <bool> checked;
+    in property <bool> vertical;
+    in property <bool> text-center;
+    in property <bool> interactive;
+    in property <bool> focused;
+    in property <ControlSize> size;
+    callback clicked();
+
+    private property <bool> hoverable: interactive && !checked;
+    private property <length> label-size: size == ControlSize.xsmall || size == ControlSize.small ? Theme.font-size-xs : Theme.font-size-sm;
+
+    opacity: item.disabled ? 0.5 : 1;
+
+    VerticalLayout {
+        if !vertical: VerticalLayout {
+            spacing: 4px;
+            HorizontalLayout {
+                alignment: text-center ? center : start;
+                StepperIndicator {
+                    icon: item.icon;
+                    number: index + 1;
+                    checked: checked;
+                    has-hover: hoverable && touch.has-hover;
+                    pressed: hoverable && touch.pressed;
+                    focused: focused;
+                    size: size;
+                }
+            }
+            if item.label != "": Text {
+                text: item.label;
+                color: Theme.foreground;
+                font-size: label-size;
+                font-weight: 500;
+                horizontal-alignment: text-center ? center : left;
+            }
+            if item.description != "": Text {
+                text: item.description;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: text-center ? center : left;
+            }
+        }
+
+        if vertical: HorizontalLayout {
+            spacing: 8px;
+            VerticalLayout {
+                alignment: start;
+                StepperIndicator {
+                    icon: item.icon;
+                    number: index + 1;
+                    checked: checked;
+                    has-hover: hoverable && touch.has-hover;
+                    pressed: hoverable && touch.pressed;
+                    focused: focused;
+                    size: size;
+                }
+            }
+            VerticalLayout {
+                spacing: 2px;
+                alignment: start;
+                if item.label != "": Text {
+                    text: item.label;
+                    color: Theme.foreground;
+                    font-size: label-size;
+                    font-weight: 500;
+                }
+                if item.description != "": Text {
+                    text: item.description;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                }
+            }
+        }
+    }
+
+    touch := TouchArea {
+        enabled: interactive;
+        clicked => {
+            root.clicked();
+        }
+    }
+}
+
+component StepperStep {
+    in property <StepperItem> item;
+    in property <int> index;
+    in property <int> selected-index;
+    in property <bool> vertical;
+    in property <bool> text-center;
+    in property <bool> last;
+    in property <bool> interactive;
+    in property <bool> focused;
+    in property <ControlSize> size;
+    callback clicked();
+
+    private property <length> indicator: size == ControlSize.xsmall ? 8px
+        : size == ControlSize.small ? 18px
+        : size == ControlSize.large ? 32px
+        : 24px;
+    private property <length> line: size == ControlSize.xsmall ? 1.5px : size == ControlSize.large ? 3px : 2px;
+    private property <length> gap: 4px;
+
+    accessible-role: list-item;
+    accessible-label: item.label;
+    accessible-item-index: index;
+    accessible-item-selected: index == selected-index;
+
+    if !last: Rectangle {
+        x: vertical ? (indicator - line) / 2
+            : text-center ? (parent.width + indicator) / 2 + gap
+            : indicator + gap;
+        y: vertical ? indicator + gap : (indicator - line) / 2;
+        width: vertical ? line : parent.width - indicator - 2 * gap;
+        height: vertical ? parent.height - indicator - 2 * gap : line;
+        background: index < selected-index ? Theme.primary : Theme.border;
+        animate background { duration: 150ms; }
+    }
+
+    VerticalLayout {
+        padding-bottom: vertical && !last ? Theme.spacing-xl : 0;
+        HorizontalLayout {
+            alignment: text-center && !vertical ? center : start;
+            StepperTrigger {
+                item: item;
+                index: index;
+                checked: index <= selected-index;
+                vertical: vertical;
+                text-center: text-center;
+                interactive: interactive && !item.disabled;
+                focused: focused;
+                size: size;
+                clicked => {
+                    root.clicked();
+                }
+            }
+        }
+    }
+}
+
+// A step-by-step progress indicator. Mirrors GPUI Component's `Stepper` and
+// `StepperItem`: steps up to `selected-index` are checked and the connectors
+// between passed steps turn primary; horizontal or `vertical` layout,
+// `text-center`, sizes, optional icons and descriptions, and per-step or
+// whole-stepper disabling. Clicking a step, or Left/Right (Up/Down when
+// vertical) with keyboard focus, selects it and emits `clicked(index)`.
+export component Stepper {
+    in property <[StepperItem]> items;
+    in-out property <int> selected-index;
+    in property <bool> vertical;
+    in property <bool> text-center;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <bool> enabled: true;
+    callback clicked(index: int);
+
+    function select(index: int) {
+        if index >= 0 && index < items.length && !items[index].disabled {
+            root.selected-index = index;
+            root.clicked(index);
+        }
+    }
+
+    function step-by(delta: int) {
+        let next = root.selected-index + delta;
+        root.select(next >= 0 && next < items.length && items[next].disabled ? next + delta : next);
+    }
+
+    accessible-role: list;
+    horizontal-stretch: vertical ? 0 : 1;
+    vertical-stretch: 0;
+
+    focus := FocusScope {
+        enabled: root.enabled;
+        key-pressed(event) => {
+            if event.text == (vertical ? Key.DownArrow : Key.RightArrow) {
+                root.step-by(1);
+                return accept;
+            }
+            if event.text == (vertical ? Key.UpArrow : Key.LeftArrow) {
+                root.step-by(-1);
+                return accept;
+            }
+            reject
+        }
+    }
+
+    VerticalLayout {
+        if !vertical: HorizontalLayout {
+            for item[index] in items: StepperStep {
+                item: item;
+                index: index;
+                selected-index: root.selected-index;
+                text-center: root.text-center;
+                last: index == items.length - 1;
+                interactive: root.enabled;
+                focused: focus.has-focus && index == root.selected-index;
+                size: root.size;
+                preferred-width: 0;
+                horizontal-stretch: self.last && !root.text-center ? 0 : 1;
+                clicked => {
+                    root.select(index);
+                }
+            }
+        }
+
+        if vertical: VerticalLayout {
+            for item[index] in items: StepperStep {
+                item: item;
+                index: index;
+                selected-index: root.selected-index;
+                vertical: true;
+                last: index == items.length - 1;
+                interactive: root.enabled;
+                focused: focus.has-focus && index == root.selected-index;
+                size: root.size;
+                clicked => {
+                    root.select(index);
+                }
+            }
+        }
+    }
+}

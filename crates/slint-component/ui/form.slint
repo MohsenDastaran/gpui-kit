@@ -1,0 +1,39 @@
+import { Theme } from "theme.slint";
+import { Label } from "label.slint";
+
+// A labeled field stack. Mirrors GPUI Component's `Form` / `FormField`.
+export component Form inherits VerticalLayout {
+    spacing: 16px;
+    alignment: start;
+    @children
+}
+
+export component FormField inherits VerticalLayout {
+    in property <string> label;
+    in property <string> description;
+    in property <bool> required;
+    in property <string> error;
+
+    spacing: 6px;
+
+    if label != "": Label {
+        text: label;
+        required: required;
+    }
+
+    @children
+
+    if description != "" && error == "": Text {
+        text: description;
+        color: Theme.muted-foreground;
+        font-size: Theme.font-size-xs;
+        wrap: word-wrap;
+    }
+
+    if error != "": Text {
+        text: error;
+        color: Theme.danger;
+        font-size: Theme.font-size-xs;
+        wrap: word-wrap;
+    }
+}

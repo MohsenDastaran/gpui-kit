@@ -14,6 +14,7 @@ export function wasmExamplesDevServer(base) {
   const roots = new Map([
     [`${prefix}/examples/base`, resolve('../crates/base/examples/wasm/www/dist')],
     [`${prefix}/gallery`, resolve('../crates/story-web/www/dist')],
+    [`${prefix}/slint-gallery`, resolve('../crates/slint-component/www/dist')],
   ]);
 
   return {

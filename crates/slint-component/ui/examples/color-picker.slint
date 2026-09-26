@@ -1,0 +1,20 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { ColorPicker } from "../color-picker.slint";
+
+export component ColorPickerExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    ColorPicker {
+        swatches: [
+            { name: "Ink", fill: #171717 },
+            { name: "Red", fill: #ef4444 },
+            { name: "Amber", fill: #eab308 },
+            { name: "Green", fill: #22c55e },
+            { name: "Cyan", fill: #06b6d4 },
+        ];
+    }
+
+}

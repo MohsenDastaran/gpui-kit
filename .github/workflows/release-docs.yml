@@ -67,6 +67,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
+            crates/slint-component/target
           key: ${{ runner.os }}-cargo-wasm-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Build Story Web (WASM)
@@ -76,6 +77,11 @@ jobs:
 
       - name: Build GPUI Base examples (WASM)
         working-directory: crates/base/examples/wasm
+        run: |
+          make build
+
+      - name: Build Slint gallery (WASM)
+        working-directory: crates/slint-component
         run: |
           make build
 
@@ -95,6 +101,8 @@ jobs:
           cp -r crates/story-web/www/dist/* website/dist/gallery/
           mkdir -p website/dist/examples/base
           cp -r crates/base/examples/wasm/www/dist/* website/dist/examples/base/
+          mkdir -p website/dist/slint-gallery
+          cp -r crates/slint-component/www/dist/* website/dist/slint-gallery/
 
       - name: Setup Pages
         uses: actions/configure-pages@v5

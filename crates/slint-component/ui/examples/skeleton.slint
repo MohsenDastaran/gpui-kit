@@ -1,0 +1,16 @@
+import { Theme } from "../theme.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Skeleton } from "../skeleton.slint";
+
+export component SkeletonExample inherits VerticalLayout {
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox { title: "Loading"; variant: GroupBoxVariant.outline;
+        Skeleton { height: 16px; }
+        Skeleton { height: 16px; width: 70%; }
+        Skeleton { height: 80px; }
+    }
+
+}

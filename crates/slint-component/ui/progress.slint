@@ -1,0 +1,135 @@
+import { Theme, ControlSize, Status } from "theme.slint";
+
+// A linear progress bar. Mirrors GPUI Component's `Progress`: a 0–100 value
+// with an eased transition, an indeterminate `loading` animation, sizes from
+// 4px to 10px tall, and a fill color that follows `status` or an explicit
+// `color`.
+export component Progress {
+    in property <float> value;
+    in property <bool> loading;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <Status> status: Status.default;
+    in property <color> color: status == Status.default ? Theme.primary : Theme.status-color(status);
+
+    private property <float> fraction: clamp(value, 0, 100) / 100;
+    private property <float> phase: loading ? mod(animation-tick(), 1s) / 1s : 0;
+    private property <float> head: ease-in-out(clamp((phase - 0.5) / 0.5, 0, 1));
+    private property <float> tail: ease-in-out(1 - phase);
+
+    pure function ease-in-out(t: float) -> float {
+        return t < 0.5 ? 2 * t * t : 1 - (2 - 2 * t) * (2 - 2 * t) / 2;
+    }
+
+    accessible-role: progress-indicator;
+    accessible-value: loading ? "" : "\{round(fraction * 100)}";
+    accessible-value-minimum: 0;
+    accessible-value-maximum: 100;
+
+    height: size == ControlSize.xsmall ? 4px
+        : size == ControlSize.small ? 6px
+        : size == ControlSize.large ? 10px
+        : 8px;
+    min-width: 32px;
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    Rectangle {
+        border-radius: root.height / 2;
+        background: root.color.with-alpha(0.2);
+        clip: true;
+
+        if !loading: Rectangle {
+            x: 0;
+            width: parent.width * fraction;
+            border-radius: root.height / 2;
+            background: root.color;
+            animate width { duration: 200ms; easing: ease-out; }
+        }
+
+        if loading: Rectangle {
+            x: parent.width * head;
+            width: max(0px, parent.width * (1 - head - tail));
+            border-radius: root.height / 2;
+            background: root.color;
+        }
+    }
+}
+
+// A circular progress indicator. Mirrors GPUI Component's `ProgressCircle`:
+// a 0–100 arc drawn clockwise from the top over a tinted track, an
+// indeterminate `loading` arc, sizes from 8px to 20px (set `width` for a custom
+// diameter), `status`/`color`, and children centered inside the circle.
+export component ProgressCircle {
+    in property <float> value;
+    in property <bool> loading;
+    in property <ControlSize> size: ControlSize.medium;
+    in property <Status> status: Status.default;
+    in property <color> color: status == Status.default ? Theme.primary : Theme.status-color(status);
+
+    private property <float> shown-value: clamp(value, 0, 100);
+    private property <length> diameter: min(self.width, self.height);
+    private property <length> stroke: min(diameter * 0.15, 5px);
+    private property <float> phase: loading ? mod(animation-tick(), 1s) / 1s : 0;
+    private property <float> arc-start: loading ? ease-in-out(clamp((phase - 0.5) / 0.5, 0, 1)) : 0;
+    private property <float> arc-end: loading ? ease-in-out(phase) : shown-value / 100;
+    private property <float> origin: diameter / 2 / 1px;
+    private property <float> radius: (diameter - stroke) / 2 / 1px;
+    private property <angle> start-angle: arc-start * 360deg;
+    private property <angle> end-angle: arc-end * 360deg;
+    private property <angle> mid-angle: (start-angle + end-angle) / 2;
+
+    animate shown-value { duration: 200ms; easing: ease-out; }
+
+    pure function ease-in-out(t: float) -> float {
+        return t < 0.5 ? 2 * t * t : 1 - (2 - 2 * t) * (2 - 2 * t) / 2;
+    }
+
+    accessible-role: progress-indicator;
+    accessible-value: loading ? "" : "\{round(clamp(value, 0, 100))}";
+    accessible-value-minimum: 0;
+    accessible-value-maximum: 100;
+
+    width: size == ControlSize.xsmall ? 8px
+        : size == ControlSize.small ? 12px
+        : size == ControlSize.large ? 20px
+        : 16px;
+    height: self.width;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+
+    Rectangle {
+        x: (root.width - diameter) / 2;
+        y: (root.height - diameter) / 2;
+        width: diameter;
+        height: diameter;
+        border-radius: diameter / 2;
+        border-width: stroke;
+        border-color: root.color.with-alpha(0.2);
+    }
+
+    // Two segments of at most half a turn each, so the arc never needs the
+    // SVG large-arc flag and a full circle still renders.
+    if arc-end > arc-start: Path {
+        x: (root.width - diameter) / 2;
+        y: (root.height - diameter) / 2;
+        width: diameter;
+        height: diameter;
+        viewbox-width: diameter / 1px;
+        viewbox-height: diameter / 1px;
+        stroke: root.color;
+        stroke-width: stroke;
+        commands: "M \{origin + radius * sin(start-angle)} \{origin - radius * cos(start-angle)} "
+            + "A \{radius} \{radius} 0 0 1 \{origin + radius * sin(mid-angle)} \{origin - radius * cos(mid-angle)} "
+            + "A \{radius} \{radius} 0 0 1 \{origin + radius * sin(end-angle)} \{origin - radius * cos(end-angle)}";
+    }
+
+    VerticalLayout {
+        width: root.width;
+        height: root.height;
+        alignment: center;
+        HorizontalLayout {
+            alignment: center;
+            @children
+        }
+    }
+}

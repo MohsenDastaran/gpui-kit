@@ -1,0 +1,111 @@
+import { Theme, ControlSize, ButtonVariant } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Spinner } from "../spinner.slint";
+
+export component SpinnerExample inherits VerticalLayout {
+    in-out property <bool> refreshing;
+
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "Colors";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 16px;
+            alignment: start;
+            Spinner { }
+            Spinner { color: Theme.muted-foreground; }
+            Spinner { color: Theme.info; }
+            Spinner { color: Theme.success; }
+            Spinner { color: Theme.warning; }
+            Spinner { color: Theme.danger; }
+        }
+    }
+
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 16px;
+            alignment: start;
+            VerticalLayout { alignment: center; Spinner { size: ControlSize.xsmall; } }
+            VerticalLayout { alignment: center; Spinner { size: ControlSize.small; } }
+            VerticalLayout { alignment: center; Spinner { } }
+            VerticalLayout { alignment: center; Spinner { size: ControlSize.large; } }
+            VerticalLayout { alignment: center; Spinner { width: 32px; color: Theme.primary; } }
+        }
+    }
+
+    GroupBox {
+        title: "In context";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 8px;
+            alignment: start;
+            Button {
+                text: root.refreshing ? "Refreshing" : "Refresh";
+                icon: "refresh-cw";
+                loading: root.refreshing;
+                clicked => {
+                    root.refreshing = true;
+                }
+            }
+            if root.refreshing: HorizontalLayout {
+                spacing: 8px;
+                VerticalLayout {
+                    alignment: center;
+                    Spinner { size: ControlSize.small; color: Theme.muted-foreground; }
+                }
+                Text {
+                    text: "Loading data…";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-sm;
+                    vertical-alignment: center;
+                }
+            }
+        }
+        Rectangle {
+            height: 140px;
+            border-width: 1px;
+            border-color: Theme.border;
+            border-radius: Theme.radius-md;
+            clip: true;
+
+            VerticalLayout {
+                padding: 16px;
+                spacing: 8px;
+                Text { text: "Quarterly report"; color: Theme.foreground; font-size: Theme.font-size-sm; font-weight: 600; }
+                Text { text: "Revenue, active users and retention for the last three months."; color: Theme.muted-foreground; font-size: Theme.font-size-sm; }
+            }
+
+            Rectangle {
+                background: Theme.background.with-alpha(0.8);
+                VerticalLayout {
+                    alignment: center;
+                    spacing: 12px;
+                    HorizontalLayout {
+                        alignment: center;
+                        Spinner { size: ControlSize.large; color: Theme.primary; }
+                    }
+                    Text {
+                        text: "Loading…";
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-sm;
+                        horizontal-alignment: center;
+                    }
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 2s;
+        running: root.refreshing;
+        triggered => {
+            root.refreshing = false;
+        }
+    }
+}

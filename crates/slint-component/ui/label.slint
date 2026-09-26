@@ -1,0 +1,28 @@
+import { Theme, ControlSize } from "theme.slint";
+
+// A form label. Mirrors GPUI Component's `Label`: optional required mark,
+// muted secondary text, and sizes.
+export component Label inherits HorizontalLayout {
+    in property <string> text;
+    in property <bool> required;
+    in property <ControlSize> size: ControlSize.medium;
+
+    spacing: 4px;
+    alignment: start;
+
+    Text {
+        text: root.text;
+        color: Theme.foreground;
+        font-size: Theme.control-font-size(size);
+        font-weight: 500;
+        vertical-alignment: center;
+    }
+
+    if required: Text {
+        text: "*";
+        color: Theme.danger;
+        font-size: Theme.control-font-size(size);
+    }
+
+    @children
+}

@@ -1,0 +1,119 @@
+import { Theme, ControlSize, ButtonVariant } from "../theme.slint";
+import { Button } from "../button.slint";
+import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Stepper, StepperItem } from "../stepper.slint";
+
+export component StepperExample inherits VerticalLayout {
+    in-out property <int> order-step: 1;
+    in-out property <int> center-step;
+    in-out property <int> vertical-step: 2;
+    in-out property <int> size-step: 1;
+
+    padding: 24px;
+    spacing: 24px;
+    alignment: start;
+
+    GroupBox {
+        title: "With icons";
+        variant: GroupBoxVariant.outline;
+        order := Stepper {
+            selected-index <=> root.order-step;
+            items: [
+                { label: "Order Details", icon: "calendar" },
+                { label: "Shipping", icon: "inbox" },
+                { label: "Preview", icon: "layers" },
+                { label: "Finish", icon: "info" },
+            ];
+        }
+        HorizontalLayout {
+            spacing: 8px;
+            Text {
+                text: "Step \{root.order-step + 1} of \{order.items.length}";
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-sm;
+                vertical-alignment: center;
+                horizontal-stretch: 1;
+            }
+            Button {
+                text: "Previous";
+                icon: "chevron-left";
+                enabled: root.order-step > 0;
+                clicked => {
+                    root.order-step -= 1;
+                }
+            }
+            Button {
+                text: root.order-step == order.items.length - 1 ? "Done" : "Next";
+                suffix-icon: root.order-step == order.items.length - 1 ? "" : "chevron-right";
+                variant: ButtonVariant.primary;
+                enabled: root.order-step < order.items.length - 1;
+                clicked => {
+                    root.order-step += 1;
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Text center";
+        variant: GroupBoxVariant.outline;
+        Stepper {
+            selected-index <=> root.center-step;
+            text-center: true;
+            items: [
+                { label: "Step 1", description: "Desc for step 1." },
+                { label: "Step 2", description: "Desc for step 2." },
+                { label: "Step 3", description: "Desc for step 3." },
+            ];
+        }
+    }
+
+    HorizontalLayout {
+        spacing: 24px;
+
+        GroupBox {
+            title: "Vertical";
+            variant: GroupBoxVariant.outline;
+            horizontal-stretch: 1;
+            Stepper {
+                vertical: true;
+                selected-index <=> root.vertical-step;
+                items: [
+                    { label: "Step 1", description: "Description for step 1.", icon: "house" },
+                    { label: "Step 2", description: "Description for step 2.", icon: "sparkles" },
+                    { label: "Step 3", description: "Description for step 3.", icon: "folder" },
+                    { label: "Step 4", description: "Description for step 4.", icon: "circle-check" },
+                ];
+            }
+        }
+
+        GroupBox {
+            title: "Sizes and disabled";
+            variant: GroupBoxVariant.outline;
+            horizontal-stretch: 2;
+            Stepper {
+                size: ControlSize.xsmall;
+                selected-index <=> root.size-step;
+                items: [{ label: "Cart" }, { label: "Address" }, { label: "Payment" }];
+            }
+            Stepper {
+                size: ControlSize.small;
+                selected-index <=> root.size-step;
+                items: [{ label: "Cart" }, { label: "Address" }, { label: "Payment" }];
+            }
+            Stepper {
+                size: ControlSize.large;
+                selected-index <=> root.size-step;
+                items: [{ label: "Cart" }, { label: "Address" }, { label: "Payment" }];
+            }
+            Stepper {
+                items: [{ label: "Available" }, { label: "Locked", disabled: true }, { label: "Available" }];
+            }
+            Stepper {
+                enabled: false;
+                selected-index: 1;
+                items: [{ label: "Account" }, { label: "Profile" }, { label: "Review" }];
+            }
+        }
+    }
+}

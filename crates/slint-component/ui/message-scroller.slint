@@ -1,0 +1,24 @@
+import { Theme } from "theme.slint";
+import { Scrollable } from "scrollable.slint";
+import { Message, MessageRole } from "message.slint";
+
+export struct ChatTurn {
+    role: MessageRole,
+    body: string,
+}
+
+// A conversation that stays pinned to the latest turn.
+export component MessageScroller {
+    in-out property <[ChatTurn]> messages;
+
+    Scrollable {
+        VerticalLayout {
+            padding: 8px;
+            spacing: 4px;
+            for turn in messages: Message {
+                role: turn.role;
+                body: turn.body;
+            }
+        }
+    }
+}

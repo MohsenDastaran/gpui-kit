@@ -1,0 +1,74 @@
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Button } from "button.slint";
+import { Placement } from "dialog.slint";
+
+// A sliding panel. Mirrors GPUI Component's `Sheet`: overlay plus a panel
+// that enters from a side.
+export component Sheet {
+    in-out property <bool> open;
+    in property <string> title;
+    in property <string> description;
+    in property <Placement> placement: Placement.right;
+    callback closed();
+
+    private property <bool> vertical: placement == Placement.top || placement == Placement.bottom;
+    visible: open;
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        background: Theme.overlay;
+        TouchArea {
+            clicked => {
+                root.open = false;
+                root.closed();
+            }
+        }
+    }
+
+    Rectangle {
+        x: placement == Placement.right ? parent.width - self.width : 0px;
+        y: placement == Placement.bottom ? parent.height - self.height : 0px;
+        width: vertical ? parent.width : min(parent.width * 0.8, 320px);
+        height: vertical ? min(parent.height * 0.55, 240px) : parent.height;
+        background: Theme.popover;
+        border-width: 1px;
+        border-color: Theme.border;
+
+        VerticalLayout {
+            padding: 20px;
+            spacing: 16px;
+
+            HorizontalLayout {
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 4px;
+                    if title != "": Text {
+                        text: title;
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-lg;
+                        font-weight: 600;
+                    }
+                    if description != "": Text {
+                        text: description;
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-sm;
+                        wrap: word-wrap;
+                    }
+                }
+                Button {
+                    icon: "x";
+                    variant: ButtonVariant.ghost;
+                    size: ControlSize.xsmall;
+                    accessible-label: "Close";
+                    clicked => {
+                        root.open = false;
+                        root.closed();
+                    }
+                }
+            }
+
+            @children
+        }
+    }
+}
