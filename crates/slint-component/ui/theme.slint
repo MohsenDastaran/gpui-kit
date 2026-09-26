@@ -10,6 +10,9 @@ export enum Status { default, info, success, warning, danger }
 
 export global Theme {
     in-out property <bool> dark: false;
+    // The gallery writes the frame width here. Layouts read it instead of
+    // their own width, which would loop through the layout solver.
+    in-out property <length> viewport: 800px;
 
     // colors.light / colors.dark
     out property <color> background: dark ? #0a0a0a : #ffffff;
@@ -112,24 +115,70 @@ export global Theme {
         return 12px;
     }
 
+    // Button labels: xs is text-xs, small is text-sm, medium and large are text-base.
     public pure function control-font-size(size: ControlSize) -> length {
-        if size == ControlSize.xsmall || size == ControlSize.small {
+        if size == ControlSize.xsmall {
             return 12px;
         }
-        if size == ControlSize.large {
-            return 16px;
+        if size == ControlSize.small {
+            return 14px;
         }
-        return 14px;
+        return 16px;
     }
 
+    // Checkbox and radio labels. Large is text-lg; buttons stay at text-base.
+    public pure function label-font-size(size: ControlSize) -> length {
+        if size == ControlSize.large {
+            return 18px;
+        }
+        return control-font-size(size);
+    }
+
+    // Icon boxes: 12 / 14 / 16 / 24, matching GPUI size_3 through size_6.
     public pure function icon-size(size: ControlSize) -> length {
         if size == ControlSize.xsmall {
             return 12px;
         }
+        if size == ControlSize.small {
+            return 14px;
+        }
         if size == ControlSize.large {
-            return 18px;
+            return 24px;
         }
         return 16px;
+    }
+
+    // How many tracks a row of controls gets. Phones stack, the docs frame
+    // wraps, and a wide window keeps a single row.
+    public pure function wrap-columns(width: length) -> int {
+        if width < 480px {
+            return 1;
+        }
+        if width < 1100px {
+            return 4;
+        }
+        return 12;
+    }
+
+    public pure function wrap-row(index: int, columns: int) -> int {
+        if columns < 1 {
+            return 0;
+        }
+        return index / columns;
+    }
+
+    public pure function wrap-col(index: int, columns: int) -> int {
+        if columns < 1 {
+            return 0;
+        }
+        return mod(index, columns);
+    }
+
+    public pure function page-padding(width: length) -> length {
+        if width < 480px {
+            return 16px;
+        }
+        return 24px;
     }
 
     public pure function status-color(status: Status) -> color {

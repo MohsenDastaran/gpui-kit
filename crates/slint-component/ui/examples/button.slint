@@ -1,77 +1,210 @@
-import { ButtonVariant, ControlSize } from "../theme.slint";
+import { Theme, ButtonVariant, ControlSize } from "../theme.slint";
 import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 
 export component ButtonExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox {
         title: "Variants";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button { text: "Default"; }
-            Button { text: "Primary"; variant: ButtonVariant.primary; }
-            Button { text: "Secondary"; variant: ButtonVariant.secondary; }
-            Button { text: "Danger"; variant: ButtonVariant.danger; }
-            Button { text: "Warning"; variant: ButtonVariant.warning; }
-            Button { text: "Success"; variant: ButtonVariant.success; }
-            Button { text: "Info"; variant: ButtonVariant.info; }
-        }
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button { text: "Ghost"; variant: ButtonVariant.ghost; }
-            Button { text: "Link"; variant: ButtonVariant.link; }
-            Button { text: "Text"; variant: ButtonVariant.text; }
-        }
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Default"; }
+            Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Primary"; variant: ButtonVariant.primary; }
+            Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Secondary"; variant: ButtonVariant.secondary; }
+            Button {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Danger"; variant: ButtonVariant.danger; }
+            Button {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Warning"; variant: ButtonVariant.warning; }
+            Button {
+                row: Theme.wrap-row(5, root.wrap-cols);
+                col: Theme.wrap-col(5, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Success"; variant: ButtonVariant.success; }
+            Button {
+                row: Theme.wrap-row(6, root.wrap-cols);
+                col: Theme.wrap-col(6, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Info"; variant: ButtonVariant.info; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Ghost"; variant: ButtonVariant.ghost; }
+            Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Link"; variant: ButtonVariant.link; }
+            Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Text"; variant: ButtonVariant.text; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Outline";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button { text: "Primary"; variant: ButtonVariant.primary; outline: true; }
-            Button { text: "Secondary"; variant: ButtonVariant.secondary; outline: true; }
-            Button { text: "Danger"; variant: ButtonVariant.danger; outline: true; }
-            Button { text: "Warning"; variant: ButtonVariant.warning; outline: true; }
-            Button { text: "Success"; variant: ButtonVariant.success; outline: true; }
-            Button { text: "Info"; variant: ButtonVariant.info; outline: true; }
-        }
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Primary"; variant: ButtonVariant.primary; outline: true; }
+            Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Secondary"; variant: ButtonVariant.secondary; outline: true; }
+            Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Danger"; variant: ButtonVariant.danger; outline: true; }
+            Button {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Warning"; variant: ButtonVariant.warning; outline: true; }
+            Button {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Success"; variant: ButtonVariant.success; outline: true; }
+            Button {
+                row: Theme.wrap-row(5, root.wrap-cols);
+                col: Theme.wrap-col(5, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Info"; variant: ButtonVariant.info; outline: true; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Sizes";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            VerticalLayout { alignment: center; Button { text: "Extra small"; size: ControlSize.xsmall; } }
-            VerticalLayout { alignment: center; Button { text: "Small"; size: ControlSize.small; } }
-            VerticalLayout { alignment: center; Button { text: "Medium"; } }
-            VerticalLayout { alignment: center; Button { text: "Large"; size: ControlSize.large; } }
-        }
+        GridLayout {
+            spacing: 8px;            VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Button { text: "Extra small"; size: ControlSize.xsmall; } }
+            VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Button { text: "Small"; size: ControlSize.small; } }
+            VerticalLayout {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Button { text: "Medium"; } }
+            VerticalLayout {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Button { text: "Large"; size: ControlSize.large; } }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Icons and states";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button { text: "Search"; icon: "search"; }
-            Button { text: "Options"; suffix-icon: "chevron-down"; }
-            Button { icon: "settings"; variant: ButtonVariant.ghost; }
-            Button { icon: "plus"; variant: ButtonVariant.primary; }
-            Button { text: "Saving"; loading: true; }
-            Button { text: "Selected"; selected: true; }
-            Button { text: "Disabled"; enabled: false; }
-            Button { text: "Compact"; compact: true; }
-        }
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Search"; icon: "search"; }
+            Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Options"; suffix-icon: "chevron-down"; }
+            Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 icon: "settings"; variant: ButtonVariant.ghost; }
+            Button {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 icon: "plus"; variant: ButtonVariant.primary; }
+            Button {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Saving"; loading: true; }
+            Button {
+                row: Theme.wrap-row(5, root.wrap-cols);
+                col: Theme.wrap-col(5, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Selected"; selected: true; }
+            Button {
+                row: Theme.wrap-row(6, root.wrap-cols);
+                col: Theme.wrap-col(6, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Disabled"; enabled: false; }
+            Button {
+                row: Theme.wrap-row(7, root.wrap-cols);
+                col: Theme.wrap-col(7, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Compact"; compact: true; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 }

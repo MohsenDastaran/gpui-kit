@@ -4,7 +4,8 @@ import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 
 export component AccordionExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
@@ -61,10 +62,11 @@ export component AccordionExample inherits VerticalLayout {
                         color: Theme.foreground;
                         font-size: Theme.font-size-sm;
                     }
-                    HorizontalLayout {
-                        spacing: 8px;
-                        alignment: start;
-                        Button {
+                    GridLayout {
+                        spacing: 8px;                        Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                             text: "Mark all as read";
                             size: ControlSize.small;
                             enabled: root.notifications > 0;
@@ -73,6 +75,9 @@ export component AccordionExample inherits VerticalLayout {
                             }
                         }
                         Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                             text: "Simulate new";
                             size: ControlSize.small;
                             variant: ButtonVariant.ghost;
@@ -81,7 +86,13 @@ export component AccordionExample inherits VerticalLayout {
                                 root.notifications += 1;
                             }
                         }
-                    }
+                    
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
                 }
             }
             AccordionItem {
@@ -112,9 +123,12 @@ export component AccordionExample inherits VerticalLayout {
     GroupBox {
         title: "Sizes";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
+        GridLayout {
             spacing: 16px;
             Accordion {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 size: ControlSize.xsmall;
                 open-index: 0;
                 items: [
@@ -123,6 +137,9 @@ export component AccordionExample inherits VerticalLayout {
                 ];
             }
             Accordion {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 size: ControlSize.small;
                 open-index: 0;
                 items: [
@@ -131,6 +148,9 @@ export component AccordionExample inherits VerticalLayout {
                 ];
             }
             Accordion {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
                 size: ControlSize.large;
                 open-index: 0;
                 items: [
@@ -138,15 +158,24 @@ export component AccordionExample inherits VerticalLayout {
                     { title: "Second section", content: "Content." },
                 ];
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Borderless and disabled";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
+        GridLayout {
             spacing: 24px;
             Accordion {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 bordered: false;
                 open-index: 0;
                 items: [
@@ -155,12 +184,21 @@ export component AccordionExample inherits VerticalLayout {
                 ];
             }
             Accordion {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 enabled: false;
                 items: [
                     { title: "Disabled section", content: "Content." },
                     { title: "Another disabled section", content: "Content." },
                 ];
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 }

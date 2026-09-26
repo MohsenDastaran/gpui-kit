@@ -3,18 +3,44 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Avatar, AvatarGroup, AvatarSize } from "../avatar.slint";
 
 export component AvatarExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
-        HorizontalLayout { spacing: 12px; alignment: start;
-            Avatar { initials: "XS"; size: AvatarSize.xsmall; }
-            Avatar { initials: "SM"; size: AvatarSize.small; }
-            Avatar { initials: "MD"; }
-            Avatar { initials: "LG"; size: AvatarSize.large; }
-            Avatar { initials: "XL"; size: AvatarSize.xlarge; }
-        }
+        GridLayout { spacing: 12px;            Avatar {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 initials: "XS"; size: AvatarSize.xsmall; }
+            Avatar {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 initials: "SM"; size: AvatarSize.small; }
+            Avatar {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 initials: "MD"; }
+            Avatar {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 initials: "LG"; size: AvatarSize.large; }
+            Avatar {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 initials: "XL"; size: AvatarSize.xlarge; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
     GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
         AvatarGroup {

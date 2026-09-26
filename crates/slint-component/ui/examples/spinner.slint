@@ -4,48 +4,102 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Spinner } from "../spinner.slint";
 
 export component SpinnerExample inherits VerticalLayout {
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <bool> refreshing;
 
-    padding: 24px;
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox {
         title: "Colors";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 16px;
-            alignment: start;
-            Spinner { }
-            Spinner { color: Theme.muted-foreground; }
-            Spinner { color: Theme.info; }
-            Spinner { color: Theme.success; }
-            Spinner { color: Theme.warning; }
-            Spinner { color: Theme.danger; }
-        }
+        GridLayout {
+            spacing: 16px;            Spinner {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 }
+            Spinner {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 color: Theme.muted-foreground; }
+            Spinner {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 color: Theme.info; }
+            Spinner {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 color: Theme.success; }
+            Spinner {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 color: Theme.warning; }
+            Spinner {
+                row: Theme.wrap-row(5, root.wrap-cols);
+                col: Theme.wrap-col(5, root.wrap-cols);
+                horizontal-stretch: 0;
+                 color: Theme.danger; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Sizes";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 16px;
-            alignment: start;
-            VerticalLayout { alignment: center; Spinner { size: ControlSize.xsmall; } }
-            VerticalLayout { alignment: center; Spinner { size: ControlSize.small; } }
-            VerticalLayout { alignment: center; Spinner { } }
-            VerticalLayout { alignment: center; Spinner { size: ControlSize.large; } }
-            VerticalLayout { alignment: center; Spinner { width: 32px; color: Theme.primary; } }
-        }
+        GridLayout {
+            spacing: 16px;            VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Spinner { size: ControlSize.xsmall; } }
+            VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Spinner { size: ControlSize.small; } }
+            VerticalLayout {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Spinner { } }
+            VerticalLayout {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Spinner { size: ControlSize.large; } }
+            VerticalLayout {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; Spinner { width: 32px; color: Theme.primary; } }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "In context";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button {
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: root.refreshing ? "Refreshing" : "Refresh";
                 icon: "refresh-cw";
                 loading: root.refreshing;
@@ -53,20 +107,41 @@ export component SpinnerExample inherits VerticalLayout {
                     root.refreshing = true;
                 }
             }
-            if root.refreshing: HorizontalLayout {
+            if root.refreshing: GridLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 spacing: 8px;
                 VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                     alignment: center;
                     Spinner { size: ControlSize.small; color: Theme.muted-foreground; }
                 }
                 Text {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                     text: "Loading data…";
                     color: Theme.muted-foreground;
                     font-size: Theme.font-size-sm;
                     vertical-alignment: center;
                 }
+            
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
             }
-        }
+}
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
         Rectangle {
             height: 140px;
             border-width: 1px;

@@ -12,7 +12,7 @@ export component Radio {
 
     private property <length> disc: size == ControlSize.xsmall ? 12px
         : size == ControlSize.small ? 14px
-        : size == ControlSize.large ? 20px
+        : size == ControlSize.large ? 18px
         : 16px;
 
     function select() {
@@ -63,7 +63,7 @@ export component Radio {
         if label != "": Text {
             text: label;
             color: Theme.foreground;
-            font-size: Theme.control-font-size(size);
+            font-size: Theme.label-font-size(size);
             vertical-alignment: center;
         }
     }

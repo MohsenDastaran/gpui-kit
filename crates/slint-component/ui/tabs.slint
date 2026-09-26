@@ -19,7 +19,14 @@ export component Tabs inherits VerticalLayout {
 
     spacing: 0;
 
-    HorizontalLayout {
+    // The bar flicks sideways when the labels do not fit the frame.
+    bar := Flickable {
+        horizontal-stretch: 1;
+        height: tabs.preferred-height;
+        viewport-height: self.height;
+        viewport-width: max(self.width, tabs.preferred-width);
+
+        tabs := HorizontalLayout {
         spacing: variant == TabsVariant.underline ? 0 : 4px;
         padding: variant == TabsVariant.underline ? 0 : 4px;
 
@@ -48,6 +55,7 @@ export component Tabs inherits VerticalLayout {
                         : Theme.muted-foreground;
                     font-size: Theme.control-font-size(size);
                     font-weight: selected == index ? 600 : 500;
+                    overflow: elide;
                 }
             }
 
@@ -64,6 +72,7 @@ export component Tabs inherits VerticalLayout {
                     root.changed(index);
                 }
             }
+        }
         }
     }
 

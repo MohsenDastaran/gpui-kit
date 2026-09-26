@@ -1,21 +1,175 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
-import { Badge, BadgeVariant } from "../badge.slint";
-import { Status } from "../theme.slint";
+import { Badge } from "../badge.slint";
+import { Icon } from "../icon.slint";
+import { Avatar } from "../avatar.slint";
 
 export component BadgeExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Variants"; variant: GroupBoxVariant.outline;
-        HorizontalLayout { spacing: 8px;
-            Badge { text: "Default"; }
-            Badge { text: "Secondary"; variant: BadgeVariant.secondary; }
-            Badge { text: "Outline"; variant: BadgeVariant.outline; }
-            Badge { text: "Info"; variant: BadgeVariant.status; status: Status.info; }
-            Badge { text: "9"; variant: BadgeVariant.status; status: Status.danger; }
+    GroupBox {
+        title: "Icon";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 24px;            Badge {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 3;
+                Icon { name: "bell"; size: 24px; color: Theme.foreground; }
+            }
+            Badge {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 103;
+                Icon { name: "inbox"; size: 24px; color: Theme.foreground; }
+            }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+    }
+
+    GroupBox {
+        title: "Count";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 24px;            Badge {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 3;
+                Avatar { initials: "AL"; }
+            }
+            Badge {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 103;
+                Avatar { initials: "MK"; fill: Theme.muted; }
+            }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+    }
+
+    GroupBox {
+        title: "Badge icon";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 24px;            Badge {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                icon: "check";
+                color: Theme.info;
+                Avatar { initials: "AL"; }
+            }
+            Badge {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                icon: "star";
+                color: Theme.warning;
+                Avatar { initials: "JR"; }
+            }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+    }
+
+    GroupBox {
+        title: "Dot";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            spacing: 24px;
+            alignment: start;
+            Badge {
+                dot: true;
+                count: 1;
+                Avatar { initials: "AL"; }
+            }
         }
     }
 
+    GroupBox {
+        title: "Color";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 24px;            Badge {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 3;
+                color: Theme.selection;
+                Avatar { initials: "AL"; }
+            }
+            Badge {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                dot: true;
+                count: 1;
+                color: Theme.success;
+                Avatar { initials: "AL"; }
+            }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+    }
+
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 24px;            Badge {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 2;
+                size: ControlSize.small;
+                Icon { name: "bell"; size: 16px; color: Theme.foreground; }
+            }
+            Badge {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 2;
+                Icon { name: "bell"; size: 24px; color: Theme.foreground; }
+            }
+            Badge {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                count: 2;
+                size: ControlSize.large;
+                Icon { name: "bell"; size: 32px; color: Theme.foreground; }
+            }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+    }
 }

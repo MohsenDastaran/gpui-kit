@@ -4,7 +4,8 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Table, TableHeader, TableBody, TableFooter, TableRow, TableHead, TableCell, TableCaption } from "../table.slint";
 
 export component TableExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
@@ -49,10 +50,11 @@ export component TableExample inherits VerticalLayout {
         title: "Striped, bordered and sizes";
         variant: GroupBoxVariant.outline;
 
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button {
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Striped";
                 selected: striped;
                 clicked => {
@@ -60,14 +62,24 @@ export component TableExample inherits VerticalLayout {
                 }
             }
             Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Bordered";
                 selected: bordered;
                 clicked => {
                     bordered = !bordered;
                 }
             }
-            Rectangle { width: 8px; }
+            Rectangle {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 width: 8px; }
             Button {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Small";
                 selected: table-size == ControlSize.small;
                 clicked => {
@@ -75,6 +87,9 @@ export component TableExample inherits VerticalLayout {
                 }
             }
             Button {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Medium";
                 selected: table-size == ControlSize.medium;
                 clicked => {
@@ -82,13 +97,22 @@ export component TableExample inherits VerticalLayout {
                 }
             }
             Button {
+                row: Theme.wrap-row(5, root.wrap-cols);
+                col: Theme.wrap-col(5, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Large";
                 selected: table-size == ControlSize.large;
                 clicked => {
                     table-size = ControlSize.large;
                 }
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
 
         Table {
             bordered: bordered;

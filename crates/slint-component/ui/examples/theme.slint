@@ -3,18 +3,41 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Button } from "../button.slint";
 
 export component ThemeExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox { title: "Palette"; variant: GroupBoxVariant.outline;
         Button { text: Theme.dark ? "Switch to light" : "Switch to dark"; clicked => { Theme.dark = !Theme.dark; } }
-        HorizontalLayout { spacing: 8px;
-            Rectangle { width: 32px; height: 32px; border-radius: 6px; background: Theme.primary; }
-            Rectangle { width: 32px; height: 32px; border-radius: 6px; background: Theme.secondary; }
-            Rectangle { width: 32px; height: 32px; border-radius: 6px; background: Theme.danger; }
-            Rectangle { width: 32px; height: 32px; border-radius: 6px; background: Theme.success; }
-        }
+        GridLayout { spacing: 8px;
+            Rectangle {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 width: 32px; height: 32px; border-radius: 6px; background: Theme.primary; }
+            Rectangle {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 width: 32px; height: 32px; border-radius: 6px; background: Theme.secondary; }
+            Rectangle {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 width: 32px; height: 32px; border-radius: 6px; background: Theme.danger; }
+            Rectangle {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 width: 32px; height: 32px; border-radius: 6px; background: Theme.success; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
 }

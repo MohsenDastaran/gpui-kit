@@ -25,14 +25,17 @@ export component Alert {
     horizontal-stretch: 1;
 
     Rectangle {
-        border-radius: banner ? 0 : Theme.radius-lg;
+        border-radius: banner ? 0 : Theme.radius-md;
         border-width: 1px;
-        border-color: tone.with-alpha(0.35);
-        background: Theme.tint(tone);
+        border-color: status == Status.default ? Theme.border : tone.mix(Theme.background, 0.7);
+        background: status == Status.default ? Theme.background : tone.mix(Theme.background, 0.96);
     }
 
     HorizontalLayout {
-        padding: banner ? 12px : 16px;
+        padding-left: banner ? 12px : 16px;
+        padding-right: self.padding-left;
+        padding-top: banner ? 8px : 10px;
+        padding-bottom: self.padding-top;
         spacing: 12px;
 
         VerticalLayout {
@@ -49,13 +52,14 @@ export component Alert {
             spacing: 4px;
             if title != "": Text {
                 text: title;
-                color: Theme.foreground;
+                color: status == Status.default ? Theme.foreground : tone;
                 font-size: Theme.font-size-sm;
                 font-weight: 600;
+                wrap: word-wrap;
             }
             if message != "": Text {
                 text: message;
-                color: Theme.foreground;
+                color: status == Status.default ? Theme.foreground : tone;
                 font-size: Theme.font-size-sm;
                 wrap: word-wrap;
             }

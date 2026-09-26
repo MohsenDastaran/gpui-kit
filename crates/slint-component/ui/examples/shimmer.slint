@@ -5,44 +5,82 @@ import { Icon } from "../icon.slint";
 import { ShimmerText } from "../shimmer.slint";
 
 export component ShimmerExample inherits VerticalLayout {
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <bool> generating: true;
 
-    padding: 24px;
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox {
         title: "Basic";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 32px;
-            alignment: start;
-            ShimmerText { text: "Thinking…"; }
-            ShimmerText { text: "Generating a response…"; color: Theme.muted-foreground; }
-            ShimmerText { text: "Loading project data…"; font-size: Theme.font-size-md; font-weight: 500; }
-        }
+        GridLayout {
+            spacing: 32px;            ShimmerText {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Thinking…"; }
+            ShimmerText {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Generating a response…"; color: Theme.muted-foreground; }
+            ShimmerText {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Loading project data…"; font-size: Theme.font-size-md; font-weight: 500; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Timing, spread and color";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 32px;
-            alignment: start;
-            ShimmerText { text: "Indexing files…"; duration: 3s; highlight-color: Theme.primary; color: Theme.muted-foreground; spread: 0.45; reverse: true; }
-            ShimmerText { text: "Loading a narrow label…"; color: Theme.muted-foreground; spread: 0.15; }
-            ShimmerText { text: "Loading a broad label…"; color: Theme.muted-foreground; spread: 0.7; }
-            ShimmerText { text: "Fixed-width highlight…"; color: Theme.muted-foreground; spread-width: 48px; }
-        }
+        GridLayout {
+            spacing: 32px;            ShimmerText {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Indexing files…"; duration: 3s; highlight-color: Theme.primary; color: Theme.muted-foreground; spread: 0.45; reverse: true; }
+            ShimmerText {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Loading a narrow label…"; color: Theme.muted-foreground; spread: 0.15; }
+            ShimmerText {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Loading a broad label…"; color: Theme.muted-foreground; spread: 0.7; }
+            ShimmerText {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Fixed-width highlight…"; color: Theme.muted-foreground; spread-width: 48px; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Play once";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 16px;
-            alignment: start;
-            finalizing := ShimmerText {
+        GridLayout {
+            spacing: 16px;            finalizing := ShimmerText {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Finalizing…";
                 color: Theme.muted-foreground;
                 reverse: true;
@@ -51,22 +89,32 @@ export component ShimmerExample inherits VerticalLayout {
                 vertical-stretch: 0;
             }
             Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Replay";
                 icon: "refresh-cw";
                 clicked => {
                     finalizing.restart();
                 }
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "In context";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 12px;
-            alignment: start;
-            Rectangle {
+        GridLayout {
+            spacing: 12px;            Rectangle {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 width: 32px;
                 height: 32px;
                 border-radius: 16px;
@@ -74,6 +122,9 @@ export component ShimmerExample inherits VerticalLayout {
                 Icon { name: "bot"; color: Theme.muted-foreground; }
             }
             VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 alignment: center;
                 if root.generating: ShimmerText {
                     text: "The assistant is thinking…";
@@ -85,25 +136,38 @@ export component ShimmerExample inherits VerticalLayout {
                     font-size: Theme.font-size-sm;
                 }
             }
-        }
-        HorizontalLayout {
-            spacing: 12px;
-            alignment: start;
+        
             Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+        GridLayout {
+            spacing: 12px;            Rectangle {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 width: 260px;
                 height: 52px;
                 border-width: 1px;
                 border-color: Theme.border;
                 border-radius: Theme.radius-lg;
-                HorizontalLayout {
+                GridLayout {
                     padding-left: 12px;
                     padding-right: 12px;
                     spacing: 12px;
                     VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                         alignment: center;
                         Icon { name: "file-text"; color: Theme.muted-foreground; }
                     }
                     VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                         alignment: center;
                         spacing: 2px;
                         if root.generating: ShimmerText { text: "transcript.pdf"; font-weight: 500; }
@@ -114,9 +178,18 @@ export component ShimmerExample inherits VerticalLayout {
                             font-size: Theme.font-size-xs;
                         }
                     }
-                }
+                
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
             }
             VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 alignment: center;
                 Button {
                     text: root.generating ? "Finish" : "Generate again";
@@ -125,6 +198,12 @@ export component ShimmerExample inherits VerticalLayout {
                     }
                 }
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 }

@@ -13,6 +13,9 @@ export component DescriptionList {
     in property <DescriptionLayout> layout: DescriptionLayout.vertical;
     in property <bool> bordered;
 
+    private property <bool> stack: layout == DescriptionLayout.vertical || Theme.viewport < 480px;
+    horizontal-stretch: 1;
+
     VerticalLayout {
         spacing: 0;
 
@@ -21,7 +24,7 @@ export component DescriptionList {
             border-color: Theme.border;
             background: bordered && mod(index, 2) == 1 ? Theme.muted.with-alpha(0.35) : transparent;
 
-            if layout == DescriptionLayout.vertical: VerticalLayout {
+            if stack: VerticalLayout {
                 padding: bordered ? 12px : 8px;
                 spacing: 4px;
                 Text {
@@ -38,7 +41,7 @@ export component DescriptionList {
                 }
             }
 
-            if layout == DescriptionLayout.horizontal: HorizontalLayout {
+            if !stack: HorizontalLayout {
                 padding: bordered ? 12px : 8px;
                 spacing: 16px;
                 Text {

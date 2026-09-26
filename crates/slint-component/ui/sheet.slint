@@ -29,7 +29,7 @@ export component Sheet {
     Rectangle {
         x: placement == Placement.right ? parent.width - self.width : 0px;
         y: placement == Placement.bottom ? parent.height - self.height : 0px;
-        width: vertical ? parent.width : min(parent.width * 0.8, 320px);
+        width: vertical || parent.width < 480px ? parent.width : min(parent.width * 0.8, 320px);
         height: vertical ? min(parent.height * 0.55, 240px) : parent.height;
         background: Theme.popover;
         border-width: 1px;

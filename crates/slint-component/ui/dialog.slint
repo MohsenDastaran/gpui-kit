@@ -30,7 +30,7 @@ export component Dialog {
     panel := Rectangle {
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
-        width: min(parent.width - 48px, 440px);
+        width: min(parent.width - (parent.width < 420px ? 16px : 48px), 440px);
         border-radius: Theme.radius-lg;
         border-width: 1px;
         border-color: Theme.border;
@@ -40,7 +40,7 @@ export component Dialog {
         drop-shadow-color: Theme.shadow;
 
         VerticalLayout {
-            padding: 20px;
+            padding: parent.width < 420px ? 16px : 20px;
             spacing: 16px;
 
             HorizontalLayout {

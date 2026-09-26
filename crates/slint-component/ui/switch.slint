@@ -9,15 +9,10 @@ export component Switch {
     in property <ControlSize> size: ControlSize.medium;
     callback changed(checked: bool);
 
-    private property <length> track-w: size == ControlSize.xsmall ? 28px
-        : size == ControlSize.small ? 32px
-        : size == ControlSize.large ? 44px
-        : 36px;
-    private property <length> track-h: size == ControlSize.xsmall ? 16px
-        : size == ControlSize.small ? 18px
-        : size == ControlSize.large ? 24px
-        : 20px;
-    private property <length> thumb: track-h - 4px;
+    // GPUI uses one track for xs/sm and one for medium/large.
+    private property <length> track-w: size == ControlSize.xsmall || size == ControlSize.small ? 28px : 36px;
+    private property <length> track-h: size == ControlSize.xsmall || size == ControlSize.small ? 16px : 20px;
+    private property <length> thumb: size == ControlSize.xsmall || size == ControlSize.small ? 12px : 16px;
 
     function toggle() {
         if !enabled {
@@ -36,7 +31,6 @@ export component Switch {
         root.toggle();
     }
 
-    opacity: enabled ? 1 : 0.5;
     horizontal-stretch: 0;
 
     HorizontalLayout {
@@ -49,7 +43,9 @@ export component Switch {
             width: track-w;
             height: track-h;
             border-radius: self.height / 2;
-            background: checked ? Theme.primary : Theme.input;
+            background: !enabled ? (checked ? Theme.primary : Theme.secondary).with-alpha(0.5)
+                : checked ? Theme.primary
+                : Theme.secondary.darker(0.1);
             animate background { duration: 120ms; }
 
             Rectangle {
@@ -66,8 +62,8 @@ export component Switch {
 
         if label != "": Text {
             text: label;
-            color: Theme.foreground;
-            font-size: Theme.control-font-size(size);
+            color: enabled ? Theme.foreground : Theme.muted-foreground;
+            font-size: size == ControlSize.xsmall || size == ControlSize.small ? Theme.font-size-sm : Theme.font-size-md;
             vertical-alignment: center;
         }
     }

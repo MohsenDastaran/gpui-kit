@@ -4,20 +4,22 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Progress, ProgressCircle } from "../progress.slint";
 
 export component ProgressExample inherits VerticalLayout {
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <float> value: 45;
     in-out property <bool> loading;
 
-    padding: 24px;
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox {
         title: "Progress";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            Button {
+        GridLayout {
+            spacing: 8px;            Button {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Loading";
                 selected: root.loading;
                 clicked => {
@@ -25,6 +27,9 @@ export component ProgressExample inherits VerticalLayout {
                 }
             }
             Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 icon: "minus";
                 enabled: root.value > 0;
                 clicked => {
@@ -32,28 +37,48 @@ export component ProgressExample inherits VerticalLayout {
                 }
             }
             Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
                 icon: "plus";
                 enabled: root.value < 100;
                 clicked => {
                     root.value = min(100, root.value + 10);
                 }
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
         VerticalLayout {
             spacing: 8px;
-            HorizontalLayout {
+            GridLayout {
                 Text {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
                     text: root.loading ? "Preparing upload…" : "Uploading report.pdf";
                     color: Theme.foreground;
                     font-size: Theme.font-size-sm;
                     horizontal-stretch: 1;
                 }
                 Text {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                     text: root.loading ? "" : "\{round(root.value)}%";
                     color: Theme.muted-foreground;
                     font-size: Theme.font-size-sm;
                 }
+            
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
             }
+}
             Progress {
                 value: root.value;
                 loading: root.loading;
@@ -73,9 +98,12 @@ export component ProgressExample inherits VerticalLayout {
     GroupBox {
         title: "Sizes and status colors";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
+        GridLayout {
             spacing: 24px;
             VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 spacing: 12px;
                 alignment: center;
                 Progress { value: 50; size: ControlSize.xsmall; }
@@ -84,6 +112,9 @@ export component ProgressExample inherits VerticalLayout {
                 Progress { value: 50; size: ControlSize.large; }
             }
             VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 spacing: 12px;
                 alignment: center;
                 Progress { value: 30; status: Status.info; }
@@ -91,23 +122,58 @@ export component ProgressExample inherits VerticalLayout {
                 Progress { value: 45; status: Status.warning; }
                 Progress { value: 80; status: Status.danger; }
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
         title: "Progress circle";
         variant: GroupBoxVariant.outline;
-        HorizontalLayout {
-            spacing: 16px;
-            alignment: start;
-            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.xsmall; } }
-            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.small; } }
-            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; } }
-            VerticalLayout { alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.large; } }
-            VerticalLayout { alignment: center; ProgressCircle { value: 75; status: Status.success; size: ControlSize.large; } }
-            VerticalLayout { alignment: center; ProgressCircle { value: 40; status: Status.warning; size: ControlSize.large; } }
-            VerticalLayout { alignment: center; ProgressCircle { loading: true; size: ControlSize.large; } }
+        GridLayout {
+            spacing: 16px;            VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.xsmall; } }
+            VerticalLayout {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.small; } }
+            VerticalLayout {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { value: root.value; loading: root.loading; } }
+            VerticalLayout {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { value: root.value; loading: root.loading; size: ControlSize.large; } }
+            VerticalLayout {
+                row: Theme.wrap-row(4, root.wrap-cols);
+                col: Theme.wrap-col(4, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { value: 75; status: Status.success; size: ControlSize.large; } }
+            VerticalLayout {
+                row: Theme.wrap-row(5, root.wrap-cols);
+                col: Theme.wrap-col(5, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { value: 40; status: Status.warning; size: ControlSize.large; } }
+            VerticalLayout {
+                row: Theme.wrap-row(6, root.wrap-cols);
+                col: Theme.wrap-col(6, root.wrap-cols);
+                horizontal-stretch: 0;
+                 alignment: center; ProgressCircle { loading: true; size: ControlSize.large; } }
             ProgressCircle {
+                row: Theme.wrap-row(7, root.wrap-cols);
+                col: Theme.wrap-col(7, root.wrap-cols);
+                horizontal-stretch: 0;
                 value: root.value;
                 loading: root.loading;
                 width: 80px;
@@ -129,11 +195,18 @@ export component ProgressExample inherits VerticalLayout {
                     }
                 }
             }
-        }
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: start;
-            VerticalLayout {
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
+        GridLayout {
+            spacing: 8px;            VerticalLayout {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
                 alignment: center;
                 ProgressCircle {
                     value: root.value;
@@ -141,11 +214,20 @@ export component ProgressExample inherits VerticalLayout {
                 }
             }
             Text {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: root.loading ? "Initializing…" : "Downloading…";
                 color: Theme.foreground;
                 font-size: Theme.font-size-sm;
                 vertical-alignment: center;
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 }

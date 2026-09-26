@@ -21,39 +21,65 @@ export component Button {
     private property <bool> interactive: enabled && !loading;
     private property <bool> icon-only: text == "";
     private property <bool> transparent-fill: variant == ButtonVariant.ghost || variant == ButtonVariant.link || variant == ButtonVariant.text;
-    private property <color> status-fill: variant == ButtonVariant.danger ? Theme.danger
+    // GPUI status buttons are a 20% tint of the status color, with the status
+    // color as the label. Primary and secondary stay solid.
+    private property <color> tone: variant == ButtonVariant.danger ? Theme.danger
         : variant == ButtonVariant.warning ? Theme.warning
         : variant == ButtonVariant.success ? Theme.success
         : variant == ButtonVariant.info ? Theme.info
         : variant == ButtonVariant.primary ? Theme.primary
         : variant == ButtonVariant.secondary ? Theme.secondary
-        : Theme.background;
+        : Theme.foreground;
     private property <bool> status-variant: variant == ButtonVariant.danger || variant == ButtonVariant.warning || variant == ButtonVariant.success || variant == ButtonVariant.info;
     private property <color> ink: variant == ButtonVariant.link ? Theme.primary
         : variant == ButtonVariant.text ? Theme.foreground.with-alpha(0.9)
-        : variant == ButtonVariant.ghost || variant == ButtonVariant.default ? Theme.foreground
-        : outline ? (variant == ButtonVariant.secondary ? Theme.secondary-foreground : status-fill)
-        : variant == ButtonVariant.primary ? Theme.primary-foreground
+        : variant == ButtonVariant.ghost ? Theme.secondary-foreground
+        : variant == ButtonVariant.default ? Theme.foreground
+        : status-variant ? tone
+        : variant == ButtonVariant.primary ? (outline ? Theme.primary : Theme.primary-foreground)
         : variant == ButtonVariant.secondary ? Theme.secondary-foreground
-        : #ffffff;
-    private property <color> fill: transparent-fill ? transparent
-        : outline ? transparent
-        : status-fill;
-    private property <color> hover-fill: variant == ButtonVariant.ghost ? Theme.accent
+        : Theme.foreground;
+    private property <color> shown-ink: enabled ? ink : Theme.muted-foreground;
+    private property <color> fill: transparent-fill || outline ? transparent
+        : status-variant ? tone.with-alpha(0.2)
+        : variant == ButtonVariant.primary ? Theme.primary
+        : variant == ButtonVariant.secondary ? Theme.secondary
+        : Theme.dark ? Theme.input.with-alpha(0.7) : Theme.background;
+    private property <color> disabled-fill: transparent-fill || outline ? transparent
+        : variant == ButtonVariant.primary ? Theme.primary.with-alpha(0.15)
+        : status-variant ? tone.with-alpha(0.15)
+        : variant == ButtonVariant.secondary ? Theme.secondary
+        : Theme.input.mix(Theme.background, 0.5);
+    private property <color> hover-fill: variant == ButtonVariant.ghost ? (Theme.dark ? Theme.accent.with-alpha(0.5) : Theme.accent)
         : transparent-fill ? transparent
-        : outline ? (status-variant || variant == ButtonVariant.primary ? status-fill.with-alpha(0.1) : Theme.accent)
-        : variant == ButtonVariant.default ? Theme.accent
-        : Theme.hovered(status-fill);
-    private property <color> press-fill: variant == ButtonVariant.ghost ? Theme.hovered(Theme.accent)
+        : outline ? (status-variant || variant == ButtonVariant.primary ? tone.with-alpha(0.1) : Theme.accent)
+        : status-variant ? tone.with-alpha(0.3)
+        : variant == ButtonVariant.primary ? Theme.primary.mix(Theme.background, 0.1)
+        : variant == ButtonVariant.secondary ? Theme.secondary.mix(Theme.background, 0.1)
+        : Theme.input.mix(Theme.background, 0.5);
+    private property <color> press-fill: variant == ButtonVariant.ghost ? Theme.input.mix(Theme.background, 0.3)
         : transparent-fill ? transparent
-        : outline ? (status-variant || variant == ButtonVariant.primary ? status-fill.with-alpha(0.18) : Theme.hovered(Theme.accent))
-        : variant == ButtonVariant.default ? Theme.hovered(Theme.accent)
-        : Theme.pressed(status-fill);
+        : outline ? (status-variant || variant == ButtonVariant.primary ? tone.with-alpha(0.2) : Theme.hovered(Theme.accent))
+        : status-variant ? tone.with-alpha(0.4)
+        : variant == ButtonVariant.primary ? Theme.primary.darker(0.1)
+        : variant == ButtonVariant.secondary ? Theme.secondary.darker(0.1)
+        : Theme.input.mix(Theme.background, 0.3);
     private property <color> border-tone: transparent-fill ? transparent
         : variant == ButtonVariant.default ? Theme.input
         : variant == ButtonVariant.secondary ? Theme.border
-        : outline && status-variant ? status-fill.with-alpha(0.6)
-        : status-fill;
+        : status-variant ? tone.with-alpha(outline ? 0.45 : 0.2)
+        : variant == ButtonVariant.primary ? Theme.primary
+        : Theme.border;
+    // GPUI large is the medium height with wider padding, not a taller control.
+    private property <length> button-height: size == ControlSize.xsmall ? 20px
+        : size == ControlSize.small ? 24px
+        : 32px;
+    private property <length> button-pad: icon-only || variant == ButtonVariant.link || variant == ButtonVariant.text ? 0px
+        : compact ? (size == ControlSize.xsmall ? 4px : size == ControlSize.small ? 6px : 8px)
+        : size == ControlSize.xsmall ? 4px
+        : size == ControlSize.small ? 8px
+        : size == ControlSize.large ? 12px
+        : 10px;
 
     accessible-role: button;
     accessible-label: text;
@@ -62,19 +88,19 @@ export component Button {
         root.clicked();
     }
 
-    height: Theme.control-height(size);
-    min-width: icon-only ? self.height : 0;
+    height: button-height;
+    min-width: icon-only ? self.height : 0px;
     horizontal-stretch: 0;
     vertical-stretch: 0;
-    opacity: enabled ? 1 : 0.5;
 
     background := Rectangle {
         border-radius: Theme.radius-md;
-        border-width: transparent-fill ? 0 : 1px;
-        border-color: border-tone;
-        background: !interactive ? fill
-            : touch.pressed ? press-fill
-            : touch.has-hover || selected ? hover-fill
+        // GPUI draws a border on the default button and on outline variants only.
+        border-width: !transparent-fill && (variant == ButtonVariant.default || outline) ? 1px : 0px;
+        border-color: enabled ? border-tone : border-tone.with-alpha(0.5);
+        background: !enabled ? disabled-fill
+            : touch.pressed || selected ? press-fill
+            : touch.has-hover ? hover-fill
             : fill;
         animate background { duration: 100ms; }
     }
@@ -90,9 +116,9 @@ export component Button {
     }
 
     HorizontalLayout {
-        padding-left: icon-only || variant == ButtonVariant.link || variant == ButtonVariant.text ? 0 : (compact ? Theme.control-padding(size) / 2 : Theme.control-padding(size));
-        padding-right: self.padding-left;
-        spacing: size == ControlSize.xsmall ? 4px : 6px;
+        padding-left: button-pad;
+        padding-right: button-pad;
+        spacing: size == ControlSize.xsmall || size == ControlSize.small ? 4px : 8px;
         alignment: center;
 
         if loading || icon != "": VerticalLayout {
@@ -100,24 +126,27 @@ export component Button {
             Icon {
                 name: loading ? "loader-circle" : icon;
                 spinning: loading;
-                color: ink;
+                color: shown-ink;
                 size: Theme.icon-size(size);
             }
         }
 
-        if !icon-only: Rectangle {
-            label := Text {
+        if !icon-only: VerticalLayout {
+            alignment: center;
+            spacing: 1px;
+
+            Text {
                 text: root.text;
-                color: ink;
+                color: shown-ink;
                 font-size: Theme.control-font-size(size);
                 font-weight: 500;
+                horizontal-alignment: center;
                 vertical-alignment: center;
             }
 
-            if variant == ButtonVariant.link && touch.has-hover: Rectangle {
-                y: (parent.height + label.preferred-height) / 2 - 1px;
+            if variant == ButtonVariant.link: Rectangle {
                 height: 1px;
-                background: ink;
+                background: shown-ink;
             }
         }
 
@@ -125,7 +154,7 @@ export component Button {
             alignment: center;
             Icon {
                 name: suffix-icon;
-                color: ink;
+                color: shown-ink;
                 size: Theme.icon-size(size);
             }
         }

@@ -13,6 +13,7 @@ pub fn run(component: &str, dark: bool) -> Result<(), slint::PlatformError> {
     gallery.global::<Theme>().set_dark(dark);
 
     gallery.show()?;
+    follow_frame(gallery.as_weak());
 
     #[cfg(target_arch = "wasm32")]
     {
@@ -21,6 +22,24 @@ pub fn run(component: &str, dark: bool) -> Result<(), slint::PlatformError> {
     }
 
     slint::run_event_loop()
+}
+
+/// Rows reflow from `Theme.viewport`, which has to follow the real frame.
+/// Slint does not expose a resize callback, so the gallery samples the size.
+fn follow_frame(gallery: slint::Weak<Gallery>) {
+    let timer = slint::Timer::default();
+    timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(200), move || {
+        let Some(gallery) = gallery.upgrade() else {
+            return;
+        };
+        let window = gallery.window();
+        let width = window.size().to_logical(window.scale_factor()).width;
+        let theme = gallery.global::<Theme>();
+        if (theme.get_viewport() - width).abs() >= 1.0 {
+            theme.set_viewport(width);
+        }
+    });
+    Box::leak(Box::new(timer));
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -83,6 +102,7 @@ mod web {
             let height = browser.inner_height().ok().and_then(|value| value.as_f64()).unwrap_or(600.0);
             if let Some(gallery) = gallery.upgrade() {
                 gallery.window().set_size(slint::LogicalSize::new(width as f32, height as f32));
+                gallery.global::<Theme>().set_viewport(width as f32);
             }
         };
         fit();

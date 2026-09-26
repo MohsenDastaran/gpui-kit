@@ -14,7 +14,7 @@ export component Checkbox {
 
     private property <length> box: size == ControlSize.xsmall ? 12px
         : size == ControlSize.small ? 14px
-        : size == ControlSize.large ? 20px
+        : size == ControlSize.large ? 18px
         : 16px;
     private property <bool> on: checked || indeterminate;
 
@@ -48,7 +48,7 @@ export component Checkbox {
         Rectangle {
             width: box;
             height: box;
-            border-radius: Theme.radius-sm;
+            border-radius: 4px;
             border-width: 1px;
             border-color: on ? Theme.primary : Theme.input;
             background: on ? Theme.primary : Theme.background;
@@ -70,7 +70,7 @@ export component Checkbox {
             if label != "": Text {
                 text: label;
                 color: Theme.foreground;
-                font-size: Theme.control-font-size(size);
+                font-size: Theme.label-font-size(size);
                 vertical-alignment: center;
             }
             if description != "": Text {

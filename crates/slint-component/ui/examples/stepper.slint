@@ -4,12 +4,13 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Stepper, StepperItem } from "../stepper.slint";
 
 export component StepperExample inherits VerticalLayout {
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <int> order-step: 1;
     in-out property <int> center-step;
     in-out property <int> vertical-step: 2;
     in-out property <int> size-step: 1;
 
-    padding: 24px;
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
@@ -25,9 +26,11 @@ export component StepperExample inherits VerticalLayout {
                 { label: "Finish", icon: "info" },
             ];
         }
-        HorizontalLayout {
+        GridLayout {
             spacing: 8px;
             Text {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
                 text: "Step \{root.order-step + 1} of \{order.items.length}";
                 color: Theme.muted-foreground;
                 font-size: Theme.font-size-sm;
@@ -35,6 +38,9 @@ export component StepperExample inherits VerticalLayout {
                 horizontal-stretch: 1;
             }
             Button {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: "Previous";
                 icon: "chevron-left";
                 enabled: root.order-step > 0;
@@ -43,6 +49,9 @@ export component StepperExample inherits VerticalLayout {
                 }
             }
             Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
                 text: root.order-step == order.items.length - 1 ? "Done" : "Next";
                 suffix-icon: root.order-step == order.items.length - 1 ? "" : "chevron-right";
                 variant: ButtonVariant.primary;
@@ -51,7 +60,13 @@ export component StepperExample inherits VerticalLayout {
                     root.order-step += 1;
                 }
             }
-        }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
     GroupBox {
@@ -68,10 +83,12 @@ export component StepperExample inherits VerticalLayout {
         }
     }
 
-    HorizontalLayout {
+    GridLayout {
         spacing: 24px;
 
         GroupBox {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
             title: "Vertical";
             variant: GroupBoxVariant.outline;
             horizontal-stretch: 1;
@@ -88,6 +105,8 @@ export component StepperExample inherits VerticalLayout {
         }
 
         GroupBox {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
             title: "Sizes and disabled";
             variant: GroupBoxVariant.outline;
             horizontal-stretch: 2;
@@ -115,5 +134,11 @@ export component StepperExample inherits VerticalLayout {
                 items: [{ label: "Account" }, { label: "Profile" }, { label: "Review" }];
             }
         }
-    }
+    
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
 }

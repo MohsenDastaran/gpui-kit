@@ -4,7 +4,8 @@ import { Switch } from "../switch.slint";
 import { ControlSize } from "../theme.slint";
 
 export component SwitchExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
@@ -14,12 +15,34 @@ export component SwitchExample inherits VerticalLayout {
         Switch { label: "Disabled"; enabled: false; }
     }
     GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
-        HorizontalLayout { spacing: 16px;
-            Switch { size: ControlSize.xsmall; checked: true; }
-            Switch { size: ControlSize.small; checked: true; }
-            Switch { checked: true; }
-            Switch { size: ControlSize.large; checked: true; }
-        }
+        GridLayout { spacing: 16px;
+            Switch {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 size: ControlSize.xsmall; checked: true; }
+            Switch {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 size: ControlSize.small; checked: true; }
+            Switch {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 checked: true; }
+            Switch {
+                row: Theme.wrap-row(3, root.wrap-cols);
+                col: Theme.wrap-col(3, root.wrap-cols);
+                horizontal-stretch: 0;
+                 size: ControlSize.large; checked: true; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
     }
 
 }

@@ -3,14 +3,33 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Marker, MarkerHighlight } from "../marker.slint";
 
 export component MarkerExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
-    HorizontalLayout { spacing: 4px;
-        Marker { text: "Search found"; }
-        MarkerHighlight { text: "12 matches"; }
-        Marker { text: "in this file."; }
-    }
+    GridLayout { spacing: 4px;
+        Marker {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Search found"; }
+        MarkerHighlight {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "12 matches"; }
+        Marker {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "in this file."; }
+    
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
 
 }

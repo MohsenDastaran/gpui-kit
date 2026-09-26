@@ -3,7 +3,8 @@ import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 
 export component GroupBoxExample inherits VerticalLayout {
-    padding: 24px;
+    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
@@ -14,11 +15,29 @@ export component GroupBoxExample inherits VerticalLayout {
     GroupBox {
         title: "Account Settings";
         variant: GroupBoxVariant.fill;
-        HorizontalLayout {
-            Text { text: "Make profile private"; color: Theme.foreground; vertical-alignment: center; }
-            Rectangle { }
-            Button { text: "Private"; }
-        }
+        GridLayout {
+            Text {
+                row: Theme.wrap-row(0, root.wrap-cols);
+                col: Theme.wrap-col(0, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Make profile private"; color: Theme.foreground; vertical-alignment: center; }
+            Rectangle {
+                row: Theme.wrap-row(1, root.wrap-cols);
+                col: Theme.wrap-col(1, root.wrap-cols);
+                horizontal-stretch: 0;
+                 }
+            Button {
+                row: Theme.wrap-row(2, root.wrap-cols);
+                col: Theme.wrap-col(2, root.wrap-cols);
+                horizontal-stretch: 0;
+                 text: "Private"; }
+        
+            Rectangle {
+                row: 0;
+                col: root.wrap-cols;
+                horizontal-stretch: 1;
+            }
+}
         HorizontalLayout {
             alignment: start;
             Button { text: "Save Changes"; variant: ButtonVariant.primary; }

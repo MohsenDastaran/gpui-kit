@@ -6,5 +6,11 @@ dev-web:
 dev\:website:
 	bun run --cwd website dev
 
+# The site serves crates/slint-component/www/dist as-is, so this rebuilds the
+# Slint gallery before starting the same dev server.
+dev\:website-slint:
+	$(MAKE) -C crates/slint-component build
+	bun run --cwd website dev
+
 build\:website:
 	bun run --cwd website build

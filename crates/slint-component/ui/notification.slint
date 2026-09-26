@@ -22,7 +22,10 @@ export component Notification {
         : status == Status.danger ? "circle-x"
         : "info";
 
-    width: 320px;
+    horizontal-stretch: 1;
+    min-width: 0px;
+    max-width: 320px;
+    preferred-width: 320px;
 
     Rectangle {
         border-radius: Theme.radius-lg;
