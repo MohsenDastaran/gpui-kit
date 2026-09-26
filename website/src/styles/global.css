@@ -537,7 +537,7 @@ html.dark .astro-code span {
   /* Tailwind's preflight zeroes block margins, so prose needs its own vertical
      rhythm: without this every paragraph, list and code block butted directly
      against the next one. Headings set their own top margin below. */
-  p, ul, ol, pre, table, blockquote, .callout, details {
+  p, ul, ol, pre, table, blockquote, .callout, details, .code-block, .framework-code {
     margin-block: 1rem;
   }
 
@@ -692,6 +692,80 @@ html.dark .astro-code span {
   }
 
   pre code { display: block; padding: 1rem; overflow-x: auto; font-size: 0.875em; line-height: 1.7; }
+
+  .code-block {
+    position: relative;
+  }
+
+  .code-block > pre {
+    margin-block: 0;
+  }
+
+  .code-block pre code {
+    padding-right: 2.75rem;
+  }
+
+  .code-block__copy {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--code-bg);
+    color: var(--muted-foreground);
+    cursor: pointer;
+  }
+
+  .code-block__copy:hover,
+  .code-block__copy[data-copied] {
+    background: var(--secondary);
+    color: var(--foreground);
+  }
+
+  .framework-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-block: 1.5rem;
+    padding: 0.375rem 0.375rem 0.375rem 0.875rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--sidebar);
+  }
+
+  .framework-code__panel > :is(pre, .code-block) {
+    margin-block: 0;
+  }
+
+  .framework-code__missing {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    padding: 0.75rem 1rem;
+    border: 1px dashed var(--border-hover);
+    border-radius: var(--radius-card);
+    background: color-mix(in srgb, var(--secondary) 45%, transparent);
+    color: var(--muted-foreground);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .framework-code__missing-name {
+    flex-shrink: 0;
+    padding: 0.125rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 0.25rem;
+    background: var(--background);
+    color: var(--foreground);
+    font: 0.68rem/1.4 var(--font-mono);
+  }
 
   td:first-child code {
     border: 0;
@@ -1289,6 +1363,186 @@ html[lang^="zh"] :is(
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+.code-block-mount {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ====================================================================
+   Framework selector (component pages)
+   ==================================================================== */
+
+.framework-bar__label {
+  color: var(--muted-foreground);
+  font: 0.68rem/1 var(--font-mono);
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.framework-switch {
+  position: relative;
+  display: inline-grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-control);
+  background: var(--secondary);
+}
+
+.framework-switch__thumb {
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 2px;
+  width: calc((100% - 4px) / 2);
+  border-radius: calc(var(--radius-control) - 2px);
+  background: var(--background);
+  box-shadow: var(--shadow-hairline), var(--shadow-raise);
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Before the script runs, the stored choice on <html> positions the thumb, so
+   a returning reader never sees it jump from GPUI to Slint. */
+html[data-framework="slint"] .framework-switch:not([data-selected]) .framework-switch__thumb,
+.framework-switch[data-selected="slint"] .framework-switch__thumb {
+  transform: translateX(100%);
+}
+
+.framework-switch__option {
+  position: relative;
+  z-index: 1;
+  min-width: 4.75rem;
+  padding: 0.3rem 0.9rem;
+  border-radius: calc(var(--radius-control) - 2px);
+  color: var(--muted-foreground);
+  font: 500 0.8125rem/1.25 var(--font-sans);
+  cursor: pointer;
+  transition: color 160ms ease;
+}
+
+.framework-switch__option:hover,
+html:not([data-framework="slint"]) .framework-switch:not([data-selected]) [data-framework-option="gpui"],
+html[data-framework="slint"] .framework-switch:not([data-selected]) [data-framework-option="slint"],
+.framework-switch[data-selected="gpui"] [data-framework-option="gpui"],
+.framework-switch[data-selected="slint"] [data-framework-option="slint"] {
+  color: var(--foreground);
+}
+
+.framework-code {
+  position: relative;
+}
+
+.framework-code__panel[data-framework-panel="slint"],
+html[data-framework="slint"] .framework-code__panel[data-framework-panel="gpui"] {
+  display: none;
+}
+
+html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"] {
+  display: block;
+}
+
+/* Switching reloads the page's code in place: the blocks give way to a
+   skeleton while the progress bar runs, then the chosen framework settles in. */
+.framework-loading .framework-code,
+.framework-entering .framework-code {
+  overflow: clip;
+  border-radius: var(--radius-card);
+}
+
+.framework-loading .framework-code__panel {
+  opacity: 0;
+  transform: translateY(2px);
+  transition: opacity 140ms ease, transform 140ms ease;
+}
+
+.framework-loading .framework-code::after,
+.framework-entering .framework-code::after {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background:
+    linear-gradient(var(--skeleton) 0 0) 1rem 1.05rem / min(42%, 16rem) 0.5rem no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 1rem 2.15rem / min(68%, 26rem) 0.5rem no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 2.25rem 3.25rem / min(36%, 14rem) 0.5rem no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 1rem 4.35rem / min(54%, 21rem) 0.5rem no-repeat,
+    var(--code-bg);
+  content: "";
+  pointer-events: none;
+  --skeleton: color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+.framework-loading .framework-code::after {
+  animation: framework-fade-in 160ms ease both;
+}
+
+.framework-entering .framework-code::after {
+  animation: framework-fade-out 220ms ease both;
+}
+
+.framework-loading .framework-code::before {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(
+    100deg,
+    transparent 25%,
+    color-mix(in srgb, var(--foreground) 6%, transparent) 50%,
+    transparent 75%
+  );
+  content: "";
+  pointer-events: none;
+  animation: framework-sweep 900ms ease-in-out infinite;
+}
+
+.framework-entering .framework-code__panel {
+  animation: framework-enter 280ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.framework-progress {
+  position: fixed;
+  top: var(--nav-height);
+  left: 0;
+  z-index: 45;
+  width: 100%;
+  height: 2px;
+  background: var(--brand);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+}
+
+@keyframes framework-fade-in {
+  from { opacity: 0; }
+}
+
+@keyframes framework-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes framework-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+
+@keyframes framework-enter {
+  from { opacity: 0; transform: translateY(4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .framework-switch__thumb { transition: none; }
 }
 
 /* ====================================================================

@@ -93,6 +93,14 @@ const jsonLd = JSON.stringify(structuredData ?? defaultStructuredData).replace(/
       })();
     </script>
 
+    <!-- Framework: pick the code blocks before paint so they never flash -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('selected-framework');
+        document.documentElement.dataset.framework = stored === 'slint' ? 'slint' : 'gpui';
+      })();
+    </script>
+
     <!-- Favicon follows theme toggle -->
     <script is:inline define:vars={{ base }}>
       (function () {
