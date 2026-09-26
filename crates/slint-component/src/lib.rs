@@ -12,6 +12,11 @@ pub fn run(component: &str, dark: bool) -> Result<(), slint::PlatformError> {
     gallery.set_component(component.into());
     gallery.global::<Theme>().set_dark(dark);
 
+    // Size the window before it is shown. Otherwise the first frame keeps the
+    // 800px preferred width and the iframe clips the right padding.
+    #[cfg(target_arch = "wasm32")]
+    web::sync_to_frame(&gallery);
+
     gallery.show()?;
     follow_frame(gallery.as_weak());
 
@@ -24,22 +29,38 @@ pub fn run(component: &str, dark: bool) -> Result<(), slint::PlatformError> {
     slint::run_event_loop()
 }
 
-/// Rows reflow from `Theme.viewport`, which has to follow the real frame.
-/// Slint does not expose a resize callback, so the gallery samples the size.
+/// Rows reflow from `Theme.viewport`. Slint does not expose a resize callback,
+/// so the gallery samples the frame. On the web the canvas CSS fills the
+/// iframe, which makes Slint keep its 800px preferred size and clip the right
+/// padding until something resizes the window.
 fn follow_frame(gallery: slint::Weak<Gallery>) {
     let timer = slint::Timer::default();
-    timer.start(slint::TimerMode::Repeated, std::time::Duration::from_millis(200), move || {
-        let Some(gallery) = gallery.upgrade() else {
-            return;
-        };
+    timer.start(
+        slint::TimerMode::Repeated,
+        std::time::Duration::from_millis(100),
+        move || {
+            let Some(gallery) = gallery.upgrade() else {
+                return;
+            };
+            sync_frame(&gallery);
+        },
+    );
+    Box::leak(Box::new(timer));
+}
+
+fn sync_frame(gallery: &Gallery) {
+    #[cfg(target_arch = "wasm32")]
+    web::sync_to_frame(gallery);
+
+    #[cfg(not(target_arch = "wasm32"))]
+    {
         let window = gallery.window();
         let width = window.size().to_logical(window.scale_factor()).width;
         let theme = gallery.global::<Theme>();
         if (theme.get_viewport() - width).abs() >= 1.0 {
             theme.set_viewport(width);
         }
-    });
-    Box::leak(Box::new(timer));
+    }
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -76,16 +97,53 @@ mod web {
         let Some(window) = web_sys::window() else {
             return;
         };
-        let listener = Closure::<dyn FnMut(web_sys::StorageEvent)>::new(move |event: web_sys::StorageEvent| {
-            if event.key().as_deref() != Some("theme") {
-                return;
-            }
-            if let Some(gallery) = gallery.upgrade() {
-                gallery.global::<Theme>().set_dark(site_prefers_dark());
-            }
-        });
-        let _ = window.add_event_listener_with_callback("storage", listener.as_ref().unchecked_ref());
+        let listener = Closure::<dyn FnMut(web_sys::StorageEvent)>::new(
+            move |event: web_sys::StorageEvent| {
+                if event.key().as_deref() != Some("theme") {
+                    return;
+                }
+                if let Some(gallery) = gallery.upgrade() {
+                    gallery.global::<Theme>().set_dark(site_prefers_dark());
+                }
+            },
+        );
+        let _ =
+            window.add_event_listener_with_callback("storage", listener.as_ref().unchecked_ref());
         listener.forget();
+    }
+
+    /// The iframe's size. `None` before the document has a real frame.
+    fn frame_size() -> Option<(f32, f32)> {
+        let browser = web_sys::window()?;
+        let width = browser
+            .inner_width()
+            .ok()
+            .and_then(|value| value.as_f64())? as f32;
+        let height = browser
+            .inner_height()
+            .ok()
+            .and_then(|value| value.as_f64())? as f32;
+        if width < 1.0 || height < 1.0 {
+            return None;
+        }
+        Some((width, height))
+    }
+
+    /// Size the Slint window to the iframe. Creating the browser window applies
+    /// the preferred 800px size again, so this has to win after that.
+    pub(crate) fn sync_to_frame(gallery: &Gallery) {
+        let Some((width, height)) = frame_size() else {
+            return;
+        };
+        let window = gallery.window();
+        let current = window.size().to_logical(window.scale_factor());
+        if (current.width - width).abs() >= 1.0 || (current.height - height).abs() >= 1.0 {
+            window.set_size(slint::LogicalSize::new(width, height));
+        }
+        let theme = gallery.global::<Theme>();
+        if (theme.get_viewport() - width).abs() >= 1.0 {
+            theme.set_viewport(width);
+        }
     }
 
     /// Slint sizes the canvas to the window's preferred size; the gallery
@@ -95,22 +153,23 @@ mod web {
             return;
         };
         let fit = move || {
-            let Some(browser) = web_sys::window() else {
-                return;
-            };
-            let width = browser.inner_width().ok().and_then(|value| value.as_f64()).unwrap_or(800.0);
-            let height = browser.inner_height().ok().and_then(|value| value.as_f64()).unwrap_or(600.0);
             if let Some(gallery) = gallery.upgrade() {
-                gallery.window().set_size(slint::LogicalSize::new(width as f32, height as f32));
-                gallery.global::<Theme>().set_viewport(width as f32);
+                sync_to_frame(&gallery);
             }
         };
         fit();
         // The browser window is created once the event loop starts, and
-        // creating it applies the preferred width again.
-        slint::Timer::single_shot(std::time::Duration::ZERO, fit.clone());
+        // creating it applies the preferred width again. Retry past that.
+        for delay in [
+            std::time::Duration::ZERO,
+            std::time::Duration::from_millis(32),
+            std::time::Duration::from_millis(120),
+        ] {
+            slint::Timer::single_shot(delay, fit.clone());
+        }
         let listener = Closure::<dyn FnMut()>::new(fit);
-        let _ = window.add_event_listener_with_callback("resize", listener.as_ref().unchecked_ref());
+        let _ =
+            window.add_event_listener_with_callback("resize", listener.as_ref().unchecked_ref());
         listener.forget();
     }
 

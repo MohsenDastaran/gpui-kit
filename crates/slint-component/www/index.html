@@ -12,6 +12,17 @@
           (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches);
         document.documentElement.dataset.theme = dark ? 'dark' : 'light';
       })();
+
+      // The first click focuses the canvas. The browser would otherwise scroll
+      // the docs page to reveal it; later clicks do not, because it stays focused.
+      const focusWithoutScroll = HTMLElement.prototype.focus;
+      HTMLElement.prototype.focus = function (options) {
+        const settings =
+          options && typeof options === 'object'
+            ? { ...options, preventScroll: true }
+            : { preventScroll: true };
+        focusWithoutScroll.call(this, settings);
+      };
     </script>
     <style>
       html,
@@ -28,8 +39,10 @@
       }
       canvas {
         display: block;
-        width: 100%;
-        height: 100%;
+        /* Inline pixel sizes from the preferred 800px window lose to this,
+           otherwise the iframe clips the right padding until a resize. */
+        width: 100% !important;
+        height: 100% !important;
         outline: none;
       }
       #loading {
@@ -60,6 +73,13 @@
         }
       });
       document.getElementById('loading')?.remove();
+      // The first Slint frame can keep the 800px preferred width. A resize
+      // after layout makes it match the iframe, including the right padding.
+      const fit = () => window.dispatchEvent(new Event('resize'));
+      requestAnimationFrame(() => {
+        fit();
+        requestAnimationFrame(fit);
+      });
     </script>
   </body>
 </html>
