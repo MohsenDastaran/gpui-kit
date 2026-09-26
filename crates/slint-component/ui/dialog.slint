@@ -31,6 +31,7 @@ export component Dialog {
         x: (parent.width - self.width) / 2;
         y: (parent.height - self.height) / 2;
         width: min(parent.width - (parent.width < 420px ? 16px : 48px), 440px);
+        height: content.preferred-height;
         border-radius: Theme.radius-lg;
         border-width: 1px;
         border-color: Theme.border;
@@ -39,7 +40,7 @@ export component Dialog {
         drop-shadow-offset-y: 8px;
         drop-shadow-color: Theme.shadow;
 
-        VerticalLayout {
+        content := VerticalLayout {
             padding: parent.width < 420px ? 16px : 20px;
             spacing: 16px;
 

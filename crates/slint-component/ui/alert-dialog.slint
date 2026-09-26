@@ -13,7 +13,14 @@ export component AlertDialog {
     callback cancelled();
     callback confirmed();
 
+    // The preview sizes this host. The dialog inside has to fill it, or the
+    // overlay and card collapse to the text and the actions land on each other.
+    width: 100%;
+    height: 100%;
+
     Dialog {
+        width: 100%;
+        height: 100%;
         open <=> root.open;
         title: root.title;
         description: root.description;
@@ -24,7 +31,6 @@ export component AlertDialog {
         DialogFooter {
             Button {
                 text: cancel-text;
-                variant: ButtonVariant.ghost;
                 clicked => {
                     root.open = false;
                     root.cancelled();
