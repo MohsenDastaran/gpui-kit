@@ -2,6 +2,7 @@
 import { Check, Copy } from "lucide-vue-next";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { toggleLogos } from "../lib/toggle-logos.js";
+import FlowText from "./FlowText.vue";
 
 const MANAGERS = ["npx", "pnpm", "bun"] as const;
 type Manager = (typeof MANAGERS)[number];
@@ -25,7 +26,11 @@ const isManager = (value: unknown): value is Manager =>
   MANAGERS.includes(value as Manager);
 
 const runner = computed(() =>
-  manager.value === "pnpm" ? "pnpm dlx" : manager.value === "bun" ? "bunx" : "npx",
+  manager.value === "pnpm"
+    ? "pnpm dlx"
+    : manager.value === "bun"
+      ? "bunx"
+      : "npx",
 );
 
 const command = computed(() => {
@@ -65,17 +70,23 @@ function mountFrameworkLogos() {
     .forEach((button) => {
       if (button.querySelector(".framework-switch__logo")) return;
       const name = button.dataset.frameworkOption;
-      const logo = name ? toggleLogos[name as keyof typeof toggleLogos] : undefined;
+      const logo = name
+        ? toggleLogos[name as keyof typeof toggleLogos]
+        : undefined;
       if (!logo) return;
       const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
       svg.setAttribute("class", "framework-switch__logo");
       svg.setAttribute("viewBox", logo.viewBox);
       svg.setAttribute("aria-hidden", "true");
       for (const path of logo.paths) {
-        const el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        const el = document.createElementNS(
+          "http://www.w3.org/2000/svg",
+          "path",
+        );
         el.setAttribute("d", path.d);
         el.setAttribute("fill", path.fill);
-        if (path.accent) el.setAttribute("class", "framework-switch__logo-accent");
+        if (path.accent)
+          el.setAttribute("class", "framework-switch__logo-accent");
         svg.append(el);
       }
       button.prepend(svg);
@@ -214,10 +225,11 @@ async function copy() {
       </div>
       <div class="install-command__line">
         <code>
-          <span class="install-command__run">{{ runner + " " }}</span>
-          <span class="install-command__package">{{ PACKAGE + " " }}</span>
+          <FlowText class="install-command__run" :text="runner" />
+          <span class="install-command__package">{{ " " + PACKAGE + " " }}</span>
           <span>{{ "add " }}</span>
-          <span class="install-command__arg">{{ framework + " " + slug }}</span>
+          <FlowText class="install-command__arg" :text="framework" />
+          <span class="install-command__arg">{{ " " + slug }}</span>
         </code>
         <button
           type="button"
