@@ -35,15 +35,14 @@ templates/                       # phase 7 apps people copy
 tokens/
 ├── tokens.json
 └── schema.json
+registry/                        # uni-kit CLI and components.json
 ```
+
+`uni-kit` only copies files named in `registry/components.json`. It does not generate components. Adding a toolkit is a new entry in that file, not a new CLI release.
 
 **Do not add:**
 
-- A CLI (`dui add`, `dui init`, or any installer)
-- A `registry/` tree or `registry.json`
 - A code-generation pipeline (components, blocks, and Slint files are hand-written)
-
-`crates/registry-cli` and `registry/` are leftovers from the installer approach. Remove them, and remove component comments that tell the registry CLI to copy files.
 
 ---
 
@@ -147,9 +146,7 @@ The repository is already public and Apache-2.0. The site is already at <https:/
 
 ## What not to do
 
-- Build a CLI.
-- Build a registry (`registry.json`, manifests, install commands).
-- Generate components or blocks from a spec.
+- Generate components or blocks from a spec. `uni-kit` only copies files listed in `registry/components.json`.
 - Use git submodules for framework ports.
 - Add QuickGUI until its API is stable.
 - Replace the GPUI Kit docs site, or open a second docs site.

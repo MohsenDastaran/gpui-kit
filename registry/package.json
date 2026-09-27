@@ -1,0 +1,22 @@
+{
+  "name": "uni-kit",
+  "version": "0.1.0",
+  "description": "Copy Uni Kit components into a Rust app. One command for Slint, egui, GPUI, and QuickGUI.",
+  "type": "module",
+  "bin": {
+    "uni-kit": "./index.js"
+  },
+  "files": [
+    "index.js",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MohsenDastaran/uni-kit.git",
+    "directory": "registry"
+  }
+}

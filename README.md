@@ -6,7 +6,7 @@
 
 [![Build Status](https://github.com/longbridge/gpui-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/longbridge/gpui-kit/actions/workflows/ci.yml) [![Docs](https://docs.rs/gpui-kit/badge.svg)](https://docs.rs/gpui-kit/) [![Crates.io](https://img.shields.io/crates/v/gpui-kit.svg)](https://crates.io/crates/gpui-kit)
 
-Copy-paste native UI for Rust desktop toolkits. The same component catalog is hand-written for each framework and published on <https://gpui-kit.com>. You copy the source into your own app. There is no CLI, no registry, and no code generator.
+Copy-paste native UI for Rust desktop toolkits. The same component catalog is hand-written for each framework and published on <https://gpui-kit.com>. You copy the source into your own app, or install it with [`uni-kit`](registry). The CLI does not generate components. It copies the files listed in [`registry/components.json`](registry/components.json).
 
 GPUI and Slint are in the catalog now. egui, QuickGUI, and other toolkits join the same pages after their components are written. The work is tracked in the [roadmap](docs/roadmap.md).
 
@@ -15,10 +15,18 @@ GPUI and Slint are in the catalog now. egui, QuickGUI, and other toolkits join t
 | Framework | How an app uses it | Status |
 | --- | --- | --- |
 | [GPUI](https://github.com/zed-industries/zed) | Depend on the `gpui-kit` crate. Copy a sample from the component page. | On the site |
-| [Slint](https://slint.dev) | Copy the `.slint` files into the app and compile them with `slint-build`. | On the site |
+| [Slint](https://slint.dev) | `npx uni-kit add slint <component>` copies the `.slint` files into `ui/components/`. | On the site |
 | egui, QuickGUI, and others | The same pages, once the source exists. | [Roadmap](docs/roadmap.md) |
 
 The site docs stay one site, in English and zh-CN. A framework selector on each component page switches the live example and the copyable source. GPUI samples assume an app that depends on `gpui-kit` (that crate already brings `gpui-component` and `gpui-base`). Slint samples are the files under `crates/slint-component/ui/`.
+
+```bash
+npx uni-kit add slint alert-dialog
+bunx uni-kit add slint alert-dialog
+pnpm dlx uni-kit add slint alert-dialog
+```
+
+The same command takes `egui`, `gpui`, or `quickgui` once that toolkit's files are in the manifest. Slint writes `ui/components/`. The Rust toolkits write `src/components/` and can add a `pub mod` line. `--dir` overrides the directory.
 
 Blocks (Login, Dashboard, Settings) and starter templates are next. See the [roadmap](docs/roadmap.md).
 
