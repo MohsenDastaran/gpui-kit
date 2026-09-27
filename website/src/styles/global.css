@@ -781,15 +781,97 @@ html.dark .astro-code span {
   }
 
   .framework-bar {
-    display: flex;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
     align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
+    column-gap: 0.75rem;
     margin-block: 1.5rem;
     padding: 0.375rem 0.375rem 0.375rem 0.875rem;
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
     background: var(--sidebar);
+  }
+
+  .framework-bar__label { grid-column: 1; grid-row: 1; }
+
+  .framework-bar > .framework-switch {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .install-command-host { display: contents; }
+
+  .install-command__switch { grid-column: 4; grid-row: 1; }
+
+  .install-command__switch .framework-switch__thumb {
+    width: calc((100% - 4px) / 3);
+  }
+
+  .install-command__switch[data-selected="pnpm"] .framework-switch__thumb {
+    transform: translateX(100%);
+  }
+
+  .install-command__switch[data-selected="bun"] .framework-switch__thumb {
+    transform: translateX(200%);
+  }
+
+  .install-command__switch .framework-switch__option {
+    min-width: 3.25rem;
+    padding-inline: 0.7rem;
+  }
+
+  .install-command__option:hover,
+  .install-command__option[aria-checked="true"] {
+    color: var(--foreground);
+  }
+
+  .install-command__copy {
+    grid-column: 5;
+    grid-row: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--background);
+    color: var(--muted-foreground);
+    cursor: pointer;
+  }
+
+  .install-command__copy:hover,
+  .install-command__copy[data-copied] {
+    background: var(--secondary);
+    color: var(--foreground);
+  }
+
+  .install-command__line {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    margin: 0.5rem -0.375rem -0.375rem -0.875rem;
+    padding: 0.7rem 0.875rem;
+    border-top: 1px solid var(--border);
+    color: var(--foreground);
+    font: 0.8125rem/1.5 var(--font-mono);
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 760px) {
+    .framework-bar { grid-template-columns: minmax(0, 1fr) auto; }
+
+    .framework-bar > .framework-switch { grid-column: 2; }
+
+    .install-command__switch {
+      grid-column: 1;
+      grid-row: 2;
+      justify-self: start;
+    }
+
+    .install-command__copy { grid-column: 2; grid-row: 2; }
+
+    .install-command__line { grid-row: 3; }
   }
 
   .framework-code__panel > :is(pre, .code-block) {

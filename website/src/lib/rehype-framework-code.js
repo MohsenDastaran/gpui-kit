@@ -46,7 +46,7 @@ function missing(copy, framework, covered) {
   ]);
 }
 
-function selector(copy) {
+function selector(copy, slug) {
   return element(
     'div',
     {
@@ -78,6 +78,7 @@ function selector(copy) {
           ),
         ),
       ]),
+      element('div', { className: ['install-command-host'], dataInstallSlug: slug }),
       element('span', { className: ['sr-only'], role: 'status', dataFrameworkStatus: '' }),
     ],
   );
@@ -138,6 +139,6 @@ export function rehypeFrameworkCode() {
     while (tree.children[at] && isBlank(tree.children[at])) at += 1;
     const lead = tree.children[at];
     const after = lead?.type === 'element' && lead.tagName === 'p' ? at + 1 : title + 1;
-    tree.children.splice(after, 0, selector(copy));
+    tree.children.splice(after, 0, selector(copy, slug));
   };
 }

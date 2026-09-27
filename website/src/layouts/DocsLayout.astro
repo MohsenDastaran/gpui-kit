@@ -5,6 +5,7 @@ import Sidebar from '../components/Sidebar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
 import Toc from '../components/Toc.astro';
 import CodeBlock from '../components/CodeBlock.vue';
+import InstallCommand from '../components/InstallCommand.vue';
 import type { Heading } from '../components/Toc.astro';
 import type { SidebarItem } from '../lib/sidebar';
 import { fetchStarCount } from '../lib/github';
@@ -75,6 +76,7 @@ const structuredData = [
         copyLabel={isZh ? '复制代码' : 'Copy code'}
         copiedLabel={isZh ? '已复制' : 'Copied'}
       />
+      <InstallCommand client:load lang={isZh ? 'zh-CN' : 'en'} />
     </main>
 
     {hasSidebar && <Toc headings={headings} lang={lang} />}
