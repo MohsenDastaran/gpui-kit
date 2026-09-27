@@ -4,12 +4,24 @@
 /* ====================================================================
    Dark-mode image visibility helpers
    ==================================================================== */
-.architecture-dark { display: none; }
-.alignment-dark { display: none; }
-html.dark .architecture-light { display: none; }
-html.dark .architecture-dark { display: block; }
-html.dark .alignment-light { display: none; }
-html.dark .alignment-dark { display: block; }
+.architecture-dark {
+  display: none;
+}
+.alignment-dark {
+  display: none;
+}
+html.dark .architecture-light {
+  display: none;
+}
+html.dark .architecture-dark {
+  display: block;
+}
+html.dark .alignment-light {
+  display: none;
+}
+html.dark .alignment-dark {
+  display: block;
+}
 
 /* ====================================================================
    CSS Design Tokens, light + dark. Do NOT change values — ported as-is
@@ -222,8 +234,13 @@ html[lang^="ja"] :is(h1, h2, h3, h4) {
    Scrollbars
    ==================================================================== */
 
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
 ::-webkit-scrollbar-thumb {
   border: 2px solid transparent;
   border-radius: 999px;
@@ -234,10 +251,15 @@ html[lang^="ja"] :is(h1, h2, h3, h4) {
   background: var(--scrollbar-thumb-hover);
   background-clip: padding-box;
 }
-::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 @supports (scrollbar-width: thin) and (not selector(::-webkit-scrollbar)) {
-  * { scrollbar-width: thin; scrollbar-color: var(--scrollbar-thumb) transparent; }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb) transparent;
+  }
 }
 
 :focus-visible {
@@ -312,10 +334,16 @@ html.dark .astro-code span {
   box-shadow: inset 0 0 0 0.5px rgb(0 0 0 / 12%);
 }
 
-.mac-window__lights > :nth-child(2) { background: #febc2e; }
-.mac-window__lights > :nth-child(3) { background: #28c840; }
+.mac-window__lights > :nth-child(2) {
+  background: #febc2e;
+}
+.mac-window__lights > :nth-child(3) {
+  background: #28c840;
+}
 
-.mac-window__zoom { cursor: pointer; }
+.mac-window__zoom {
+  cursor: pointer;
+}
 
 .mac-window__zoom::before {
   display: flex;
@@ -330,10 +358,14 @@ html.dark .astro-code span {
   transition: opacity 0.12s ease;
 }
 
-.mac-window--zoomed .mac-window__zoom::before { content: "⤡"; }
+.mac-window--zoomed .mac-window__zoom::before {
+  content: "⤡";
+}
 
 .mac-window__bar:hover .mac-window__zoom::before,
-.mac-window__zoom:focus-visible::before { opacity: 1; }
+.mac-window__zoom:focus-visible::before {
+  opacity: 1;
+}
 
 .mac-window__action {
   display: flex;
@@ -349,19 +381,28 @@ html.dark .astro-code span {
   background: transparent;
   color: var(--muted-foreground);
   cursor: pointer;
-  transition: opacity 0.12s ease, background-color 0.12s ease, color 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    background-color 0.12s ease,
+    color 0.12s ease;
 }
 
 .mac-window__bar:hover .mac-window__action,
-.mac-window__action:focus-visible { opacity: 1; }
+.mac-window__action:focus-visible {
+  opacity: 1;
+}
 
 .mac-window__action:hover {
   background: color-mix(in srgb, var(--foreground) 8%, transparent);
   color: var(--foreground);
 }
 
-.mac-window__bar > :not(.mac-window__title) + .mac-window__action { margin-left: 0; }
-.mac-window__action--always { opacity: 1; }
+.mac-window__bar > :not(.mac-window__title) + .mac-window__action {
+  margin-left: 0;
+}
+.mac-window__action--always {
+  opacity: 1;
+}
 
 .mac-window__title {
   position: absolute;
@@ -381,7 +422,9 @@ html.dark .astro-code span {
    Component example (docs pages)
    ==================================================================== */
 
-.component-example { margin-bottom: 2rem; }
+.component-example {
+  margin-bottom: 2rem;
+}
 
 .component-example__label {
   margin-bottom: 0.5rem;
@@ -437,7 +480,9 @@ html.dark .astro-code span {
   background: #0a0a0a;
 }
 
-.component-example__frames { position: relative; }
+.component-example__frames {
+  position: relative;
+}
 
 .component-example__status {
   position: absolute;
@@ -466,11 +511,15 @@ html.dark .astro-code span {
 }
 
 @keyframes component-example-spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .component-example__spinner { animation-duration: 2.4s; }
+  .component-example__spinner {
+    animation-duration: 2.4s;
+  }
 }
 
 .component-example--base iframe {
@@ -485,14 +534,22 @@ html.dark .astro-code span {
 }
 
 @media (max-width: 640px) {
-  .mac-window__title { display: none; }
+  .mac-window__title {
+    display: none;
+  }
   .component-example iframe,
-  .component-example__status--missing { height: 560px; }
-  .component-example--base iframe { height: min(520px, 75vh); }
+  .component-example__status--missing {
+    height: 560px;
+  }
+  .component-example--base iframe {
+    height: min(520px, 75vh);
+  }
 }
 
 .has-zoomed-window,
-.has-zoomed-window body { overflow: hidden; }
+.has-zoomed-window body {
+  overflow: hidden;
+}
 
 .mac-window.mac-window--zoomed {
   position: fixed;
@@ -504,7 +561,9 @@ html.dark .astro-code span {
   box-shadow: none;
 }
 
-.mac-window.mac-window--zoomed::after { display: none; }
+.mac-window.mac-window--zoomed::after {
+  display: none;
+}
 
 .mac-window.mac-window--zoomed iframe,
 .mac-window.mac-window--zoomed .showcase__placeholder,
@@ -526,7 +585,9 @@ html.dark .astro-code span {
 .doc-content {
   color: var(--foreground);
 
-  h1 { margin-bottom: 1rem; }
+  h1 {
+    margin-bottom: 1rem;
+  }
 
   > h1:first-child {
     margin-bottom: 1rem;
@@ -574,12 +635,18 @@ html.dark .astro-code span {
     font-weight: 400;
     opacity: 0;
     text-decoration: none;
-    transition: opacity 120ms ease, color 120ms ease;
+    transition:
+      opacity 120ms ease,
+      color 120ms ease;
   }
 
   :is(h2, h3, h4):hover .heading-anchor,
-  .heading-anchor:focus-visible { opacity: 1; }
-  .heading-anchor:hover { color: var(--foreground); }
+  .heading-anchor:focus-visible {
+    opacity: 1;
+  }
+  .heading-anchor:hover {
+    color: var(--foreground);
+  }
 
   /* The bar is sticky, so an anchored heading would land underneath it. */
   :where(h1, h2, h3, h4, h5, h6)[id] {
@@ -589,28 +656,72 @@ html.dark .astro-code span {
   /* Tailwind's preflight zeroes block margins, so prose needs its own vertical
      rhythm: without this every paragraph, list and code block butted directly
      against the next one. Headings set their own top margin below. */
-  p, ul, ol, pre, table, blockquote, .callout, details, .code-block, .framework-code {
+  p,
+  ul,
+  ol,
+  pre,
+  table,
+  blockquote,
+  .callout,
+  details,
+  .code-block,
+  .framework-code {
     margin-block: 1rem;
   }
 
-  > :first-child { margin-top: 0; }
-  > :last-child { margin-bottom: 0; }
+  > :first-child {
+    margin-top: 0;
+  }
+  > :last-child {
+    margin-bottom: 0;
+  }
 
-  p, ul, ol, blockquote { max-width: 46rem; }
-  p, li { line-height: 1.75; }
+  p,
+  ul,
+  ol,
+  blockquote {
+    max-width: 46rem;
+  }
+  p,
+  li {
+    line-height: 1.75;
+  }
   /* Tailwind's preflight sets `list-style: none`, so prose lists lost their
      markers — a bulleted list read as a run of indented lines. */
-  ul { list-style: disc; padding-left: 1.2rem; }
-  ol { list-style: decimal; padding-left: 1.2rem; }
-  ul ul { list-style: circle; }
-  ul ul ul { list-style: square; }
-  li::marker { color: var(--muted-foreground); }
-  li + li { margin-top: 0.25rem; }
-  li > p { margin: 0; }
-  li > ul, li > ol { margin: 0.25rem 0 0; }
+  ul {
+    list-style: disc;
+    padding-left: 1.2rem;
+  }
+  ol {
+    list-style: decimal;
+    padding-left: 1.2rem;
+  }
+  ul ul {
+    list-style: circle;
+  }
+  ul ul ul {
+    list-style: square;
+  }
+  li::marker {
+    color: var(--muted-foreground);
+  }
+  li + li {
+    margin-top: 0.25rem;
+  }
+  li > p {
+    margin: 0;
+  }
+  li > ul,
+  li > ol {
+    margin: 0.25rem 0 0;
+  }
 
-  :is(h2, h3, h4) + :not(h2, h3, h4) { margin-top: 0.9rem; }
-  > h1:first-child + h2 { margin-top: 2.25rem; }
+  :is(h2, h3, h4) + :not(h2, h3, h4) {
+    margin-top: 0.9rem;
+  }
+  > h1:first-child + h2 {
+    margin-top: 2.25rem;
+  }
 
   a {
     text-decoration-color: color-mix(in srgb, currentColor 35%, transparent);
@@ -618,7 +729,9 @@ html.dark .astro-code span {
     text-underline-offset: 0.18em;
     transition: text-decoration-color 140ms ease;
   }
-  a:hover { text-decoration-color: currentColor; }
+  a:hover {
+    text-decoration-color: currentColor;
+  }
 
   /* VitePress-style containers (`:::tip`), turned into asides by
      `remark-callouts`. One shape, tinted by kind. */
@@ -627,12 +740,22 @@ html.dark .astro-code span {
     border: 1px solid var(--border);
     border-left: 3px solid var(--callout-accent, var(--border));
     border-radius: var(--radius-card);
-    background: color-mix(in srgb, var(--callout-accent, var(--secondary)) 6%, transparent);
+    background: color-mix(
+      in srgb,
+      var(--callout-accent, var(--secondary)) 6%,
+      transparent
+    );
   }
 
-  .callout > :first-child { margin-top: 0; }
-  .callout > :last-child { margin-bottom: 0; }
-  .callout p { max-width: none; }
+  .callout > :first-child {
+    margin-top: 0;
+  }
+  .callout > :last-child {
+    margin-bottom: 0;
+  }
+  .callout p {
+    max-width: none;
+  }
 
   .callout__title {
     margin-bottom: 0.4rem;
@@ -642,13 +765,21 @@ html.dark .astro-code span {
     letter-spacing: -0.01em;
   }
 
-  .callout--tip { --callout-accent: var(--brand); }
+  .callout--tip {
+    --callout-accent: var(--brand);
+  }
   .callout--info,
-  .callout--note { --callout-accent: var(--muted-foreground); }
+  .callout--note {
+    --callout-accent: var(--muted-foreground);
+  }
   .callout--warning,
   .callout--caution,
-  .callout--important { --callout-accent: var(--warning); }
-  .callout--danger { --callout-accent: var(--destructive); }
+  .callout--important {
+    --callout-accent: var(--warning);
+  }
+  .callout--danger {
+    --callout-accent: var(--destructive);
+  }
 
   /* GFM footnotes. The markdown pipeline emits `<h2 class="sr-only">` as the
      section's accessible name, but Tailwind only generates classes it finds in
@@ -674,12 +805,19 @@ html.dark .astro-code span {
     font-size: 0.85rem;
   }
 
-  .footnotes ol { padding-left: 1.1rem; }
-  .footnotes p { max-width: none; line-height: 1.65; }
+  .footnotes ol {
+    padding-left: 1.1rem;
+  }
+  .footnotes p {
+    max-width: none;
+    line-height: 1.65;
+  }
 
   /* Footnotes are where bare URLs turn up; let them wrap instead of pushing
      the page sideways. */
-  .footnotes a { overflow-wrap: anywhere; }
+  .footnotes a {
+    overflow-wrap: anywhere;
+  }
 
   .footnotes .data-footnote-backref {
     text-decoration: none;
@@ -698,8 +836,12 @@ html.dark .astro-code span {
     font-size: 0.82rem;
   }
 
-  tr { border-top: 0; }
-  thead tr { background: color-mix(in srgb, var(--secondary) 10%, transparent); }
+  tr {
+    border-top: 0;
+  }
+  thead tr {
+    background: color-mix(in srgb, var(--secondary) 10%, transparent);
+  }
 
   th {
     color: var(--muted-foreground);
@@ -708,7 +850,8 @@ html.dark .astro-code span {
     text-transform: uppercase;
   }
 
-  th, td {
+  th,
+  td {
     padding: 0.52rem 0.65rem;
     border: 0;
     border-bottom: 1px solid var(--border);
@@ -717,8 +860,13 @@ html.dark .astro-code span {
     vertical-align: top;
   }
 
-  tbody tr:last-child td { border-bottom: 0; }
-  th:first-child, td:first-child { padding-left: 0.75rem; }
+  tbody tr:last-child td {
+    border-bottom: 0;
+  }
+  th:first-child,
+  td:first-child {
+    padding-left: 0.75rem;
+  }
 
   blockquote {
     padding: 0.25rem 0 0.25rem 1.25rem;
@@ -743,7 +891,13 @@ html.dark .astro-code span {
     font-size: 0.875rem;
   }
 
-  pre code { display: block; padding: 1rem; overflow-x: auto; font-size: 0.875em; line-height: 1.7; }
+  pre code {
+    display: block;
+    padding: 1rem;
+    overflow-x: auto;
+    font-size: 0.875em;
+    line-height: 1.7;
+  }
 
   .code-block {
     position: relative;
@@ -782,7 +936,7 @@ html.dark .astro-code span {
 
   .framework-bar {
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto auto auto;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
     align-items: center;
     column-gap: 0.75rem;
     margin-block: 1.5rem;
@@ -792,16 +946,24 @@ html.dark .astro-code span {
     background: var(--sidebar);
   }
 
-  .framework-bar__label { grid-column: 1; grid-row: 1; }
+  .framework-bar__label {
+    grid-column: 1;
+    grid-row: 1;
+  }
 
   .framework-bar > .framework-switch {
     grid-column: 3;
     grid-row: 1;
   }
 
-  .install-command-host { display: contents; }
+  .install-command-host {
+    display: contents;
+  }
 
-  .install-command__switch { grid-column: 4; grid-row: 1; }
+  .install-command__switch {
+    grid-column: 4;
+    grid-row: 1;
+  }
 
   .install-command__switch .framework-switch__thumb {
     width: calc((100% - 4px) / 3);
@@ -826,9 +988,8 @@ html.dark .astro-code span {
   }
 
   .install-command__copy {
-    grid-column: 5;
-    grid-row: 1;
     display: inline-flex;
+    flex: none;
     align-items: center;
     justify-content: center;
     width: 1.75rem;
@@ -849,19 +1010,36 @@ html.dark .astro-code span {
   .install-command__line {
     grid-column: 1 / -1;
     grid-row: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-width: 0;
     margin: 0.5rem -0.375rem -0.375rem -0.875rem;
-    padding: 0.7rem 0.875rem;
+    padding: 0.55rem 0.875rem;
     border-top: 1px solid var(--border);
     color: var(--foreground);
-    font: 0.8125rem/1.5 var(--font-mono);
+  }
+
+  .install-command__line code {
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
     overflow-x: auto;
+    font: 0.8125rem/1.5 var(--font-mono);
     white-space: nowrap;
   }
 
   @media (max-width: 760px) {
-    .framework-bar { grid-template-columns: minmax(0, 1fr) auto; }
+    .framework-bar {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
 
-    .framework-bar > .framework-switch { grid-column: 2; }
+    .framework-bar > .framework-switch {
+      grid-column: 2;
+    }
 
     .install-command__switch {
       grid-column: 1;
@@ -869,9 +1047,9 @@ html.dark .astro-code span {
       justify-self: start;
     }
 
-    .install-command__copy { grid-column: 2; grid-row: 2; }
-
-    .install-command__line { grid-row: 3; }
+    .install-command__line {
+      grid-row: 3;
+    }
   }
 
   .framework-code__panel > :is(pre, .code-block) {
@@ -955,7 +1133,10 @@ html.dark .astro-code span {
   text-decoration: none !important;
 }
 
-.site-nav__brand img { width: 1.35rem; height: 1.4rem; }
+.site-nav__brand img {
+  width: 1.35rem;
+  height: 1.4rem;
+}
 
 .site-nav__links {
   display: flex;
@@ -973,11 +1154,18 @@ html.dark .astro-code span {
   font-size: 0.8125rem;
   font-weight: 500;
   text-decoration: none;
-  transition: background 140ms ease, color 140ms ease;
+  transition:
+    background 140ms ease,
+    color 140ms ease;
 }
 
-.site-nav__link:hover { background: var(--secondary); }
-.site-nav__link.active { color: var(--brand); font-weight: 600; }
+.site-nav__link:hover {
+  background: var(--secondary);
+}
+.site-nav__link.active {
+  color: var(--brand);
+  font-weight: 600;
+}
 
 .site-nav__actions {
   display: flex;
@@ -1005,7 +1193,9 @@ html.dark .astro-code span {
   transition: background 140ms ease;
 }
 .site-nav__dropdown:hover .site-nav__dropdown-btn,
-.site-nav__dropdown:focus-within .site-nav__dropdown-btn { background: var(--secondary); }
+.site-nav__dropdown:focus-within .site-nav__dropdown-btn {
+  background: var(--secondary);
+}
 
 .site-nav__dropdown-menu {
   position: absolute;
@@ -1019,7 +1209,9 @@ html.dark .astro-code span {
   box-shadow: var(--shadow-panel);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 140ms ease, visibility 140ms ease;
+  transition:
+    opacity 140ms ease,
+    visibility 140ms ease;
 }
 
 /* One rule decides visibility. `.is-dismissed` — set by Escape, which closes
@@ -1045,7 +1237,9 @@ html.dark .astro-code span {
   transition: background 140ms ease;
 }
 
-.site-nav__dropdown-item:hover { background: var(--secondary); }
+.site-nav__dropdown-item:hover {
+  background: var(--secondary);
+}
 
 /* ====================================================================
    Sidebar (docs layout)
@@ -1073,7 +1267,9 @@ html.dark .astro-code span {
   scrollbar-color: auto;
 }
 
-.docs-sidebar::-webkit-scrollbar { width: 8px; }
+.docs-sidebar::-webkit-scrollbar {
+  width: 8px;
+}
 
 .docs-sidebar::-webkit-scrollbar-track {
   margin-block: 2rem;
@@ -1112,7 +1308,11 @@ html.dark .astro-code span {
   margin-bottom: 0.2rem;
 }
 
-.sidebar-group__items { list-style: none; padding: 0; margin: 0 0 1.25rem; }
+.sidebar-group__items {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.25rem;
+}
 
 .sidebar-item {
   display: block;
@@ -1123,11 +1323,18 @@ html.dark .astro-code span {
   font-size: 0.8125rem;
   line-height: 1.5;
   text-decoration: none;
-  transition: color 140ms ease, background 140ms ease;
+  transition:
+    color 140ms ease,
+    background 140ms ease;
 }
 
-.sidebar-item:hover { background: var(--secondary); }
-.sidebar-item.active { color: var(--foreground); font-weight: 650; }
+.sidebar-item:hover {
+  background: var(--secondary);
+}
+.sidebar-item.active {
+  color: var(--foreground);
+  font-weight: 650;
+}
 
 .sidebar-subgroup-title {
   padding: 0.28rem 0.5rem;
@@ -1136,7 +1343,11 @@ html.dark .astro-code span {
   font-weight: 500;
 }
 
-.sidebar-subgroup__items { list-style: none; padding-left: 0.75rem; margin: 0; }
+.sidebar-subgroup__items {
+  list-style: none;
+  padding-left: 0.75rem;
+  margin: 0;
+}
 
 /* ====================================================================
    Docs layout wrapper
@@ -1177,7 +1388,9 @@ html.dark .astro-code span {
   -ms-overflow-style: none;
 }
 
-.toc::-webkit-scrollbar { display: none; }
+.toc::-webkit-scrollbar {
+  display: none;
+}
 
 /* This names the column, so it takes the foreground while the entries under it
    stay muted — that contrast is the whole separation; a rule under it competed
@@ -1209,7 +1422,9 @@ html.dark .astro-code span {
   color: var(--muted-foreground);
   line-height: 1.4;
   text-decoration: none;
-  transition: color 140ms ease, border-color 140ms ease;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease;
 }
 
 .toc__item a:hover {
@@ -1222,11 +1437,16 @@ html.dark .astro-code span {
   color: var(--brand);
 }
 
-.toc__item--sub a { padding-left: 1.5rem; font-size: 0.78rem; }
+.toc__item--sub a {
+  padding-left: 1.5rem;
+  font-size: 0.78rem;
+}
 
 /* Below this the three columns stop fitting inside the content box. */
 @media (max-width: 1180px) {
-  .toc { display: none; }
+  .toc {
+    display: none;
+  }
 }
 
 .docs-main--full {
@@ -1250,8 +1470,15 @@ html.dark .astro-code span {
   font-size: 0.75rem;
 }
 
-.site-footer strong { color: var(--foreground); font-size: 0.82rem; }
-.site-footer__brand p { max-width: 32rem; margin: 0.55rem 0 0; line-height: 1.6; }
+.site-footer strong {
+  color: var(--foreground);
+  font-size: 0.82rem;
+}
+.site-footer__brand p {
+  max-width: 32rem;
+  margin: 0.55rem 0 0;
+  line-height: 1.6;
+}
 
 .site-footer nav {
   display: flex;
@@ -1261,8 +1488,13 @@ html.dark .astro-code span {
   gap: 0.5rem 1.25rem;
 }
 
-.site-footer a { color: var(--muted-foreground); text-decoration: none; }
-.site-footer a:hover { color: var(--brand); }
+.site-footer a {
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+.site-footer a:hover {
+  color: var(--brand);
+}
 
 .site-footer__credits {
   grid-column: 1 / -1;
@@ -1276,7 +1508,9 @@ html.dark .astro-code span {
     grid-template-columns: 1fr;
     width: calc(100% - 2rem);
   }
-  .site-footer nav { justify-content: flex-start; }
+  .site-footer nav {
+    justify-content: flex-start;
+  }
 }
 
 /* ====================================================================
@@ -1295,8 +1529,13 @@ html.dark .astro-code span {
   transition: background 140ms ease;
 }
 
-.theme-toggle:hover { background: var(--secondary); }
-.theme-toggle svg { width: 1rem; height: 1rem; }
+.theme-toggle:hover {
+  background: var(--secondary);
+}
+.theme-toggle svg {
+  width: 1rem;
+  height: 1rem;
+}
 
 /* ====================================================================
    Pagefind search UI overrides
@@ -1332,7 +1571,9 @@ html.dark .astro-code span {
   border-radius: var(--radius-card);
   text-decoration: none;
   color: var(--foreground);
-  transition: border-color 160ms ease, transform 160ms ease;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
 }
 
 .doc-pager:hover {
@@ -1340,7 +1581,10 @@ html.dark .astro-code span {
   transform: translateY(-1px);
 }
 
-.doc-pager--next { text-align: right; margin-left: auto; }
+.doc-pager--next {
+  text-align: right;
+  margin-left: auto;
+}
 
 .doc-pager__label {
   font-size: 0.72rem;
@@ -1351,7 +1595,10 @@ html.dark .astro-code span {
   letter-spacing: 0.05em;
 }
 
-.doc-pager__title { font-size: 0.9rem; font-weight: 560; }
+.doc-pager__title {
+  font-size: 0.9rem;
+  font-weight: 560;
+}
 
 /* ====================================================================
    Search button (nav)
@@ -1371,7 +1618,9 @@ html.dark .astro-code span {
   color: var(--muted-foreground);
   font-size: 0.8125rem;
   cursor: pointer;
-  transition: border-color 140ms ease, background 140ms ease;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease;
 }
 
 .site-nav__search-btn:hover {
@@ -1379,18 +1628,22 @@ html.dark .astro-code span {
   background: var(--secondary);
 }
 
-.site-nav__search-hint { margin-right: auto; white-space: nowrap; }
+.site-nav__search-hint {
+  margin-right: auto;
+  white-space: nowrap;
+}
 
 /* Tracking that reads as restrained emphasis on Latin caps pulls short CJK
    labels apart — `文档`, `本页内容` — because Chinese has no case for the
    uppercase to act on, leaving only the extra space. The Vue components already
    narrow their own kickers this way; these four had been left behind. */
-html[lang^="zh"] :is(
-  .sidebar-group__title,
-  .toc__label,
-  .doc-pager__label,
-  .component-example__label
-) {
+html[lang^="zh"]
+  :is(
+    .sidebar-group__title,
+    .toc__label,
+    .doc-pager__label,
+    .component-example__label
+  ) {
   letter-spacing: 0.05em;
 }
 
@@ -1403,7 +1656,10 @@ html[lang^="zh"] :is(
    900px wide, and narrower still below that. The bar keeps its own 767px
    breakpoint — its links fit far longer than the sidebar does. */
 @media (max-width: 959px) {
-  .docs-layout { flex-direction: column; width: calc(100% - 3rem); }
+  .docs-layout {
+    flex-direction: column;
+    width: calc(100% - 3rem);
+  }
 
   .docs-sidebar {
     position: static;
@@ -1416,14 +1672,18 @@ html[lang^="zh"] :is(
   }
 
   .docs-main,
-  .docs-main--full { padding: 1.75rem 0 3rem; }
+  .docs-main--full {
+    padding: 1.75rem 0 3rem;
+  }
 }
 
 /* The bar runs out of room for a full-width field before it runs out of room
    for its links, so the field gives up width in steps: full, narrower, then
    an icon button once the label goes. */
 @media (max-width: 1080px) {
-  .site-nav__search-btn { width: 9.5rem; }
+  .site-nav__search-btn {
+    width: 9.5rem;
+  }
 }
 
 @media (max-width: 900px) {
@@ -1449,7 +1709,9 @@ html[lang^="zh"] :is(
 
   /* Scoped to the button so it outranks the shared key-cap rule, which is
      defined further down the file and would otherwise win on source order. */
-  .site-nav__search-btn .site-nav__search-key { display: none; }
+  .site-nav__search-btn .site-nav__search-key {
+    display: none;
+  }
 
   /* Once the labels go, these are five icons in a row and each needs the same
      square target — otherwise the star and language controls shrink to their
@@ -1465,7 +1727,9 @@ html[lang^="zh"] :is(
     justify-content: center;
   }
 
-  .site-nav__actions { gap: 0.25rem; }
+  .site-nav__actions {
+    gap: 0.25rem;
+  }
 
   /* Hidden from view but kept in the accessibility tree, so the button keeps
      its name once only the icon shows. */
@@ -1482,7 +1746,9 @@ html[lang^="zh"] :is(
 
 /* The docs shell keeps its own, narrower gutter at phone width. */
 @media (max-width: 640px) {
-  .docs-layout { width: calc(100% - 2rem); }
+  .docs-layout {
+    width: calc(100% - 2rem);
+  }
 }
 
 /* Visually hidden, still announced. Also defined inside `.doc-content` for
@@ -1547,7 +1813,9 @@ html[lang^="zh"] :is(
 
 /* Before the script runs, the stored choice on <html> positions the thumb, so
    a returning reader never sees it jump from GPUI to Slint. */
-html[data-framework="slint"] .framework-switch:not([data-selected]) .framework-switch__thumb,
+html[data-framework="slint"]
+  .framework-switch:not([data-selected])
+  .framework-switch__thumb,
 .framework-switch[data-selected="slint"] .framework-switch__thumb {
   transform: translateX(100%);
 }
@@ -1565,8 +1833,12 @@ html[data-framework="slint"] .framework-switch:not([data-selected]) .framework-s
 }
 
 .framework-switch__option:hover,
-html:not([data-framework="slint"]) .framework-switch:not([data-selected]) [data-framework-option="gpui"],
-html[data-framework="slint"] .framework-switch:not([data-selected]) [data-framework-option="slint"],
+html:not([data-framework="slint"])
+  .framework-switch:not([data-selected])
+  [data-framework-option="gpui"],
+html[data-framework="slint"]
+  .framework-switch:not([data-selected])
+  [data-framework-option="slint"],
 .framework-switch[data-selected="gpui"] [data-framework-option="gpui"],
 .framework-switch[data-selected="slint"] [data-framework-option="slint"] {
   color: var(--foreground);
@@ -1577,11 +1849,13 @@ html[data-framework="slint"] .framework-switch:not([data-selected]) [data-framew
 }
 
 .framework-code__panel[data-framework-panel="slint"],
-html[data-framework="slint"] .framework-code__panel[data-framework-panel="gpui"] {
+html[data-framework="slint"]
+  .framework-code__panel[data-framework-panel="gpui"] {
   display: none;
 }
 
-html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"] {
+html[data-framework="slint"]
+  .framework-code__panel[data-framework-panel="slint"] {
   display: block;
 }
 
@@ -1596,7 +1870,9 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
 .framework-loading .framework-code__panel {
   opacity: 0;
   transform: translateY(2px);
-  transition: opacity 140ms ease, transform 140ms ease;
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
 }
 
 .framework-loading .framework-code::after,
@@ -1607,10 +1883,14 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
   border: 1px solid var(--border);
   border-radius: var(--radius-card);
   background:
-    linear-gradient(var(--skeleton) 0 0) 1rem 1.05rem / min(42%, 16rem) 0.5rem no-repeat,
-    linear-gradient(var(--skeleton) 0 0) 1rem 2.15rem / min(68%, 26rem) 0.5rem no-repeat,
-    linear-gradient(var(--skeleton) 0 0) 2.25rem 3.25rem / min(36%, 14rem) 0.5rem no-repeat,
-    linear-gradient(var(--skeleton) 0 0) 1rem 4.35rem / min(54%, 21rem) 0.5rem no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 1rem 1.05rem / min(42%, 16rem) 0.5rem
+      no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 1rem 2.15rem / min(68%, 26rem) 0.5rem
+      no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 2.25rem 3.25rem / min(36%, 14rem)
+      0.5rem no-repeat,
+    linear-gradient(var(--skeleton) 0 0) 1rem 4.35rem / min(54%, 21rem) 0.5rem
+      no-repeat,
     var(--code-bg);
   content: "";
   pointer-events: none;
@@ -1659,24 +1939,37 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
 }
 
 @keyframes framework-fade-in {
-  from { opacity: 0; }
+  from {
+    opacity: 0;
+  }
 }
 
 @keyframes framework-fade-out {
-  to { opacity: 0; }
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes framework-sweep {
-  from { transform: translateX(-100%); }
-  to { transform: translateX(100%); }
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes framework-enter {
-  from { opacity: 0; transform: translateY(4px); }
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .framework-switch__thumb { transition: none; }
+  .framework-switch__thumb {
+    transition: none;
+  }
 }
 
 /* ====================================================================
@@ -1687,7 +1980,9 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
    trapping and Escape, so none of that is reimplemented here. */
 /* A closed dialog is `display: none` by the UA stylesheet; setting `display`
    unconditionally overrode that and left the panel sitting in the page flow. */
-#search-modal { display: none; }
+#search-modal {
+  display: none;
+}
 
 #search-modal[open] {
   display: flex;
@@ -1709,11 +2004,28 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
   backdrop-filter: blur(6px);
 }
 
-#search-ui { flex: 1; min-height: 0; overflow-y: auto; padding: 0.5rem; }
+#search-ui {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
 
-.search-blank { padding: 2rem 1.5rem 2.5rem; text-align: center; }
-.search-blank__title { margin: 0; color: var(--foreground); font-size: 0.95rem; font-weight: 620; }
-.search-blank__body { margin: 0.35rem 0 0; color: var(--muted-foreground); font-size: 0.85rem; }
+.search-blank {
+  padding: 2rem 1.5rem 2.5rem;
+  text-align: center;
+}
+.search-blank__title {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.95rem;
+  font-weight: 620;
+}
+.search-blank__body {
+  margin: 0.35rem 0 0;
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
 
 .search-footer {
   display: flex;
@@ -1726,7 +2038,11 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
   font-size: 0.72rem;
 }
 
-.search-footer span { display: inline-flex; align-items: center; gap: 0.3rem; }
+.search-footer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
 
 /* A key cap is a hint, not a control: a filled chip carries it without the
    border, which at this size read heavier than the label beside it. Foreground
@@ -1763,10 +2079,21 @@ html[data-framework="slint"] .framework-code__panel[data-framework-panel="slint"
   font-size: 0.95rem;
 }
 
-#search-ui .pagefind-ui__search-clear { background: transparent; color: var(--muted-foreground); }
-#search-ui .pagefind-ui__result { border-top: 1px solid var(--border); }
-#search-ui .pagefind-ui__result-link { color: var(--foreground); font-weight: 560; }
-#search-ui .pagefind-ui__result-excerpt { color: var(--muted-foreground); font-size: 0.85rem; }
+#search-ui .pagefind-ui__search-clear {
+  background: transparent;
+  color: var(--muted-foreground);
+}
+#search-ui .pagefind-ui__result {
+  border-top: 1px solid var(--border);
+}
+#search-ui .pagefind-ui__result-link {
+  color: var(--foreground);
+  font-weight: 560;
+}
+#search-ui .pagefind-ui__result-excerpt {
+  color: var(--muted-foreground);
+  font-size: 0.85rem;
+}
 #search-ui mark {
   background: color-mix(in srgb, var(--brand) 22%, transparent);
   color: var(--foreground);

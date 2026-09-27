@@ -26,7 +26,11 @@ const isManager = (value: unknown): value is Manager =>
 const command = computed(() => {
   if (!slug.value) return "";
   const runner =
-    manager.value === "pnpm" ? "pnpm dlx" : manager.value === "bun" ? "bunx" : "npx";
+    manager.value === "pnpm"
+      ? "pnpm dlx"
+      : manager.value === "bun"
+        ? "bunx"
+        : "npx";
   return `${runner} ${PACKAGE} add ${framework.value} ${slug.value}`;
 });
 
@@ -46,11 +50,14 @@ function readManager(): Manager {
 }
 
 function readFramework() {
-  return document.documentElement.dataset.framework === "slint" ? "slint" : "gpui";
+  return document.documentElement.dataset.framework === "slint"
+    ? "slint"
+    : "gpui";
 }
 
 function onStorage(event: StorageEvent) {
-  if (event.key === STORAGE_KEY && isManager(event.newValue)) manager.value = event.newValue;
+  if (event.key === STORAGE_KEY && isManager(event.newValue))
+    manager.value = event.newValue;
 }
 
 function pageSlug() {
@@ -103,7 +110,12 @@ function onKeydown(event: KeyboardEvent) {
     ArrowLeft: -1,
     ArrowUp: -1,
   }[event.key];
-  const edge = event.key === "Home" ? 0 : event.key === "End" ? MANAGERS.length - 1 : undefined;
+  const edge =
+    event.key === "Home"
+      ? 0
+      : event.key === "End"
+        ? MANAGERS.length - 1
+        : undefined;
   if (step === undefined && edge === undefined) return;
   event.preventDefault();
   const index = MANAGERS.indexOf(manager.value);
@@ -156,7 +168,7 @@ async function copy() {
           v-for="name in MANAGERS"
           :key="name"
           type="button"
-          class="framework-switch__option install-command__option"
+          class="framework-switch__option install-command__option capitalize"
           role="radio"
           :aria-checked="manager === name"
           :tabindex="manager === name ? 0 : -1"
@@ -165,18 +177,20 @@ async function copy() {
           {{ name }}
         </button>
       </div>
-      <button
-        type="button"
-        class="install-command__copy"
-        :aria-label="copied ? copiedLabel : copyLabel"
-        :title="copied ? copiedLabel : copyLabel"
-        :data-copied="copied || null"
-        @click="copy"
-      >
-        <Check v-if="copied" :size="14" aria-hidden="true" />
-        <Copy v-else :size="14" aria-hidden="true" />
-      </button>
-      <code class="install-command__line">{{ command }}</code>
+      <div class="install-command__line">
+        <code>{{ command }}</code>
+        <button
+          type="button"
+          class="install-command__copy"
+          :aria-label="copied ? copiedLabel : copyLabel"
+          :title="copied ? copiedLabel : copyLabel"
+          :data-copied="copied || null"
+          @click="copy"
+        >
+          <Check v-if="copied" :size="14" aria-hidden="true" />
+          <Copy v-else :size="14" aria-hidden="true" />
+        </button>
+      </div>
     </Teleport>
   </div>
 </template>
