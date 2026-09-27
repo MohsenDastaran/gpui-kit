@@ -1,26 +1,24 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, join, relative, resolve } from 'node:path';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { visit } from 'unist-util-visit';
 
-// Component pages show the Slint version of a component beside the GPUI code.
-// The Slint source lives in `crates/slint-component/ui/<slug>.slint`, with the
-// gallery example in `ui/examples/<slug>.slint`. This reads both and places
-// them as ```slint blocks straight after the page's first two Rust blocks —
-// the import and the basic usage, on every component page — where
-// `rehype-framework-code` pairs them into those blocks' Slint panels.
+// Component pages show a Slint version beside each GPUI sample.
+// The import panel is the import that works after `uni-kit add`: files live in
+// `ui/components`, and that directory is on the Slint include path.
+// When `ui/usage/<slug>/*.slint` exists, each file is one usage sample, in
+// filename order, paired with the Rust samples after the import. Otherwise the
+// gallery example fills the first usage panel.
 
 const COMPONENT_PAGE = /[\\/]component[\\/]([^\\/]+)\.md$/;
-const IMPORT = /^import\s*\{[^}]*\}\s*from\s*"([^"]+\.slint)"\s*;/gm;
 const EXPORTS = /^export\s+(?:component|struct|enum|global)\s+([A-Za-z_][\w-]*)/gm;
 
 const COPY = {
   en: {
-    copy: 'Copy these files from crates/slint-component/ui into your project:',
-    icons: 'with its icons/ folder',
+    installed:
+      'Installed in ui/components. That directory is on the Slint include path, so import by file name:',
   },
   'zh-CN': {
-    copy: '将以下文件从 crates/slint-component/ui 复制到你的项目：',
-    icons: '以及 icons/ 目录',
+    installed: '安装到 ui/components。该目录已加入 Slint 的 include path，按文件名导入：',
   },
 };
 
@@ -33,29 +31,24 @@ export function hasSlintExample(slug, root = process.cwd()) {
   return existsSync(join(ui, `${slug}.slint`)) && existsSync(join(ui, 'examples', `${slug}.slint`));
 }
 
-/** `file` and every `.slint` file it imports, transitively, relative to `ui`. */
-function dependencies(ui, file, seen = new Set()) {
-  const name = relative(ui, file);
-  if (seen.has(name) || !existsSync(file)) return seen;
-  seen.add(name);
-  for (const [, target] of readFileSync(file, 'utf8').matchAll(IMPORT)) {
-    dependencies(ui, resolve(dirname(file), target), seen);
-  }
-  return seen;
+/** True when this slug has one Slint sample per usage section. */
+export function hasSlintUsage(slug, root = process.cwd()) {
+  return usageSnippets(slintRoot(root), slug).length > 0;
+}
+
+function usageSnippets(ui, slug) {
+  const dir = join(ui, 'usage', slug);
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((name) => name.endsWith('.slint'))
+    .sort()
+    .map((name) => readFileSync(join(dir, name), 'utf8').trimEnd());
 }
 
 function importBlock(ui, slug, copy) {
-  const file = join(ui, `${slug}.slint`);
-  const source = readFileSync(file, 'utf8');
+  const source = readFileSync(join(ui, `${slug}.slint`), 'utf8');
   const names = [...source.matchAll(EXPORTS)].map(([, name]) => name);
-  const files = [...dependencies(ui, file)].map((name) =>
-    name === 'icon.slint' ? `${name} (${copy.icons})` : name,
-  );
-  return [
-    `// ${copy.copy}`,
-    `//   ${files.join(', ')}`,
-    `import { ${names.join(', ')} } from "${slug}.slint";`,
-  ].join('\n');
+  return [`// ${copy.installed}`, `import { ${names.join(', ')} } from "${slug}.slint";`].join('\n');
 }
 
 const code = (value) => ({ type: 'code', lang: 'slint', meta: null, value });
@@ -76,14 +69,22 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
     const [imports, usage] = rust;
     if (!imports || !usage) return;
 
-    const source = readFileSync(join(ui, `${slug}.slint`), 'utf8').trimEnd();
+    const after = ({ node, parent }, ...nodes) =>
+      parent.children.splice(parent.children.indexOf(node) + 1, 0, ...nodes);
+    after(imports, code(importBlock(ui, slug, copy)));
+
+    const snippets = usageSnippets(ui, slug);
+    if (snippets.length > 0) {
+      snippets.forEach((value, index) => {
+        const target = rust[index + 1];
+        if (target) after(target, code(value));
+      });
+      return;
+    }
+
     const example = readFileSync(join(ui, 'examples', `${slug}.slint`), 'utf8')
       .replaceAll('from "../', 'from "')
       .trimEnd();
-
-    const after = ({ node, parent }, ...nodes) =>
-      parent.children.splice(parent.children.indexOf(node) + 1, 0, ...nodes);
     after(usage, code(example));
-    after(imports, code(importBlock(ui, slug, copy)), code(`// ${slug}.slint\n${source}`));
   };
 }

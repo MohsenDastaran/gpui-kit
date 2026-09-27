@@ -1,5 +1,5 @@
 import { SKIP, visit } from 'unist-util-visit';
-import { hasSlintExample } from './remark-slint-source.js';
+import { hasSlintExample, hasSlintUsage } from './remark-slint-source.js';
 import { logoElement } from './toggle-logos.js';
 
 // Component pages carry one copy-paste block per framework. ```slint fences
@@ -91,7 +91,10 @@ export function rehypeFrameworkCode() {
     if (!COMPONENT_PAGE.test(path)) return;
     const copy = /[\\/]zh-CN[\\/]/.test(path) ? COPY['zh-CN'] : COPY.en;
     const slug = COMPONENT_PAGE.exec(path)?.[1];
-    const covered = { gpui: false, slint: Boolean(slug && hasSlintExample(slug)) };
+    const covered = {
+      gpui: false,
+      slint: Boolean(slug && hasSlintExample(slug) && !hasSlintUsage(slug)),
+    };
 
     const blocks = [];
     visit(tree, 'element', (node, _index, parent) => {

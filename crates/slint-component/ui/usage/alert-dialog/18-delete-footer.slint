@@ -1,0 +1,41 @@
+import { Button } from "button.slint";
+import { Dialog, DialogFooter } from "dialog.slint";
+import { ButtonVariant } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    private property <bool> open;
+
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        Button {
+            text: "Delete";
+            variant: ButtonVariant.danger;
+            clicked => { root.open = true; }
+        }
+    }
+
+    Dialog {
+        width: 100%;
+        height: 100%;
+        open <=> root.open;
+        show-close: false;
+        title: "Delete File?";
+        description: "This action cannot be undone.";
+        DialogFooter {
+            centered: true;
+            Button {
+                text: "Cancel";
+                outline: true;
+                clicked => { root.open = false; }
+            }
+            Button {
+                text: "Delete";
+                variant: ButtonVariant.danger;
+                clicked => { root.open = false; }
+            }
+        }
+    }
+}

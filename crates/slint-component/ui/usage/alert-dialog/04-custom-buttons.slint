@@ -1,0 +1,28 @@
+import { AlertDialog } from "alert-dialog.slint";
+import { Button } from "button.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    private property <bool> open;
+
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        Button {
+            text: "Delete Account";
+            clicked => { root.open = true; }
+        }
+    }
+
+    AlertDialog {
+        width: 100%;
+        height: 100%;
+        open <=> root.open;
+        title: "Delete Account";
+        description: "This will permanently delete your account and all associated data.";
+        cancel-text: "Keep";
+        confirm-text: "Delete";
+        destructive: true;
+    }
+}

@@ -77,6 +77,44 @@ function ensureModule(modFile, moduleName) {
   return true;
 }
 
+function buildScriptPath() {
+  const cargo = path.join(process.cwd(), 'Cargo.toml');
+  if (fs.existsSync(cargo)) {
+    const text = fs.readFileSync(cargo, 'utf8');
+    const match = text.match(/^\s*build\s*=\s*"([^"]+)"/m);
+    if (match) return path.resolve(process.cwd(), match[1]);
+  }
+  return path.join(process.cwd(), 'build.rs');
+}
+
+// Components import each other by file name ("theme.slint"). Those names only
+// resolve from a .slint file that lives next to them, so the app's own files
+// need the install directory on the Slint include path.
+function ensureSlintIncludePath(includeDir) {
+  const buildRs = buildScriptPath();
+  if (!fs.existsSync(buildRs)) {
+    console.log(`  Add "${includeDir}" to the Slint include path so imports like "alert-dialog.slint" resolve.`);
+    return;
+  }
+  const text = fs.readFileSync(buildRs, 'utf8');
+  if (text.includes(includeDir)) return;
+  const simple = /slint_build::compile\(([^)]*)\)/;
+  if (!simple.test(text) || text.includes('compile_with_config')) {
+    console.log(`  Add "${includeDir}" to the Slint include path so imports like "alert-dialog.slint" resolve.`);
+    return;
+  }
+  const next = text.replace(
+    simple,
+    `slint_build::compile_with_config(
+        $1,
+        slint_build::CompilerConfiguration::new()
+            .with_include_paths(vec![std::path::PathBuf::from("${includeDir}")]),
+    )`,
+  );
+  fs.writeFileSync(buildRs, next);
+  console.log(`  ${path.relative(process.cwd(), buildRs)} searches ${includeDir} for component imports`);
+}
+
 function usage() {
   console.log('Usage: uni-kit add <framework> <component> [--dir <path>]');
   console.log('Examples:');
@@ -142,6 +180,8 @@ async function main() {
       if (added) console.log(`  ${path.relative(process.cwd(), modFile)} += pub mod ${moduleName};`);
     }
   }
+
+  if (framework === 'slint') ensureSlintIncludePath(baseTargetDir);
 
   console.log(`Installed ${component} into ${baseTargetDir}/`);
 }
