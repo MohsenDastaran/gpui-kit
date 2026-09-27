@@ -80,6 +80,7 @@ export component Dialog {
 }
 
 export component DialogFooter inherits HorizontalLayout {
+    in property <bool> centered;
     spacing: 8px;
-    alignment: end;
+    alignment: centered ? center : end;
 }
