@@ -4,241 +4,142 @@
   <strong>GPUI Kit</strong>
 </p>
 
-[English](./README.md) | [简体中文](./README.zh-CN.md)
-
 [![Build Status](https://github.com/longbridge/gpui-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/longbridge/gpui-kit/actions/workflows/ci.yml) [![Docs](https://docs.rs/gpui-kit/badge.svg)](https://docs.rs/gpui-kit/) [![Crates.io](https://img.shields.io/crates/v/gpui-kit.svg)](https://crates.io/crates/gpui-kit)
 
-Build fantastic, high-performance desktop apps with Rust and GPUI.
+Copy-paste native UI for Rust desktop toolkits. The same component catalog is hand-written for each framework and published on <https://gpui-kit.com>. You copy the source into your own app. There is no CLI, no registry, and no code generator.
 
-GPUI Kit is a comprehensive Rust desktop application framework. It combines a
-production-ready UI system with application-grade data, layout, and editing
-capabilities, all built on a reusable foundation of behavior, state, and
-infrastructure, and opens the finished application to JavaScript extensions.
+GPUI and Slint are in the catalog now. egui, QuickGUI, and other toolkits join the same pages after their components are written. The work is tracked in the [roadmap](docs/roadmap.md).
 
-Documentation: <https://gpui-kit.com>
+## Frameworks
+
+| Framework | How an app uses it | Status |
+| --- | --- | --- |
+| [GPUI](https://github.com/zed-industries/zed) | Depend on the `gpui-kit` crate. Copy a sample from the component page. | On the site |
+| [Slint](https://slint.dev) | Copy the `.slint` files into the app and compile them with `slint-build`. | On the site |
+| egui, QuickGUI, and others | The same pages, once the source exists. | [Roadmap](docs/roadmap.md) |
+
+The site docs stay one site, in English and zh-CN. A framework selector on each component page switches the live example and the copyable source. GPUI samples assume an app that depends on `gpui-kit` (that crate already brings `gpui-component` and `gpui-base`). Slint samples are the files under `crates/slint-component/ui/`.
+
+Blocks (Login, Dashboard, Settings) and starter templates are next. See the [roadmap](docs/roadmap.md).
+
+## GPUI
+
+`gpui-kit` is the crate a GPUI application depends on. It pins the matching GPUI release and re-exports GPUI, `gpui-base`, `gpui-component`, and the default assets.
 
 ```text
 gpui-kit             The one crate applications depend on
 ├── gpui-base        Unstyled behavior, state, and infrastructure
-└── gpui-component   GPUI Component: the complete styled UI system
+└── gpui-component   The styled component library
 ```
-
-`gpui-kit` pins the matching GPUI release and re-exports GPUI, base, component,
-and assets, so a Rust application lists a single dependency. JavaScript extension
-hosts add `gpui-shell` separately; `gpui-component-shell` supplies the styled catalog.
-
-See the [executable application recipe and AI-assisted development acceptance checks](examples/ai_recipes/README.md) for a tested starting point and verification commands.
-
-## Features
-
-- **60+ UI Components**: Forms, navigation, overlays, feedback, layout, and more, with polished interactions and productive defaults.
-- **Production Ready**: Used to build Longbridge Pro from day one and continuously refined in a publicly shipped commercial desktop application.
-- **Native Feel**: Modern controls inspired by macOS and Windows, backed by semantic themes and multiple sizes.
-- **120 FPS**: GPU-accelerated interfaces that remain smooth under load.
-- **Data Tables**: Virtual scrolling, fixed and resizable columns, sorting, and cell selection across hundreds of thousands of rows.
-- **Virtual Lists**: Render only the visible range, including lists whose items have different sizes.
-- **Code Editor**: Stable performance at 200K lines with Tree-sitter highlighting and LSP diagnostics, completion, and hover.
-- **Dock Layout**: Resizable panels, draggable tabs, nested splits, and edge docks — all serializable.
-- **Rich Content**: Native Markdown and HTML rendering, syntax highlighting, and built-in charts.
-- **Design Freedom**: Use the complete visual system or build your own on the behavior and infrastructure in `gpui-base`.
-- **JavaScript Extensions**: `gpui-shell` lets a shipped Rust host load panels and business logic as scripts, with every capability granted explicitly.
-- **Cross Platform**: Ship one Rust codebase to macOS, Windows, and Linux.
-
-## Framework Architecture
-
-### Three layers. One ecosystem.
-
-Use `gpui-component` to keep the application coherent with one complete visual
-and interaction system. Use `gpui-base` when your product needs to create and
-own that system itself. Use `gpui-shell` when the application should be
-extensible in JavaScript after it ships.
-
-| **`gpui-component`**             | **`gpui-base`**                               | **`gpui-shell`**                           |
-| -------------------------------- | --------------------------------------------- | ------------------------------------------ |
-| Complete, styled components      | Unstyled behavior and infrastructure          | JavaScript runtime hosted by Rust          |
-| Productive defaults with theming | Full control over structure and visual design | Capabilities granted one at a time         |
-| Best for building applications   | Best for building design systems              | Best for plugins and scripted applications |
-
-```text
-                             APPLICATION
-                                  │
-              ┌───────────────────┼───────────────────┐
-              │                   │                   │
-              ▼                   ▼                   ▼
-    ┌──────────────────┐ ┌──────────────────┐ ┌──────────────────┐
-    │  gpui-component  │ │ Your Design      │ │    gpui-shell    │
-    │    Styled UI     │ │ System           │ │  JS extensions   │
-    └────────┬─────────┘ └────────┬─────────┘ └────────┬─────────┘
-             │                    │                    │
-             └────────────────────┼────────────────────┘
-                                  ▼
-                        ┌──────────────────┐
-                        │    gpui-base     │
-                        │ Behavior · State │
-                        │ Infrastructure   │
-                        └────────┬─────────┘
-                                 ▼
-                               GPUI
-```
-
-> **Behavior belongs to the foundation. Presentation belongs to the application.**
-
-Use **`gpui-component`** when you want polished controls ready to ship. Build on
-**`gpui-base`** when your application should own its component source, layout,
-styling, and motion while reusing difficult interaction behavior. Add
-**`gpui-shell`** when contributors should extend the product without a fork or
-a release.
-
-The layering follows the same separation that makes the
-[shadcn](https://ui.shadcn.com) ecosystem flexible:
-
-| GPUI Kit ecosystem                   | Web ecosystem                   |
-| ------------------------------------ | ------------------------------- |
-| GPUI                                 | HTML + Tailwind CSS             |
-| [`gpui-base`](crates/base/README.md) | [Base UI](https://base-ui.com)  |
-| `gpui-component`                     | shadcn's styled component layer |
-
-[Explore the architecture →](docs/ARCHITECTURE.md)
-
-## Showcase
-
-GPUI Kit has powered [Longbridge Pro](https://longbridge.com/desktop)
-from day one. The framework is extracted from the demands of a publicly shipped
-commercial desktop application rather than designed in isolation.
-
-> **GPUI provides the rendering foundation. Longbridge provides the production foundation.**
-
-<img width="1763" alt="Image" src="https://github.com/user-attachments/assets/e1ecb9c3-2dd3-431e-bd97-5a819c30e551" />
-
-## Usage
 
 ```toml
 [dependencies]
 gpui-kit = "0.6"
 ```
 
-`gpui-kit` always brings in GPUI and `gpui-base`; `gpui-component` and the
-default icon set are on by default. Turn default
-features off to keep only the layers you use. The `gpui-component` features (`inspector`, `decimal`,
-`tree-sitter`, and each `tree-sitter-<language>`) are available under the same
-names.
+`gpui_kit::init` runs before any component is used, and the first view in a window is a `Root`. The component pages on the site are the samples to copy. Architecture of the GPUI crates is in [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
-### Basic Example
+The default `assets` feature bundles the [Lucide](https://lucide.dev) icon set. Pass it in with `gpui_kit::application().with_assets(gpui_kit::assets::Assets)`.
 
-```rs
-use gpui_kit::component::button::*;
-use gpui_kit::component::*;
-use gpui_kit::*;
+JavaScript extension hosts add `gpui-shell` separately. `gpui-component-shell` supplies the styled catalog for that host.
 
-pub struct HelloWorld;
-impl Render for HelloWorld {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
-        div()
-            .v_flex()
-            .gap_2()
-            .size_full()
-            .items_center()
-            .justify_center()
-            .child("Hello, World!")
-            .child(
-                Button::new("ok")
-                    .primary()
-                    .label("Let's Go!")
-                    .on_click(|_, _, _| println!("Clicked!")),
-            )
-    }
-}
+## Slint
 
+Slint components are source you copy, not a crate from this repository. `crates/slint-component` is the gallery used by the website. An application does not depend on it.
+
+From `crates/slint-component/ui/`, copy `theme.slint`, the component, the files it imports, and the `icons/` folder beside `icon.slint`. These files are written for Slint 1.17.
+
+```bash
+cargo add slint@1.17
+cargo add --build slint-build@1.17
+```
+
+`build.rs` compiles the app window:
+
+```rust
 fn main() {
-    gpui_kit::application().run(move |cx| {
-        // This must be called before using any GPUI Component features.
-        gpui_kit::init(cx);
-
-        cx.spawn(async move |cx| {
-            cx.open_window(WindowOptions::default(), |window, cx| {
-                let view = cx.new(|_| HelloWorld);
-                // This first level on the window, should be a Root.
-                cx.new(|cx| Root::new(view, window, cx))
-            })
-            .expect("Failed to open window");
-        })
-        .detach();
-    });
+    slint_build::compile("ui/app.slint").unwrap();
 }
 ```
 
-### Icons
+`AlertDialog` fills its parent, so place it on the window. `destructive: true` uses the danger confirm button. The dialog sets `open` to false when either button is pressed.
 
-The default `assets` feature bundles the [Lucide](https://lucide.dev) icon set
-as `gpui-kit-assets`; pass it to the application with
-`gpui_kit::application().with_assets(gpui_kit::assets::Assets)`. To ship your
-own icons instead, leave that feature out and name the SVG files as defined in
-[IconName](https://github.com/longbridge/gpui-kit/blob/main/crates/component/src/icon.rs#L86).
+```slint
+import { Theme } from "theme.slint";
+import { Button } from "button.slint";
+import { AlertDialog } from "alert-dialog.slint";
 
-## Skills for AI Coding Agents
+export component App inherits Window {
+    in-out property <bool> ask-delete;
 
-Install the GPUI Kit skills for your AI coding agent (Cursor, Claude Code, Gemini CLI, Codex, etc.):
+    background: Theme.background;
+
+    VerticalLayout {
+        width: 100%;
+        height: 100%;
+        alignment: center;
+        Button {
+            text: "Delete project";
+            clicked => { root.ask-delete = true; }
+        }
+    }
+
+    AlertDialog {
+        open <=> root.ask-delete;
+        title: "Delete project?";
+        description: "This cannot be undone.";
+        confirm-text: "Delete";
+        destructive: true;
+    }
+}
+```
+
+## Roadmap
+
+The [roadmap](docs/roadmap.md) is the plan for this catalog. Current progress:
+
+1. Folder layout
+2. GPUI catalog you can copy from the site
+3. Design tokens
+4. Framework selector
+5. Slint components, one per GPUI component
+6. Blocks — Login, Dashboard, Settings
+7. Starter templates
+8. Deploy and launch
+
+egui, QuickGUI, and other toolkits are added after that, one at a time, once the API is stable: the full catalog and the three blocks, hand-written, then a value in the same selector.
+
+## Skills for AI coding agents
 
 ```bash
 npx skills add longbridge/gpui-kit
 ```
 
-| Skill                    | Description                                                                                                                         |
-| ------------------------ | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `gpui-kit`               | Setup, component catalog, usage patterns, GPUI mechanics (elements, entities, async, focus, actions, tests), and the Coding Guides. |
-| `gpui-kit-design-guides` | The Design Guides: layout, spacing, hierarchy, interaction states, overlays, and interface copy.                                    |
+| Skill | Description |
+| --- | --- |
+| `gpui-kit` | Setup, the component catalog, usage patterns, GPUI mechanics, and the Coding Guides. |
+| `gpui-kit-design-guides` | Layout, spacing, hierarchy, interaction states, overlays, and interface copy. |
 
 ## Development
 
-### Desktop Gallery (Story)
-
-The `story` crate is a gallery application that showcases all available components. Run it with:
-
 ```bash
+# GPUI component gallery
 cargo run
+
+# Website
+make dev:website
+
+# Website, rebuilding the Slint gallery first
+make dev:website-slint
 ```
 
-### Examples
-
-Some larger examples reuse the `story` gallery components and run as standalone packages:
-
-```bash
-# Dock layout system (panels, split views, tabs)
-cargo run -p example-dock
-
-# Markdown rendering
-cargo run -p example-markdown
-
-# HTML rendering
-cargo run -p example-html
-```
-
-The `examples` directory also contains standalone examples, each focused on a single feature. Each example is a separate crate, run them with `cargo run -p <name>`:
-
-```bash
-# Code editor with LSP support and syntax highlighting
-cargo run -p example-editor
-
-# Basic hello world
-cargo run -p hello_world
-
-# System monitor (real-time charts with CPU/memory data)
-cargo run -p system_monitor
-
-# Window title customization
-cargo run -p window_title
-```
-
-Check out [CONTRIBUTING.md](CONTRIBUTING.md) for more details.
-
-## Compare to others
-
-See the [comparison with Iced, egui and Qt 6](https://gpui-kit.com/docs/comparison) on the site.
+Larger GPUI examples run as their own packages: `cargo run -p example-dock`, `example-editor`, `example-markdown`, `system_monitor`. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
 Apache-2.0. Third-party attribution is in [NOTICE](./NOTICE).
 
 - Built on [GPUI](https://github.com/zed-industries/zed), the UI framework from Zed Industries, also Apache-2.0. The `gpui-pre-*` crates are snapshots of it, published with Zed's license and notices intact.
+- The GPUI component library is extracted from [Longbridge Pro](https://longbridge.com/desktop).
 - UI design based on [shadcn/ui](https://ui.shadcn.com), some from [Reui](https://reui.io).
 - Icons from [Lucide](https://lucide.dev).
