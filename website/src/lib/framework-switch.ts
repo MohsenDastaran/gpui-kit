@@ -20,6 +20,10 @@ let enterTimer: number | undefined;
 
 function syncSwitches(framework: Framework) {
   document.querySelectorAll<HTMLElement>('.framework-switch').forEach((group) => {
+    // The package-manager switch reuses this class for its look. It has no
+    // framework options, and writing `data-selected` here would replace its
+    // own selection.
+    if (!group.querySelector('[data-framework-option]')) return;
     group.dataset.selected = framework;
     group.querySelectorAll<HTMLButtonElement>('[data-framework-option]').forEach((option) => {
       const selected = option.dataset.frameworkOption === framework;

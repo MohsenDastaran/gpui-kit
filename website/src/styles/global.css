@@ -1829,9 +1829,10 @@ html[lang^="zh"]
 /* Before the script runs, the stored choice on <html> positions the thumb, so
    a returning reader never sees it jump from GPUI to Slint. */
 html[data-framework="slint"]
-  .framework-switch:not([data-selected])
+  .framework-bar
+  > .framework-switch:not([data-selected])
   .framework-switch__thumb,
-.framework-switch[data-selected="slint"] .framework-switch__thumb {
+.framework-bar > .framework-switch[data-selected="slint"] .framework-switch__thumb {
   transform: translateX(100%);
 }
 
