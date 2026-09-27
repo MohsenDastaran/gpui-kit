@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Check, Copy } from "lucide-vue-next";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { toggleLogos } from "../lib/toggle-logos.js";
 
 const MANAGERS = ["npx", "pnpm", "bun"] as const;
 type Manager = (typeof MANAGERS)[number];
@@ -23,15 +24,13 @@ let observer: MutationObserver | undefined;
 const isManager = (value: unknown): value is Manager =>
   MANAGERS.includes(value as Manager);
 
+const runner = computed(() =>
+  manager.value === "pnpm" ? "pnpm dlx" : manager.value === "bun" ? "bunx" : "npx",
+);
+
 const command = computed(() => {
   if (!slug.value) return "";
-  const runner =
-    manager.value === "pnpm"
-      ? "pnpm dlx"
-      : manager.value === "bun"
-        ? "bunx"
-        : "npx";
-  return `${runner} ${PACKAGE} add ${framework.value} ${slug.value}`;
+  return `${runner.value} ${PACKAGE} add ${framework.value} ${slug.value}`;
 });
 
 const copyLabel = computed(() =>
@@ -60,6 +59,29 @@ function onStorage(event: StorageEvent) {
     manager.value = event.newValue;
 }
 
+function mountFrameworkLogos() {
+  document
+    .querySelectorAll<HTMLButtonElement>("[data-framework-option]")
+    .forEach((button) => {
+      if (button.querySelector(".framework-switch__logo")) return;
+      const name = button.dataset.frameworkOption;
+      const logo = name ? toggleLogos[name as keyof typeof toggleLogos] : undefined;
+      if (!logo) return;
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "framework-switch__logo");
+      svg.setAttribute("viewBox", logo.viewBox);
+      svg.setAttribute("aria-hidden", "true");
+      for (const path of logo.paths) {
+        const el = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        el.setAttribute("d", path.d);
+        el.setAttribute("fill", path.fill);
+        if (path.accent) el.setAttribute("class", "framework-switch__logo-accent");
+        svg.append(el);
+      }
+      button.prepend(svg);
+    });
+}
+
 function pageSlug() {
   const match = location.pathname.match(/\/component\/([^/]+)\/?$/);
   const value = match?.[1];
@@ -67,6 +89,7 @@ function pageSlug() {
 }
 
 onMounted(() => {
+  mountFrameworkLogos();
   let host = document.querySelector<HTMLElement>(".install-command-host");
   if (!host) {
     const bar = document.querySelector(".doc-content .framework-bar");
@@ -174,11 +197,28 @@ async function copy() {
           :tabindex="manager === name ? 0 : -1"
           @click="select(name)"
         >
+          <svg
+            class="framework-switch__logo"
+            :viewBox="toggleLogos[name].viewBox"
+            aria-hidden="true"
+          >
+            <path
+              v-for="(path, index) in toggleLogos[name].paths"
+              :key="index"
+              :d="path.d"
+              :fill="path.fill"
+            />
+          </svg>
           {{ name }}
         </button>
       </div>
       <div class="install-command__line">
-        <code>{{ command }}</code>
+        <code>
+          <span class="install-command__run">{{ runner + " " }}</span>
+          <span class="install-command__package">{{ PACKAGE + " " }}</span>
+          <span>{{ "add " }}</span>
+          <span class="install-command__arg">{{ framework + " " + slug }}</span>
+        </code>
         <button
           type="button"
           class="install-command__copy"

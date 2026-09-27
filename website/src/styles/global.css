@@ -1028,8 +1028,21 @@ html.dark .astro-code span {
     border-radius: 0;
     background: transparent;
     overflow-x: auto;
+    color: var(--foreground);
     font: 0.8125rem/1.5 var(--font-mono);
     white-space: nowrap;
+  }
+
+  .install-command__run {
+    color: var(--data-2);
+  }
+
+  .install-command__package {
+    color: var(--warning);
+  }
+
+  .install-command__arg {
+    color: var(--code-type);
   }
 
   @media (max-width: 760px) {
@@ -1823,13 +1836,27 @@ html[data-framework="slint"]
 .framework-switch__option {
   position: relative;
   z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
   min-width: 4.75rem;
-  padding: 0.3rem 0.9rem;
+  padding: 0.3rem 0.7rem;
   border-radius: calc(var(--radius-control) - 2px);
   color: var(--muted-foreground);
   font: 500 0.8125rem/1.25 var(--font-sans);
   cursor: pointer;
   transition: color 160ms ease;
+}
+
+.framework-switch__logo {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex: none;
+}
+
+html.dark .framework-switch__logo-accent {
+  fill: #419cff;
 }
 
 .framework-switch__option:hover,

@@ -1,5 +1,6 @@
 import { SKIP, visit } from 'unist-util-visit';
 import { hasSlintExample } from './remark-slint-source.js';
+import { logoElement } from './toggle-logos.js';
 
 // Component pages carry one copy-paste block per framework. ```slint fences
 // directly after a Rust fence become that example's Slint version; any other
@@ -74,7 +75,7 @@ function selector(copy, slug) {
               ariaChecked: index === 0 ? 'true' : 'false',
               tabIndex: index === 0 ? 0 : -1,
             },
-            [text(NAMES[framework])],
+            [logoElement(framework), text(NAMES[framework])],
           ),
         ),
       ]),
