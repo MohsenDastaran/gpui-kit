@@ -1029,10 +1029,15 @@ html.dark .astro-code span {
     background: transparent;
     display: flex;
     align-items: center;
+    gap: 0.55em;
     overflow-x: auto;
     color: var(--foreground);
     font: 0.8125rem/1.5 var(--font-mono);
     white-space: nowrap;
+  }
+
+  .install-command__line code > * {
+    flex: none;
   }
 
   .install-command__run {

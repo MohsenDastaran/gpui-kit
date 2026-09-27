@@ -226,10 +226,10 @@ async function copy() {
       <div class="install-command__line">
         <code>
           <FlowText class="install-command__run" :text="runner" />
-          <span class="install-command__package">{{ " " + PACKAGE + " " }}</span>
-          <span>{{ "add " }}</span>
+          <span class="install-command__package">{{ PACKAGE }}</span>
+          <span>add</span>
           <FlowText class="install-command__arg" :text="framework" />
-          <span class="install-command__arg">{{ " " + slug }}</span>
+          <span class="install-command__arg">{{ slug }}</span>
         </code>
         <button
           type="button"
