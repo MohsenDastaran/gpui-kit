@@ -29,62 +29,85 @@ export component Alert {
     horizontal-stretch: 1;
 
     Rectangle {
+        horizontal-stretch: 1;
         border-radius: banner ? 0 : Theme.radius-md;
         border-width: 1px;
         border-color: edge;
         background: fill;
-    }
 
-    HorizontalLayout {
-        padding-left: banner ? 12px : 16px;
-        padding-right: self.padding-left;
-        padding-top: banner ? 8px : 10px;
-        padding-bottom: self.padding-top;
-        spacing: 12px;
-        alignment: banner ? center : start;
+        HorizontalLayout {
+            width: 100%;
+            padding-left: banner ? 12px : 16px;
+            padding-right: self.padding-left;
+            padding-top: banner ? 8px : 10px;
+            padding-bottom: self.padding-top;
+            spacing: 12px;
+            // `start` packs every item at its preferred width and drops
+            // stretch, which leaves the close control beside the title.
+            // Stretch gives the message column the leftover width so the
+            // control stays on the trailing edge.
+            alignment: stretch;
+            cross-axis-alignment: banner ? center : start;
 
-        VerticalLayout {
-            alignment: start;
-            padding-top: banner ? 0px : 2px;
-            Icon {
-                name: glyph;
-                size: 16px;
-                color: ink;
+            VerticalLayout {
+                alignment: start;
+                padding-top: banner ? 0px : 2px;
+                Icon {
+                    name: glyph;
+                    size: 16px;
+                    color: ink;
+                }
             }
-        }
 
-        VerticalLayout {
-            horizontal-stretch: 1;
-            spacing: 4px;
-            if title != "" && !banner: Text {
-                text: title;
-                color: ink;
-                font-size: Theme.font-size-sm;
-                font-weight: 600;
-                wrap: word-wrap;
+            VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 4px;
+                if title != "" && !banner: Text {
+                    text: title;
+                    color: ink;
+                    font-size: Theme.font-size-sm;
+                    font-weight: 600;
+                    wrap: word-wrap;
+                }
+                if message != "": Text {
+                    text: message;
+                    color: ink;
+                    font-size: Theme.font-size-sm;
+                    wrap: word-wrap;
+                }
+                @children
             }
-            if message != "": Text {
-                text: message;
-                color: ink;
-                font-size: Theme.font-size-sm;
-                wrap: word-wrap;
-            }
-            @children
-        }
 
-        if closable: close := TouchArea {
-            width: 16px;
-            height: 16px;
-            accessible-role: button;
-            accessible-label: "Dismiss";
-            clicked => {
-                root.open = false;
-                root.closed();
-            }
-            Icon {
-                name: "x";
-                size: 16px;
-                color: close.has-hover ? ink : ink.with-alpha(0.8);
+            if closable: VerticalLayout {
+                alignment: start;
+                horizontal-stretch: 0;
+                padding-top: banner ? 0px : 1px;
+
+                close := Rectangle {
+                    width: 16px;
+                    height: 16px;
+                    border-radius: Theme.radius-sm;
+                    background: close-touch.pressed ? ink.with-alpha(0.16)
+                        : close-touch.has-hover ? ink.with-alpha(0.1)
+                        : transparent;
+
+                    Icon {
+                        x: (parent.width - self.width) / 2;
+                        y: (parent.height - self.height) / 2;
+                        name: "x";
+                        size: 14px;
+                        color: ink;
+                    }
+
+                    close-touch := TouchArea {
+                        accessible-role: button;
+                        accessible-label: "Dismiss";
+                        clicked => {
+                            root.open = false;
+                            root.closed();
+                        }
+                    }
+                }
             }
         }
     }
