@@ -1,5 +1,5 @@
 import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { GroupBox } from "../group-box.slint";
 import { Alert } from "../alert.slint";
 import { Status } from "../theme.slint";
 
@@ -9,9 +9,80 @@ export component AlertExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    Alert { title: "Information"; message: "This is an informational message."; status: Status.info; }
-    Alert { title: "Success"; message: "Your changes were saved."; status: Status.success; closable: true; }
-    Alert { title: "Warning"; message: "Review these settings before continuing."; status: Status.warning; }
-    Alert { title: "Error"; message: "The request could not be completed."; status: Status.danger; }
+    property <bool> banner-open: true;
 
+    GroupBox {
+        title: "Default";
+        Alert {
+            title: "Workspace settings saved";
+            message: "Your workspace is ready for the team.\n• 12 members have access\n• Billing remains with the workspace owner";
+        }
+    }
+
+    GroupBox {
+        title: "Variants";
+        Alert {
+            title: "Scheduled maintenance";
+            message: "Maintenance starts Friday at 22:00 UTC.";
+            status: Status.info;
+            closable: true;
+        }
+        Alert {
+            title: "Transfer submitted";
+            message: "The transfer is queued and usually settles within one business day.";
+            status: Status.success;
+        }
+        Alert {
+            message: "Two teammates still use recovery codes generated more than a year ago. Ask them to generate a fresh set in Security settings.";
+            status: Status.warning;
+        }
+        Alert {
+            title: "Unable to process your payment.";
+            message: "Please verify your billing information and try again.\n• Check your card details\n• Ensure sufficient funds\n• Verify billing address";
+            status: Status.danger;
+        }
+    }
+
+    GroupBox {
+        title: "Banner";
+        VerticalLayout {
+            spacing: 8px;
+            alignment: start;
+            Alert {
+                message: "Reporting is read-only while the nightly ledger closes.";
+                banner: true;
+                closable: true;
+                open <=> root.banner-open;
+            }
+            Alert {
+                message: "A new desktop update will install after you restart.";
+                status: Status.info;
+                banner: true;
+            }
+            Alert {
+                message: "All 1,284 records finished importing.";
+                status: Status.success;
+                banner: true;
+            }
+            Alert {
+                message: "Your API key expires in 6 days. Rotate it before August 19.";
+                status: Status.warning;
+                banner: true;
+            }
+            Alert {
+                message: "Live updates are disconnected. Changes may be delayed.";
+                status: Status.danger;
+                banner: true;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Custom icon";
+        Alert {
+            title: "Two events overlap by 30 minutes";
+            message: "The quarterly planning review overlaps with the APAC operations call. Move one event or invite another owner before sending the agenda.";
+            icon: "calendar";
+        }
+    }
 }
