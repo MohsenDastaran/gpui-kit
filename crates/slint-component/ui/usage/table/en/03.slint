@@ -1,0 +1,27 @@
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "table.slint";
+import { Theme, Status } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Table {
+            horizontal-stretch: 1;
+            TableHeader { TableRow {
+                    TableHead { text: "Name"; }
+                    TableHead { text: "Status"; }
+                    TableHead { text: "Amount"; }
+            } }
+            TableBody { TableRow {
+                index: 0;
+                    TableCell { text: "ID"; }
+                    TableCell { text: "Name"; }
+                    TableCell { text: "Date"; }
+            } }
+        }
+    }
+}

@@ -3,12 +3,13 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { TitleBar } from "../title-bar.slint";
 
 export component TitleBarExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     Rectangle {
-        height: 220px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        width: 100%; height: Theme.viewport < 480px ? 180px : 220px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
         VerticalLayout {
             TitleBar { title: "Notes"; }
             Rectangle { vertical-stretch: 1; background: Theme.background;

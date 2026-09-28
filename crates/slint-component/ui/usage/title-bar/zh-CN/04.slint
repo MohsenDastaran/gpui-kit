@@ -1,0 +1,14 @@
+import { TitleBar } from "title-bar.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        TitleBar { horizontal-stretch: 1; title: "Saving before close..."; }
+    }
+}

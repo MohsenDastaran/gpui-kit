@@ -4,6 +4,7 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Progress, ProgressCircle } from "../progress.slint";
 
 export component ProgressExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <float> value: 45;
     in-out property <bool> loading;

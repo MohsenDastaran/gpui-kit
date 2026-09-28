@@ -2,7 +2,7 @@
 
 Copy-paste components and blocks on the existing GPUI Kit site. People copy source into their own apps. `gpui-base` stays a crate dependency. Slint and later frameworks are hand-written sources plus a tab on the same pages.
 
-The site is already Astro at <https://gpui-kit.com> (`website/`, English and zh-CN). This roadmap adds the gallery to that site. It does not start a second site.
+The site is already Astro at [https://gpui-kit.com](https://gpui-kit.com) (`website/`, English and zh-CN). This roadmap adds the gallery to that site. It does not start a second site.
 
 **Current phase = the first empty checkbox in Progress.** Tick a phase only when its **Done when** line is true.
 
@@ -13,7 +13,7 @@ The site is already Astro at <https://gpui-kit.com> (`website/`, English and zh-
 - [x] 3. Design tokens (GPUI)
 - [x] 4. Framework selector on the website
 - [x] 5. Write Slint components (one per GPUI component)
-- [ ] 6. Slint usage, main controls first
+- [x] 6. Slint usage, main controls first
 - [ ] 7. Add blocks (Login, Dashboard, Settings)
 - [ ] 8. Starter templates
 - [ ] 9. Deploy & launch
@@ -114,7 +114,7 @@ Check and finish the main controls before the rest of the catalog:
 
 For each one, in both locales:
 
-1. Match the GPUI page: one `ui/usage/<slug>/*.slint` file per Rust sample, in the same order.
+1. Match the GPUI page: one `ui/usage/<slug>/<locale>/*.slint` file per Rust sample, in the same order. When both locales share the same samples, `ui/usage/<slug>/*.slint` is enough.
 2. Imports are bare file names. Do not import gallery-only files such as GroupBox.
 
 **Done when:** every catalog page’s Slint panels are separate samples like Alert Dialog, and each sample compiles after that component is installed.
@@ -142,9 +142,11 @@ Build these in both frameworks:
 Templates are apps a person copies. They are not installed by a command.
 
 1. Add three directories under `templates/`:
-   - **Blank** — window, `gpui_component::init`, `Root`, default theme
-   - **Login** — blank plus the Login block
-   - **Dashboard** — blank plus the Dashboard block
+
+- **Blank** — window, `gpui_component::init`, `Root`, default theme
+- **Login** — blank plus the Login block
+- **Dashboard** — blank plus the Dashboard block
+
 2. Add a Templates tab, English and zh-CN, with the tree to copy and what the app contains.
 3. When Slint blocks exist, add a Slint variant of each template the same way (a directory people copy, listed on the same pages).
 
@@ -154,12 +156,12 @@ Templates are apps a person copies. They are not installed by a command.
 
 ## 9. Deploy & launch
 
-The repository is already public and Apache-2.0. The site is already at <https://gpui-kit.com>.
+The repository is already public and Apache-2.0. The site is already at [https://gpui-kit.com](https://gpui-kit.com).
 
 1. Publish the selector, the full component catalog, the three blocks, and the templates on that site.
 2. Say on the Blocks and component pages that this gallery is source you copy. There is no installer.
 
-**Done when:** those pages are live on <https://gpui-kit.com> in both locales.
+**Done when:** those pages are live on [https://gpui-kit.com](https://gpui-kit.com) in both locales.
 
 ---
 
@@ -175,12 +177,12 @@ The repository is already public and Apache-2.0. The site is already at <https:/
 
 ## Risks
 
-| Risk | What to do |
-| --- | --- |
-| GPUI and Slint drift | Finish each catalog component in both frameworks before starting the next. The three blocks wait until the components they use exist in both. |
-| Slint’s API changes | Use stable widgets. Skip new Slint APIs in this pass. |
-| The website lags the source files | Update the page when the source file changes. A monthly pass is enough. |
-| Readers look for an installer | The Blocks pages say to copy the source. |
+| Risk                              | What to do                                                                                                                                    |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| GPUI and Slint drift              | Finish each catalog component in both frameworks before starting the next. The three blocks wait until the components they use exist in both. |
+| Slint’s API changes               | Use stable widgets. Skip new Slint APIs in this pass.                                                                                         |
+| The website lags the source files | Update the page when the source file changes. A monthly pass is enough.                                                                       |
+| Readers look for an installer     | The Blocks pages say to copy the source.                                                                                                      |
 
 ---
 

@@ -1,0 +1,14 @@
+import { Notification } from "notification.slint";
+import { Theme, Status } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Notification { horizontal-stretch: 1; title: "This notification stays until manually closed."; message: "This notification stays until manually closed."; status: Status.info; }
+    }
+}

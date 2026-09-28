@@ -1,0 +1,14 @@
+import { Command } from "command.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Command { horizontal-stretch: 1; items: [{ label: "New File", icon: "search", shortcut: "", group: "" }, { label: "Duplicate", icon: "search", shortcut: "", group: "" }, { label: "Move to Trash", icon: "search", shortcut: "", group: "" }]; }
+    }
+}

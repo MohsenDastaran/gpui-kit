@@ -4,6 +4,7 @@ import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 
 export component AccordionExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
@@ -128,7 +129,7 @@ export component AccordionExample inherits VerticalLayout {
             Accordion {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 size: ControlSize.xsmall;
                 open-index: 0;
                 items: [
@@ -139,7 +140,7 @@ export component AccordionExample inherits VerticalLayout {
             Accordion {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 size: ControlSize.small;
                 open-index: 0;
                 items: [
@@ -150,7 +151,7 @@ export component AccordionExample inherits VerticalLayout {
             Accordion {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 size: ControlSize.large;
                 open-index: 0;
                 items: [
@@ -175,7 +176,7 @@ export component AccordionExample inherits VerticalLayout {
             Accordion {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 bordered: false;
                 open-index: 0;
                 items: [
@@ -186,7 +187,7 @@ export component AccordionExample inherits VerticalLayout {
             Accordion {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 enabled: false;
                 items: [
                     { title: "Disabled section", content: "Content." },

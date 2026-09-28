@@ -5,6 +5,7 @@ import { Icon } from "../icon.slint";
 import { Avatar } from "../avatar.slint";
 
 export component BadgeExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;

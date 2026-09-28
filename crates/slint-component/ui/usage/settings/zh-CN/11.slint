@@ -1,0 +1,14 @@
+import { Settings } from "settings.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Settings { horizontal-stretch: 1; rows: [{ title: "Appearance", description: "", checked: true }]; }
+    }
+}

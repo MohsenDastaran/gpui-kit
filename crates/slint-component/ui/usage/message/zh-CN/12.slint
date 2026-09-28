@@ -1,0 +1,14 @@
+import { Message, MessageRole } from "message.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Message { horizontal-stretch: 1; role: MessageRole.assistant; author: "保留 inset"; body: "保留 inset"; initials: "内容"; }
+    }
+}

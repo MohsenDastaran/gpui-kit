@@ -1,0 +1,18 @@
+import { Popover } from "popover.slint";
+import { Theme } from "theme.slint";
+import { Placement } from "tooltip.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Popover {
+            horizontal-stretch: 0; placement: Placement.bottom;
+            Text { text: "custom-popover"; color: Theme.foreground; }
+        }
+    }
+}

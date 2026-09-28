@@ -1,0 +1,14 @@
+import { DescriptionList, DescriptionLayout } from "description-list.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        DescriptionList { horizontal-stretch: 1; items: [{ term: "Name", detail: "Active" }, { term: "Type", detail: "Type" }]; }
+    }
+}

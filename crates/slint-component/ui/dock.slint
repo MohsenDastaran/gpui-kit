@@ -10,11 +10,15 @@ export component Dock {
     in-out property <int> selected: 0;
     in-out property <length> side: 200px;
 
+    horizontal-stretch: 1;
+    min-width: 0px;
+    min-height: 200px;
+
     HorizontalLayout {
         spacing: 0;
 
         Rectangle {
-            width: side;
+            width: min(side, Theme.viewport < 520px ? 140px : side);
             background: Theme.sidebar;
             border-width: 1px;
             border-color: Theme.border;

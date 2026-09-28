@@ -3,12 +3,13 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Sidebar } from "../sidebar.slint";
 
 export component SidebarExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     Rectangle {
-        height: 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        width: 100%; height: Theme.viewport < 480px ? 280px : 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
         Sidebar {
             height: 100%;
             items: [

@@ -1,0 +1,18 @@
+import { Accordion } from "accordion.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Accordion { horizontal-stretch: 1; items: [
+                { title: "Section 1", icon: "", content: "Content for section 1" },
+                { title: "Section 2", icon: "", content: "Content for section 2" },
+                { title: "Section 3", icon: "", content: "Content for section 3" }
+            ]; }
+    }
+}

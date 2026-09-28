@@ -1,0 +1,14 @@
+import { Notification } from "notification.slint";
+import { Theme, Status } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Notification { horizontal-stretch: 1; title: "## Custom Notification - **Feature**: New dashboard available - **Status**: Ready to use - [L..."; message: "## Custom Notification - **Feature**: New dashboard available - **Status**: Ready to use - [L..."; status: Status.info; }
+    }
+}

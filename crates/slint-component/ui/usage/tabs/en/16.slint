@@ -1,0 +1,17 @@
+import { Tabs, TabsVariant } from "tabs.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Tabs {
+            horizontal-stretch: 1; items: [{ label: "Account", icon: "", disabled: false }, { label: "Password", icon: "", disabled: false }]; variant: TabsVariant.pill;
+            Text { text: "Tab content"; color: Theme.foreground; wrap: word-wrap; }
+        }
+    }
+}

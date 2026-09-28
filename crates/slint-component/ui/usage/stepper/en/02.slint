@@ -1,0 +1,14 @@
+import { Stepper } from "stepper.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Stepper { horizontal-stretch: 1; items: [{ label: "icon-stepper", description: "", icon: "", disabled: false }, { label: "Order Details", description: "", icon: "", disabled: false }, { label: "Shipping", description: "", icon: "", disabled: false }]; }
+    }
+}

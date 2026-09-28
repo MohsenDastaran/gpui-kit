@@ -11,7 +11,9 @@ export component DatePicker {
     callback changed(year: int, month: int, day: int);
 
     height: Theme.control-height(size);
-    min-width: 180px;
+    min-width: 0px;
+    preferred-width: 180px;
+    horizontal-stretch: 1;
 
     Rectangle {
         border-radius: Theme.radius-md;

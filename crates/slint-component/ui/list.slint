@@ -13,6 +13,9 @@ export component List {
     in-out property <int> selected: -1;
     callback changed(index: int);
 
+    horizontal-stretch: 1;
+    min-width: 0px;
+
     VerticalLayout {
         spacing: 2px;
         for item[index] in items: Rectangle {

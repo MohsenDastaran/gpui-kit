@@ -7,6 +7,9 @@ export component Collapsible {
     in-out property <bool> open;
     callback toggled(open: bool);
 
+    horizontal-stretch: 1;
+    min-width: 0px;
+
     VerticalLayout {
         Rectangle {
             background: touch.has-hover ? Theme.accent : transparent;

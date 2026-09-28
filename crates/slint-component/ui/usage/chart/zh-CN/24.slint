@@ -1,0 +1,14 @@
+import { BarChart, ChartLegend } from "chart.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        BarChart { horizontal-stretch: 1; points: [{ label: "营业收入", value: 0.0 }, { label: "毛利润", value: 1.0 }, { label: "营业成本", value: 45.0 }, { label: "(:.1)", value: 0.0 }]; }
+    }
+}

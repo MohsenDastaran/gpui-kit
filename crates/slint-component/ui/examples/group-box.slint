@@ -3,6 +3,7 @@ import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 
 export component GroupBoxExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;

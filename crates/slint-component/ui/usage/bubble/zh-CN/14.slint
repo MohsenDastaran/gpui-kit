@@ -1,0 +1,15 @@
+import { Bubble } from "bubble.slint";
+import { Theme } from "theme.slint";
+import { MessageRole } from "message.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Bubble { horizontal-stretch: 1; role: MessageRole.assistant; text: "👍 2"; time: "reply"; }
+    }
+}

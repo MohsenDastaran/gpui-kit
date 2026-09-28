@@ -1,0 +1,17 @@
+import { GroupBox, GroupBoxVariant } from "group-box.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        GroupBox {
+            horizontal-stretch: 1; title: "Display Settings"; variant: GroupBoxVariant.outline;
+            Text { text: "Theme"; color: Theme.foreground; wrap: word-wrap; }
+        }
+    }
+}

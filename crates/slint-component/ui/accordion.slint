@@ -167,6 +167,9 @@ export component Accordion {
     in-out property <int> open-index: -1;
     callback toggled(index: int, open: bool);
 
+    horizontal-stretch: 1;
+    min-width: 0px;
+
     private property <length> font-size: size == ControlSize.xsmall ? 13px
         : size == ControlSize.large ? 16px
         : 14px;

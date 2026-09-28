@@ -5,6 +5,7 @@ import { Icon } from "../icon.slint";
 import { ShimmerText } from "../shimmer.slint";
 
 export component ShimmerExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <bool> generating: true;
 
@@ -19,17 +20,17 @@ export component ShimmerExample inherits VerticalLayout {
             spacing: 32px;            ShimmerText {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Thinking…"; }
             ShimmerText {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Generating a response…"; color: Theme.muted-foreground; }
             ShimmerText {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Loading project data…"; font-size: Theme.font-size-md; font-weight: 500; }
         
             Rectangle {
@@ -47,22 +48,22 @@ export component ShimmerExample inherits VerticalLayout {
             spacing: 32px;            ShimmerText {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Indexing files…"; duration: 3s; highlight-color: Theme.primary; color: Theme.muted-foreground; spread: 0.45; reverse: true; }
             ShimmerText {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Loading a narrow label…"; color: Theme.muted-foreground; spread: 0.15; }
             ShimmerText {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Loading a broad label…"; color: Theme.muted-foreground; spread: 0.7; }
             ShimmerText {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  text: "Fixed-width highlight…"; color: Theme.muted-foreground; spread-width: 48px; }
         
             Rectangle {
@@ -80,7 +81,7 @@ export component ShimmerExample inherits VerticalLayout {
             spacing: 16px;            finalizing := ShimmerText {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "Finalizing…";
                 color: Theme.muted-foreground;
                 reverse: true;

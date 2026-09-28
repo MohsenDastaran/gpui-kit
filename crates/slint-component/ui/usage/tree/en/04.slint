@@ -1,0 +1,14 @@
+import { Tree } from "tree.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Tree { horizontal-stretch: 1; items: [{ label: "Selected: () (())", depth: 0, folder: true, expanded: true }]; }
+    }
+}

@@ -1,0 +1,14 @@
+import { BarChart, ChartLegend } from "chart.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        BarChart { horizontal-stretch: 1; points: [{ label: "Monthly Revenue", value: 80.0 }, { label: "Profit Breakdown", value: 0.0 }, { label: "North", value: 1000.0 }, { label: "South", value: 80.0 }, { label: "East", value: 0.0 }]; }
+    }
+}

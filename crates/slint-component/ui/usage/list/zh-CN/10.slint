@@ -1,0 +1,14 @@
+import { List } from "list.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        List { horizontal-stretch: 1; items: [{ title: "No items found", description: "Try adjusting your search terms", icon: "" }, { title: "Try adjusting your search terms", description: "", icon: "" }]; }
+    }
+}

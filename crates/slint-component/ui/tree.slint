@@ -14,6 +14,9 @@ export component Tree {
     in-out property <int> selected: -1;
     callback changed(index: int);
 
+    horizontal-stretch: 1;
+    min-width: 0px;
+
     VerticalLayout {
         spacing: 0;
         for item[index] in items: Rectangle {

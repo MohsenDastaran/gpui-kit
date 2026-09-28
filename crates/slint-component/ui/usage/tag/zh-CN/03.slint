@@ -1,0 +1,14 @@
+import { Tag, TagVariant } from "tag.slint";
+import { Theme, Status } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Tag { horizontal-stretch: 0; text: "Primary Outline"; variant: TagVariant.outline; status: Status.success; }
+    }
+}

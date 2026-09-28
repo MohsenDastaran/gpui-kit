@@ -1,0 +1,14 @@
+import { DataTable } from "data-table.slint";
+import { Theme, Status } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        DataTable { horizontal-stretch: 1; columns: [{ key: "invoice", title: "Invoice", width: 0px, align: TextHorizontalAlignment.left, sortable: true, resizable: false }, { key: "status", title: "Status", width: 0px, align: TextHorizontalAlignment.left, sortable: true, resizable: false }]; rows: [{ id: "1", cells: [{ text: "name", status: Status.default }, { text: "age", status: Status.default }] }]; row-order: [0]; }
+    }
+}

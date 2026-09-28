@@ -1,0 +1,14 @@
+import { VirtualList } from "virtual-list.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        VirtualList { horizontal-stretch: 1; items: [{ label: "variable-list" }, { label: "Header ()" }, { label: "Item ()" }]; height: 160px; }
+    }
+}

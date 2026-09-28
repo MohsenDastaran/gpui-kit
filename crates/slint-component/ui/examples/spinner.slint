@@ -4,6 +4,7 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Spinner } from "../spinner.slint";
 
 export component SpinnerExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <bool> refreshing;
 

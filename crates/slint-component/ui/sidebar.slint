@@ -14,7 +14,7 @@ export component Sidebar {
     in-out property <bool> collapsed;
     callback changed(index: int);
 
-    width: collapsed ? 56px : 220px;
+    width: collapsed ? 56px : (Theme.viewport < 480px ? 180px : 220px);
     animate width { duration: 160ms; }
     horizontal-stretch: 0;
 

@@ -1,0 +1,14 @@
+import { Sidebar } from "sidebar.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Sidebar { horizontal-stretch: 0; items: [{ label: "Notifications", icon: "house" }, { label: "5", icon: "inbox" }, { label: "Dark Mode", icon: "settings" }, { label: "dark-mode", icon: "search" }]; }
+    }
+}

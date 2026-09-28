@@ -1,0 +1,14 @@
+import { Combobox } from "combobox.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Combobox { horizontal-stretch: 1; items: [{ label: "请选择...", value: "请选择..." }]; }
+    }
+}

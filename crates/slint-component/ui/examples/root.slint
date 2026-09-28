@@ -5,13 +5,14 @@ import { Button } from "../button.slint";
 import { Status } from "../theme.slint";
 
 export component RootExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     private property <bool> dialog-open;
     Rectangle {
-        height: 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        width: 100%; height: Theme.viewport < 480px ? 280px : 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
         Root {
             width: 100%; height: 100%;
             dialog-open <=> root.dialog-open;

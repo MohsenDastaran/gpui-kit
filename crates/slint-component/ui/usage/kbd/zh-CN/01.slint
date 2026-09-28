@@ -1,0 +1,17 @@
+import { Kbd, KbdSequence } from "kbd.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        KbdSequence {
+            Kbd { text: "cmd-shift-p";  horizontal-stretch: 0; }
+        Kbd { text: "escape";  horizontal-stretch: 0; }
+        }
+    }
+}

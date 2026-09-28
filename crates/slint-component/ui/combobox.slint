@@ -12,7 +12,9 @@ export component Combobox {
     callback changed(index: int);
 
     height: Theme.control-height(size);
-    min-width: 200px;
+    min-width: 0px;
+    preferred-width: 200px;
+    horizontal-stretch: 1;
 
     Input {
         text <=> root.text;

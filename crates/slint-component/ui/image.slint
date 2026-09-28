@@ -10,10 +10,11 @@ export component ImageView {
     in property <ImageFit> fit: ImageFit.cover;
     in property <length> radius: Theme.radius-md;
 
-    min-width: 80px;
+    min-width: 0px;
     min-height: 80px;
     preferred-width: 240px;
     preferred-height: 160px;
+    horizontal-stretch: 1;
 
     Rectangle {
         border-radius: radius;

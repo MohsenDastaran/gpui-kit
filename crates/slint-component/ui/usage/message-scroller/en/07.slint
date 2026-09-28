@@ -1,0 +1,15 @@
+import { MessageScroller } from "message-scroller.slint";
+import { Theme } from "theme.slint";
+import { MessageRole } from "message.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        MessageScroller { horizontal-stretch: 1; messages: [{ role: MessageRole.user, body: "Hello" }, { role: MessageRole.assistant, body: "How can I help?" }]; }
+    }
+}

@@ -1,0 +1,17 @@
+import { Accordion } from "accordion.slint";
+import { Theme } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 280px;
+    VerticalLayout {
+        horizontal-stretch: 1;
+        padding: Theme.page-padding(Theme.viewport);
+        spacing: 12px;
+        alignment: start;
+        Accordion { horizontal-stretch: 1; items: [
+                { title: "my-accordion", icon: "", content: "Settings" },
+                { title: "Settings content here", icon: "", content: "Settings content here" }
+            ]; }
+    }
+}

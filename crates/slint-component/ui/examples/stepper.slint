@@ -4,6 +4,7 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Stepper, StepperItem } from "../stepper.slint";
 
 export component StepperExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     in-out property <int> order-step: 1;
     in-out property <int> center-step;
