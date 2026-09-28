@@ -8,6 +8,7 @@ import {
   shallowRef,
   watch,
 } from "vue";
+import { RotateCw } from "lucide-vue-next";
 import WindowZoomButton from "./WindowZoomButton.vue";
 
 const props = defineProps<{
@@ -185,6 +186,17 @@ const zoomed = shallowRef(false);
 const zoomLabel = computed(() =>
   zoomed.value ? "Restore window" : "Zoom window",
 );
+const reloadLabel = computed(() =>
+  props.lang === "zh-CN" ? "重新加载示例" : "Reload example",
+);
+const reloadNonce = reactive<Record<string, number>>({});
+
+function reloadExample() {
+  if (!available.value) return;
+  const name = framework.value;
+  loaded.delete(name);
+  reloadNonce[name] = (reloadNonce[name] ?? 0) + 1;
+}
 
 function setZoomed(value: boolean) {
   zoomed.value = value;
@@ -260,17 +272,29 @@ onBeforeUnmount(() => {
             />
           </span>
           <span class="mac-window__title">{{ windowTitle }}</span>
-          <WindowZoomButton
-            :zoomed="zoomed"
-            :label="zoomLabel"
-            @click="setZoomed(!zoomed)"
-          />
+          <span class="mac-window__tools">
+            <button
+              type="button"
+              class="mac-window__action"
+              :title="reloadLabel"
+              :aria-label="reloadLabel"
+              :disabled="!available"
+              @click="reloadExample"
+            >
+              <RotateCw :size="14" />
+            </button>
+            <WindowZoomButton
+              :zoomed="zoomed"
+              :label="zoomLabel"
+              @click="setZoomed(!zoomed)"
+            />
+          </span>
         </div>
         <div class="component-example__frames">
           <iframe
             v-for="frame in frames"
             v-show="available && frame.name === framework"
-            :key="frame.src"
+            :key="`${frame.src}:${reloadNonce[frame.name] ?? 0}`"
             :src="frame.src"
             :class="`component-example__frame--${frame.name}`"
             :title="`${component} interactive example (${frameworkList[frame.name].name})`"

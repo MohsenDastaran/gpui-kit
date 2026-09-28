@@ -367,6 +367,17 @@ html.dark .astro-code span {
   opacity: 1;
 }
 
+.mac-window__tools {
+  display: flex;
+  align-items: center;
+  gap: 0.125rem;
+  margin-left: auto;
+}
+
+.mac-window__tools .mac-window__action {
+  margin-left: 0;
+}
+
 .mac-window__action {
   display: flex;
   align-items: center;
@@ -395,6 +406,15 @@ html.dark .astro-code span {
 .mac-window__action:hover {
   background: color-mix(in srgb, var(--foreground) 8%, transparent);
   color: var(--foreground);
+}
+
+.mac-window__action:disabled {
+  cursor: default;
+}
+
+.mac-window__action:disabled:hover {
+  background: transparent;
+  color: var(--muted-foreground);
 }
 
 .mac-window__bar > :not(.mac-window__title) + .mac-window__action {
