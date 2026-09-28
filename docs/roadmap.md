@@ -147,8 +147,8 @@ Templates are apps a person copies. They are not installed by a command.
 - **Login** — blank plus the Login block
 - **Dashboard** — blank plus the Dashboard block
 
-2. Add a Templates tab, English and zh-CN, with the tree to copy and what the app contains.
-3. When Slint blocks exist, add a Slint variant of each template the same way (a directory people copy, listed on the same pages).
+1. Add a Templates tab, English and zh-CN, with the tree to copy and what the app contains.
+2. When Slint blocks exist, add a Slint variant of each template the same way (a directory people copy, listed on the same pages).
 
 **Done when:** each template builds after it is copied into a new directory, and both locales link to it.
 

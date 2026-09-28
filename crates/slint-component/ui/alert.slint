@@ -1,6 +1,5 @@
-import { Theme, Status, ButtonVariant, ControlSize } from "theme.slint";
+import { Theme, Status } from "theme.slint";
 import { Icon } from "icon.slint";
-import { Button } from "button.slint";
 
 // A callout for user attention. Mirrors GPUI Component's `Alert`: status
 // variants, an optional title, a closable banner, and custom icons.
@@ -15,6 +14,11 @@ export component Alert {
     callback closed();
 
     private property <color> tone: Theme.status-color(status);
+    // GPUI keeps 4% of the status color in the fill. `mix` applies `factor` to
+    // the receiver, so 0.04 is a tint. The border is the status color at 30% opacity.
+    private property <color> ink: status == Status.default ? Theme.foreground : tone;
+    private property <color> fill: status == Status.default ? Theme.background : tone.mix(Theme.background, 0.04);
+    private property <color> edge: status == Status.default ? Theme.border : tone.with-alpha(0.3);
     private property <string> glyph: icon != "" ? icon
         : status == Status.success ? "circle-check"
         : status == Status.warning ? "triangle-alert"
@@ -27,8 +31,8 @@ export component Alert {
     Rectangle {
         border-radius: banner ? 0 : Theme.radius-md;
         border-width: 1px;
-        border-color: status == Status.default ? Theme.border : tone.mix(Theme.background, 0.7);
-        background: status == Status.default ? Theme.background : tone.mix(Theme.background, 0.96);
+        border-color: edge;
+        background: fill;
     }
 
     HorizontalLayout {
@@ -37,43 +41,50 @@ export component Alert {
         padding-top: banner ? 8px : 10px;
         padding-bottom: self.padding-top;
         spacing: 12px;
+        alignment: banner ? center : start;
 
         VerticalLayout {
             alignment: start;
+            padding-top: banner ? 0px : 2px;
             Icon {
                 name: glyph;
                 size: 16px;
-                color: tone;
+                color: ink;
             }
         }
 
         VerticalLayout {
             horizontal-stretch: 1;
             spacing: 4px;
-            if title != "": Text {
+            if title != "" && !banner: Text {
                 text: title;
-                color: status == Status.default ? Theme.foreground : tone;
+                color: ink;
                 font-size: Theme.font-size-sm;
                 font-weight: 600;
                 wrap: word-wrap;
             }
             if message != "": Text {
                 text: message;
-                color: status == Status.default ? Theme.foreground : tone;
+                color: ink;
                 font-size: Theme.font-size-sm;
                 wrap: word-wrap;
             }
             @children
         }
 
-        if closable: Button {
-            icon: "x";
-            variant: ButtonVariant.ghost;
-            size: ControlSize.xsmall;
+        if closable: close := TouchArea {
+            width: 16px;
+            height: 16px;
+            accessible-role: button;
             accessible-label: "Dismiss";
             clicked => {
                 root.open = false;
                 root.closed();
+            }
+            Icon {
+                name: "x";
+                size: 16px;
+                color: close.has-hover ? ink : ink.with-alpha(0.8);
             }
         }
     }
