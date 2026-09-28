@@ -18,8 +18,9 @@ export component Select {
 
     private property <string> label: selected >= 0 && selected < items.length ? items[selected].label : placeholder;
 
-    height: Theme.control-height(size);
-    min-width: 160px;
+    height: Theme.input-height(size);
+    min-width: 0px;
+    preferred-width: 100%;
     horizontal-stretch: 1;
     opacity: enabled ? 1 : 0.5;
 
@@ -31,15 +32,15 @@ export component Select {
     }
 
     HorizontalLayout {
-        padding-left: Theme.control-padding(size);
-        padding-right: Theme.control-padding(size);
+        padding-left: Theme.input-padding-x(size);
+        padding-right: Theme.input-padding-x(size);
         spacing: 8px;
 
         Text {
             horizontal-stretch: 1;
             text: label;
             color: selected >= 0 ? Theme.foreground : Theme.muted-foreground;
-            font-size: Theme.control-font-size(size);
+            font-size: Theme.input-font-size(size);
             overflow: elide;
             vertical-alignment: center;
         }

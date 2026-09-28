@@ -1,0 +1,15 @@
+import { Button } from "button.slint";
+import { ButtonVariant, ControlSize } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 240px;
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        spacing: 8px;
+        Button { text: "Loading..."; horizontal-stretch: 0; }
+        Button { text: "Processing"; horizontal-stretch: 0; }
+        Button { text: "Syncing"; icon: "loader-circle"; horizontal-stretch: 0; }
+    }
+}

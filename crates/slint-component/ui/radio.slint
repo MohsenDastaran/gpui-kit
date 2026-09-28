@@ -65,6 +65,7 @@ export component Radio {
             color: Theme.foreground;
             font-size: Theme.label-font-size(size);
             vertical-alignment: center;
+            wrap: word-wrap;
         }
     }
 
@@ -99,6 +100,7 @@ export component Radio {
 
 // A vertical stack of radios that keep a single selected index.
 export component RadioGroup inherits VerticalLayout {
+    horizontal-stretch: 1;
     in property <[string]> options;
     in-out property <int> selected: 0;
     in property <bool> enabled: true;

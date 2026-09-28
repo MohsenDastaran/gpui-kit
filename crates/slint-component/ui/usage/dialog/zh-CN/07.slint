@@ -1,0 +1,26 @@
+import { Dialog, DialogFooter } from "dialog.slint";
+import { Button } from "button.slint";
+import { ButtonVariant } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 360px;
+    private property <bool> open;
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        spacing: 8px;
+        Button { text: "Open"; horizontal-stretch: 0; clicked => { root.open = true; } }
+    }
+    Dialog {
+        width: 100%;
+        height: 100%;
+        open <=> root.open;
+        title: "First Dialog";
+        description: "Make changes, then save.";
+        DialogFooter {
+            Button { text: "Cancel"; clicked => { root.open = false; } }
+            Button { text: "Save"; variant: ButtonVariant.primary; clicked => { root.open = false; } }
+        }
+    }
+}

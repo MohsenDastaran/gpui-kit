@@ -13,9 +13,10 @@ The site is already Astro at <https://gpui-kit.com> (`website/`, English and zh-
 - [x] 3. Design tokens (GPUI)
 - [x] 4. Framework selector on the website
 - [x] 5. Write Slint components (one per GPUI component)
-- [ ] 6. Add blocks (Login, Dashboard, Settings)
-- [ ] 7. Starter templates
-- [ ] 8. Deploy & launch
+- [ ] 6. Slint usage, main controls first
+- [ ] 7. Add blocks (Login, Dashboard, Settings)
+- [ ] 8. Starter templates
+- [ ] 9. Deploy & launch
 
 ---
 
@@ -24,14 +25,14 @@ The site is already Astro at <https://gpui-kit.com> (`website/`, English and zh-
 ```text
 website/                         # existing Astro site
 ├── component/                   # current GPUI Kit docs
-├── blocks/                      # phase 6
-├── templates/                   # phase 7 pages
+├── blocks/                      # phase 7
+├── templates/                   # phase 8 pages
 └── zh-CN/                       # same sections in Chinese
 crates/
 ├── base/                        # gpui-base (real dependency, never copied)
 ├── component/                   # GPUI copy sources
 └── slint-component/             # hand-written Slint catalog + WASM gallery
-templates/                       # phase 7 apps people copy
+templates/                       # phase 8 apps people copy
 tokens/
 ├── tokens.json
 └── schema.json
@@ -96,13 +97,31 @@ Built on the existing Astro site. The GPUI Kit docs stay as they are (usage, API
 2. `ui/theme.slint` maps `tokens/tokens.json` (see `tokens/README.md`). Components read `Theme` and nothing else.
 3. `scripts/check.sh` type-checks each example with the gallery's Slint version. The gallery window (`ui/gallery.slint`) shows one example, chosen by page slug.
 4. The website live example follows the selector (`ComponentExample.vue`): GPUI stays at `/gallery`, Slint loads `/slint-gallery?component=<slug>`. Another framework later adds a source in the same map. Both iframes stay mounted after first open, so switching back is instant.
-5. `remark-slint-source.js` fills the Import and Usage Slint panels from those files, in both locales. Remaining GPUI-only samples say the Slint usage at the top of the page covers the component.
+5. `remark-slint-source.js` fills the Import and the first Usage Slint panel from those files, in both locales. Phase 6 replaces that with one sample per section.
 
 **Done when:** every catalog page shows Slint source under the selector, and selecting Slint shows the Slint WASM example.
 
 ---
 
-## 6. Add blocks (Login, Dashboard, Settings)
+## 6. Slint usage, main controls first
+
+Alert Dialog is the pattern. Each Rust sample on its page has its own Slint sample in `crates/slint-component/ui/usage/alert-dialog/`. The import is by file name (`alert-dialog.slint`) from `ui/components`, which is where `uni-kit add` writes the files and what it adds to the Slint include path. Samples import only files that command installs.
+
+Check and finish the main controls before the rest of the catalog:
+
+1. Button, Input, Textarea, Checkbox, Radio, Switch, Select, Label, Icon, Dialog.
+2. Every remaining catalog slug.
+
+For each one, in both locales:
+
+1. Match the GPUI page: one `ui/usage/<slug>/*.slint` file per Rust sample, in the same order.
+2. Imports are bare file names. Do not import gallery-only files such as GroupBox.
+
+**Done when:** every catalog page’s Slint panels are separate samples like Alert Dialog, and each sample compiles after that component is installed.
+
+---
+
+## 7. Add blocks (Login, Dashboard, Settings)
 
 Build these in both frameworks:
 
@@ -118,7 +137,7 @@ Build these in both frameworks:
 
 ---
 
-## 7. Starter templates
+## 8. Starter templates
 
 Templates are apps a person copies. They are not installed by a command.
 
@@ -133,7 +152,7 @@ Templates are apps a person copies. They are not installed by a command.
 
 ---
 
-## 8. Deploy & launch
+## 9. Deploy & launch
 
 The repository is already public and Apache-2.0. The site is already at <https://gpui-kit.com>.
 
@@ -167,4 +186,4 @@ The repository is already public and Apache-2.0. The site is already at <https:/
 
 ## Later
 
-egui, Iced, or another toolkit can join after phase 8, one at a time, once its API is stable: hand-write the full catalog and the 3 blocks, add a value to the selector, and add the snippets in both locales.
+egui, Iced, or another toolkit can join after phase 9, one at a time, once its API is stable: hand-write the full catalog and the 3 blocks, add a value to the selector, and add the snippets in both locales.

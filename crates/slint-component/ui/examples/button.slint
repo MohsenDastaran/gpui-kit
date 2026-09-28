@@ -3,6 +3,7 @@ import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 
 export component ButtonExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
@@ -12,6 +13,7 @@ export component ButtonExample inherits VerticalLayout {
         title: "Variants";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 8px;            Button {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
@@ -55,6 +57,7 @@ export component ButtonExample inherits VerticalLayout {
             }
 }
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 8px;            Button {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
@@ -83,6 +86,7 @@ export component ButtonExample inherits VerticalLayout {
         title: "Outline";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 8px;            Button {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
@@ -126,6 +130,7 @@ export component ButtonExample inherits VerticalLayout {
         title: "Sizes";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 8px;            VerticalLayout {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
@@ -159,6 +164,7 @@ export component ButtonExample inherits VerticalLayout {
         title: "Icons and states";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 8px;            Button {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);

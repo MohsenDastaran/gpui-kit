@@ -5,8 +5,9 @@ import { visit } from 'unist-util-visit';
 // Component pages show a Slint version beside each GPUI sample.
 // The import panel is the import that works after `uni-kit add`: files live in
 // `ui/components`, and that directory is on the Slint include path.
-// When `ui/usage/<slug>/*.slint` exists, each file is one usage sample, in
-// filename order, paired with the Rust samples after the import. Otherwise the
+// When `ui/usage/<slug>/<locale>/*.slint` exists, each file is one usage sample,
+// in filename order, paired with that locale's Rust samples after the import.
+// A shared `ui/usage/<slug>/*.slint` folder is the fallback. Otherwise the
 // gallery example fills the first usage panel.
 
 const COMPONENT_PAGE = /[\\/]component[\\/]([^\\/]+)\.md$/;
@@ -33,11 +34,18 @@ export function hasSlintExample(slug, root = process.cwd()) {
 
 /** True when this slug has one Slint sample per usage section. */
 export function hasSlintUsage(slug, root = process.cwd()) {
-  return usageSnippets(slintRoot(root), slug).length > 0;
+  const ui = slintRoot(root);
+  return usageSnippets(ui, slug, 'en').length > 0 || usageSnippets(ui, slug, 'zh-CN').length > 0;
 }
 
-function usageSnippets(ui, slug) {
-  const dir = join(ui, 'usage', slug);
+function usageDirectory(ui, slug, locale) {
+  const localized = join(ui, 'usage', slug, locale);
+  if (existsSync(localized)) return localized;
+  return join(ui, 'usage', slug);
+}
+
+function usageSnippets(ui, slug, locale = 'en') {
+  const dir = usageDirectory(ui, slug, locale);
   if (!existsSync(dir)) return [];
   return readdirSync(dir)
     .filter((name) => name.endsWith('.slint'))
@@ -60,7 +68,8 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
     const path = String(file?.path ?? file?.history?.[0] ?? '');
     const slug = COMPONENT_PAGE.exec(path)?.[1];
     if (!slug || !hasSlintExample(slug, root)) return;
-    const copy = /[\\/]zh-CN[\\/]/.test(path) ? COPY['zh-CN'] : COPY.en;
+    const locale = /[\\/]zh-CN[\\/]/.test(path) ? 'zh-CN' : 'en';
+    const copy = COPY[locale];
 
     const rust = [];
     visit(tree, 'code', (node, index, parent) => {
@@ -73,7 +82,7 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
       parent.children.splice(parent.children.indexOf(node) + 1, 0, ...nodes);
     after(imports, code(importBlock(ui, slug, copy)));
 
-    const snippets = usageSnippets(ui, slug);
+    const snippets = usageSnippets(ui, slug, locale);
     if (snippets.length > 0) {
       snippets.forEach((value, index) => {
         const target = rust[index + 1];

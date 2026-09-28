@@ -1,5 +1,6 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
+import { componentMarkdownLoader } from './lib/component-loader';
 
 const pageSchema = z.object({
   title: z.string().min(1),
@@ -15,12 +16,12 @@ const docs = defineCollection({
 });
 
 const component = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './component' }),
+  loader: componentMarkdownLoader('./component'),
   schema: pageSchema,
 });
 
 const zhComponent = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './zh-CN/component' }),
+  loader: componentMarkdownLoader('./zh-CN/component'),
   schema: pageSchema,
 });
 

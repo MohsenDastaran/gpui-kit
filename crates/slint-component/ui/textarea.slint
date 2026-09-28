@@ -14,9 +14,10 @@ export component Textarea {
     private property <bool> focused: field.has-focus && enabled;
     private property <color> edge: invalid ? Theme.danger : focused ? Theme.ring : Theme.input;
 
-    min-height: 80px;
-    preferred-height: 120px;
-    preferred-width: 280px;
+    min-height: Theme.viewport < 480px ? 72px : 80px;
+    preferred-height: Theme.viewport < 480px ? 96px : 120px;
+    min-width: 0px;
+    preferred-width: 100%;
     horizontal-stretch: 1;
     opacity: enabled ? 1 : 0.5;
 
@@ -38,7 +39,7 @@ export component Textarea {
     }
 
     VerticalLayout {
-        padding: Theme.control-padding(size);
+        padding: Theme.input-padding-x(size);
 
         Rectangle {
             clip: true;
@@ -49,7 +50,7 @@ export component Textarea {
                 width: 100%;
                 text: root.text == "" ? root.placeholder : "";
                 color: Theme.muted-foreground;
-                font-size: Theme.control-font-size(size);
+                font-size: Theme.input-font-size(size);
                 wrap: word-wrap;
             }
 
@@ -62,7 +63,7 @@ export component Textarea {
                 single-line: false;
                 wrap: word-wrap;
                 color: Theme.foreground;
-                font-size: Theme.control-font-size(size);
+                font-size: Theme.input-font-size(size);
                 selection-background-color: Theme.selection.with-alpha(0.35);
                 selection-foreground-color: Theme.foreground;
                 edited => {

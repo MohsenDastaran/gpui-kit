@@ -4,6 +4,7 @@ import { Switch } from "../switch.slint";
 import { ControlSize } from "../theme.slint";
 
 export component SwitchExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
@@ -15,7 +16,8 @@ export component SwitchExample inherits VerticalLayout {
         Switch { label: "Disabled"; enabled: false; }
     }
     GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
-        GridLayout { spacing: 16px;
+        GridLayout {
+            horizontal-stretch: 1; spacing: 16px;
             Switch {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);

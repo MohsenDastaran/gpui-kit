@@ -1,0 +1,14 @@
+import { Label } from "label.slint";
+import { Input } from "input.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 140px;
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        spacing: 8px;
+        Label { text: "Email"; horizontal-stretch: 1; }
+        Input { placeholder: "Value"; horizontal-stretch: 1; }
+    }
+}

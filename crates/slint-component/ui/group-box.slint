@@ -9,6 +9,7 @@ export component GroupBox inherits VerticalLayout {
     in property <string> title;
     in property <GroupBoxVariant> variant: GroupBoxVariant.normal;
 
+    horizontal-stretch: 1;
     spacing: variant == GroupBoxVariant.normal ? 16px : 12px;
 
     if title != "": Text {
@@ -20,6 +21,7 @@ export component GroupBox inherits VerticalLayout {
     }
 
     Rectangle {
+        horizontal-stretch: 1;
         background: variant == GroupBoxVariant.fill ? Theme.background.mix(Theme.secondary, Theme.dark ? 0.3 : 0.4) : transparent;
         border-width: variant == GroupBoxVariant.outline ? 1px : 0;
         border-color: Theme.border;

@@ -4,7 +4,8 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Input } from "../input.slint";
 
 export component InputExample inherits VerticalLayout {
-    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    horizontal-stretch: 1;
+    private property <int> wrap-cols: Theme.field-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
@@ -13,25 +14,21 @@ export component InputExample inherits VerticalLayout {
         title: "Basic";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 12px;
             name := Input {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 placeholder: "Enter your name...";
             }
             Input {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "John Doe";
             }
         
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
-            }
 }
         Text {
             text: name.text == "" ? "Type to see the value." : "Hello, \{name.text}!";
@@ -43,11 +40,12 @@ export component InputExample inherits VerticalLayout {
         title: "Prefix, suffix and clear button";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 12px;
             Input {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 placeholder: "Search...";
                 prefix-icon: "search";
                 cleanable: true;
@@ -55,7 +53,7 @@ export component InputExample inherits VerticalLayout {
             Input {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 placeholder: "Username";
                 prefix-icon: "user";
                 Button {
@@ -68,18 +66,13 @@ export component InputExample inherits VerticalLayout {
             Input {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "1,280.00";
                 prefix-text: "$";
                 suffix-text: "USD";
                 horizontal-alignment: TextHorizontalAlignment.right;
             }
         
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
-            }
 }
     }
 
@@ -87,11 +80,12 @@ export component InputExample inherits VerticalLayout {
         title: "Password";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 12px;
             Input {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "password123";
                 prefix-icon: "lock";
                 masked: true;
@@ -100,17 +94,12 @@ export component InputExample inherits VerticalLayout {
             Input {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 placeholder: "Clears on Escape";
                 text: "Press Escape";
                 clean-on-escape: true;
             }
         
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
-            }
 }
     }
 
@@ -118,33 +107,29 @@ export component InputExample inherits VerticalLayout {
         title: "Sizes";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 12px;
             VerticalLayout {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  alignment: center; Input { placeholder: "Large"; size: ControlSize.large; } }
             VerticalLayout {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  alignment: center; Input { placeholder: "Medium"; } }
             VerticalLayout {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  alignment: center; Input { placeholder: "Small"; size: ControlSize.small; } }
             VerticalLayout {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                  alignment: center; Input { placeholder: "Extra small"; size: ControlSize.xsmall; } }
         
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
-            }
 }
     }
 
@@ -152,34 +137,30 @@ export component InputExample inherits VerticalLayout {
         title: "States";
         variant: GroupBoxVariant.outline;
         GridLayout {
+            horizontal-stretch: 1;
             spacing: 12px;
             Input {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "Disabled";
                 enabled: false;
             }
             Input {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "Read-only, still selectable";
                 read-only: true;
             }
             Input {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
+                horizontal-stretch: 1;
                 text: "not-an-email";
                 invalid: true;
             }
         
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
-            }
 }
     }
 }

@@ -1,0 +1,12 @@
+import { Select } from "select.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 160px;
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        spacing: 8px;
+        Select { placeholder: "Select"; items: [{ label: "US", value: "US" }]; horizontal-stretch: 1; }
+    }
+}

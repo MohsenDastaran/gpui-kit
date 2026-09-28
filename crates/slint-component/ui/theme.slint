@@ -102,6 +102,44 @@ export global Theme {
         return 32px;
     }
 
+    // GPUI input heights: h_5, h_6, h_8, h_11.
+    public pure function input-height(size: ControlSize) -> length {
+        if size == ControlSize.xsmall {
+            return 20px;
+        }
+        if size == ControlSize.small {
+            return 24px;
+        }
+        if size == ControlSize.large {
+            return 44px;
+        }
+        return 32px;
+    }
+
+    // Medium inputs are text-sm. Large is text-base. Buttons stay on control-font-size.
+    public pure function input-font-size(size: ControlSize) -> length {
+        if size == ControlSize.xsmall {
+            return 12px;
+        }
+        if size == ControlSize.large {
+            return 16px;
+        }
+        return 14px;
+    }
+
+    public pure function input-padding-x(size: ControlSize) -> length {
+        if size == ControlSize.xsmall {
+            return 4px;
+        }
+        if size == ControlSize.small {
+            return 8px;
+        }
+        if size == ControlSize.large {
+            return 12px;
+        }
+        return 10px;
+    }
+
     public pure function control-padding(size: ControlSize) -> length {
         if size == ControlSize.xsmall {
             return 6px;
@@ -151,13 +189,24 @@ export global Theme {
     // How many tracks a row of controls gets. Phones stack, the docs frame
     // wraps, and a wide window keeps a single row.
     public pure function wrap-columns(width: length) -> int {
-        if width < 480px {
+        if width < 520px {
             return 1;
+        }
+        if width < 800px {
+            return 2;
         }
         if width < 1100px {
             return 4;
         }
         return 12;
+    }
+
+    // Fields are wider than buttons, so a narrow frame gets one column.
+    public pure function field-columns(width: length) -> int {
+        if width < 720px {
+            return 1;
+        }
+        return 2;
     }
 
     public pure function wrap-row(index: int, columns: int) -> int {
@@ -175,7 +224,7 @@ export global Theme {
     }
 
     public pure function page-padding(width: length) -> length {
-        if width < 480px {
+        if width < 640px {
             return 16px;
         }
         return 24px;

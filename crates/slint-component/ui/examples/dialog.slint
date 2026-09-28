@@ -5,13 +5,15 @@ import { ButtonVariant } from "../theme.slint";
 import { Button } from "../button.slint";
 
 export component DialogExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     private property <bool> open: true;
     Rectangle {
-        height: 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
+        width: 100%;
+        height: Theme.viewport < 480px ? 280px : 360px; border-width: 1px; border-color: Theme.border; border-radius: Theme.radius-lg; clip: true;
         Button { x: 16px; y: 16px; text: "Open"; clicked => { root.open = true; } }
         Dialog {
             width: 100%; height: 100%;

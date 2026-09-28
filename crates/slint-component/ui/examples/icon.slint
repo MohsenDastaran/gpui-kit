@@ -3,13 +3,15 @@ import { GroupBox, GroupBoxVariant } from "../group-box.slint";
 import { Icon } from "../icon.slint";
 
 export component IconExample inherits VerticalLayout {
+    horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
     GroupBox { title: "Icons"; variant: GroupBoxVariant.outline;
-        GridLayout { spacing: 12px;
+        GridLayout {
+            horizontal-stretch: 1; spacing: 12px;
             Icon {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);

@@ -36,8 +36,8 @@ export component Input {
 
     private property <bool> revealed;
     private property <bool> focused: field.has-focus && enabled;
-    private property <length> inset: Theme.control-padding(size);
-    private property <length> text-size: Theme.control-font-size(size);
+    private property <length> inset: Theme.input-padding-x(size);
+    private property <length> text-size: Theme.input-font-size(size);
     private property <length> gap: size == ControlSize.xsmall || size == ControlSize.small ? Theme.spacing-xs : Theme.spacing-sm;
     private property <color> edge: invalid ? Theme.danger : focused ? Theme.ring : Theme.input;
 
@@ -66,9 +66,9 @@ export component Input {
         root.edited(value);
     }
 
-    height: Theme.control-height(size);
-    min-width: 2 * inset + 24px;
-    preferred-width: 240px;
+    height: Theme.input-height(size);
+    min-width: 0px;
+    preferred-width: 100%;
     horizontal-stretch: 1;
     vertical-stretch: 0;
     opacity: enabled ? 1 : 0.5;

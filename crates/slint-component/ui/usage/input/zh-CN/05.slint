@@ -1,0 +1,13 @@
+import { Input } from "input.slint";
+import { ControlSize } from "theme.slint";
+
+export component Example inherits Window {
+    preferred-width: 480px;
+    preferred-height: 160px;
+    VerticalLayout {
+        padding: 24px;
+        alignment: start;
+        spacing: 8px;
+        Input { placeholder: "info"; horizontal-stretch: 1; size: ControlSize.xsmall; prefix-icon: "search"; }
+    }
+}

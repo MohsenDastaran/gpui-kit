@@ -54,7 +54,7 @@ export component Button {
         : transparent-fill ? transparent
         : outline ? (status-variant || variant == ButtonVariant.primary ? tone.with-alpha(0.1) : Theme.accent)
         : status-variant ? tone.with-alpha(0.3)
-        : variant == ButtonVariant.primary ? Theme.primary.mix(Theme.background, 0.1)
+        : variant == ButtonVariant.primary ? Theme.primary.mix(Theme.background, 0.9)
         : variant == ButtonVariant.secondary ? Theme.secondary.mix(Theme.background, 0.1)
         : Theme.input.mix(Theme.background, 0.5);
     private property <color> press-fill: variant == ButtonVariant.ghost ? Theme.input.mix(Theme.background, 0.3)
@@ -142,6 +142,7 @@ export component Button {
                 font-weight: 500;
                 horizontal-alignment: center;
                 vertical-alignment: center;
+                overflow: elide;
             }
 
             if variant == ButtonVariant.link: Rectangle {
