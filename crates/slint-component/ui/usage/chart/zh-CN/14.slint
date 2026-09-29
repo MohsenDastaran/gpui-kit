@@ -1,14 +1,25 @@
-import { BarChart, ChartLegend } from "chart.slint";
 import { Theme } from "theme.slint";
+import { LineChart, AreaChart, BarChart, PieChart, RadarChart, CandlestickChart, SankeyChart, ChartLegend, LineInterpolation, BarAlign } from "chart.slint";
 
 export component Example inherits Window {
     preferred-width: 480px;
-    preferred-height: 360px;
+    preferred-height: 400px;
     VerticalLayout {
         horizontal-stretch: 1;
         padding: Theme.page-padding(Theme.viewport);
         spacing: 12px;
         alignment: start;
-        BarChart { horizontal-stretch: 1; points: [{ label: "Mon", value: 100.0 }, { label: "Tue", value: 100.0 }, { label: "Wed", value: 100.0 }, { label: "Thu", value: 100.0 }]; }
+        PieChart { points: [
+            { label: "直接", value: 38 },
+            { label: "搜索", value: 27 },
+            { label: "社交", value: 18 },
+            { label: "推荐", value: 11 },
+        ]; }
+        ChartLegend { points: [
+            { label: "直接", value: 38 },
+            { label: "搜索", value: 27 },
+            { label: "社交", value: 18 },
+            { label: "推荐", value: 11 },
+        ]; }
     }
 }

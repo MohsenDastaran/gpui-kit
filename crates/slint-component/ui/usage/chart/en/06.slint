@@ -1,5 +1,5 @@
-import { BarChart, ChartLegend } from "chart.slint";
 import { Theme } from "theme.slint";
+import { LineChart, AreaChart, BarChart, PieChart, RadarChart, CandlestickChart, SankeyChart, ChartLegend, LineInterpolation, BarAlign } from "chart.slint";
 
 export component Example inherits Window {
     preferred-width: 480px;
@@ -9,6 +9,13 @@ export component Example inherits Window {
         padding: Theme.page-padding(Theme.viewport);
         spacing: 12px;
         alignment: start;
-        BarChart { horizontal-stretch: 1; points: [{ label: "Mon", value: 0.3 }, { label: "Tue", value: 0.0 }, { label: "Wed", value: 1.0 }, { label: "Thu", value: 0.0 }]; }
+        BarChart { points: [
+            { label: "Jan", value: 100 },
+            { label: "Feb", value: 150 },
+            { label: "Mar", value: 120 },
+            { label: "Apr", value: 180 },
+            { label: "May", value: 160 },
+            { label: "Jun", value: 200 },
+        ]; gradient: true; }
     }
 }

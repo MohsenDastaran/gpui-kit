@@ -1,47 +1,67 @@
 import { Theme } from "theme.slint";
 
+export enum LineInterpolation { curve, linear, step }
+export enum BarAlign { bottom, top, left, right }
+
 export struct ChartPoint {
     label: string,
     value: float,
 }
 
-// Simple charts. Mirrors GPUI Component's `Chart` for bar and legend.
-export component BarChart {
-    in property <[ChartPoint]> points;
-    in property <length> bar-width: 28px;
+export struct SeriesPoint {
+    label: string,
+    a: float,
+    b: float,
+}
 
-    min-height: 180px;
-    horizontal-stretch: 1;
+export struct StackPoint {
+    label: string,
+    a: float,
+    b: float,
+    c: float,
+    d: float,
+}
 
-    VerticalLayout {
-        spacing: 8px;
+export struct RadarPoint {
+    label: string,
+    alpha: float,
+    beta: float,
+}
 
-        HorizontalLayout {
-            spacing: 12px;
-            alignment: end;
-            padding-bottom: 4px;
-            for point[index] in points: VerticalLayout {
-                spacing: 6px;
-                alignment: end;
-                Rectangle {
-                    width: bar-width;
-                    height: max(4px, 120px * clamp(point.value / 100, 0, 1));
-                    border-radius: Theme.radius-sm;
-                    background: index == 0 ? Theme.chart-1
-                        : index == 1 ? Theme.chart-2
-                        : index == 2 ? Theme.chart-3
-                        : index == 3 ? Theme.chart-4
-                        : Theme.chart-5;
-                }
-                Text {
-                    text: point.label;
-                    color: Theme.muted-foreground;
-                    font-size: Theme.font-size-xs;
-                    horizontal-alignment: center;
-                }
-            }
-        }
-    }
+export struct CandlePoint {
+    label: string,
+    open: float,
+    high: float,
+    low: float,
+    close: float,
+}
+
+export struct SankeyNode {
+    name: string,
+    value: float,
+    column: int,
+    slot: int,
+    tone: int,
+}
+
+export struct SankeyLink {
+    from-column: int,
+    from-slot: int,
+    to-column: int,
+    to-slot: int,
+    value: float,
+    tone: int,
+}
+
+// Shared palette. Index wraps after five theme chart colors.
+export component ChartSwatch inherits Rectangle {
+    in property <int> tone;
+    in property <float> alpha: 1;
+
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: Theme.chart-tone(tone).with-alpha(alpha);
 }
 
 export component ChartLegend inherits HorizontalLayout {
@@ -49,21 +69,868 @@ export component ChartLegend inherits HorizontalLayout {
     spacing: 12px;
     for point[index] in points: HorizontalLayout {
         spacing: 6px;
-        Rectangle {
-            y: 4px;
-            width: 8px;
-            height: 8px;
-            border-radius: 2px;
-            background: index == 0 ? Theme.chart-1
-                : index == 1 ? Theme.chart-2
-                : index == 2 ? Theme.chart-3
-                : index == 3 ? Theme.chart-4
-                : Theme.chart-5;
-        }
+        ChartSwatch { tone: index; y: 4px; }
         Text {
-            text: "\{point.label}  \{round(point.value)}";
+            text: point.value == 0 ? point.label : "\{point.label}  \{round(point.value)}";
             color: Theme.muted-foreground;
             font-size: Theme.font-size-xs;
+        }
+    }
+}
+
+component PlotLabels inherits HorizontalLayout {
+    in property <[ChartPoint]> points;
+    in property <int> tick-margin: 1;
+    width: 100%;
+    alignment: space-around;
+    for point[index] in points: Text {
+        horizontal-stretch: 1;
+        text: root.tick-margin < 1 || mod(index, root.tick-margin) == 0 ? point.label : "";
+        color: Theme.muted-foreground;
+        font-size: Theme.font-size-xs;
+        horizontal-alignment: center;
+        overflow: elide;
+    }
+}
+
+component ChartGrid inherits Rectangle {
+    in property <int> lines: 4;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    VerticalLayout {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        spacing: 0px;
+        for _ in lines: Rectangle {
+            vertical-stretch: 1;
+            border-width: 0;
+            HorizontalLayout {
+                alignment: stretch;
+                Rectangle {
+                    height: 1px;
+                    y: 0px;
+                    background: Theme.border.with-alpha(0.6);
+                    vertical-stretch: 0;
+                }
+            }
+        }
+    }
+}
+
+// Line through up to twelve points. Curve is a smooth cubic; step is step-after.
+export component LineChart {
+    in property <[ChartPoint]> points;
+    in property <LineInterpolation> interpolation: LineInterpolation.curve;
+    in property <bool> dots;
+    in property <color> stroke: Theme.chart-2;
+    in property <int> tick-margin: 1;
+    in property <float> max-value;
+    in property <length> plot-height: 140px;
+
+    private property <int> n: min(points.length, 12);
+    private property <float> peak: max-value > 0 ? max-value : max(1,
+        max(n > 0 ? points[0].value : 0,
+        max(n > 1 ? points[1].value : 0,
+        max(n > 2 ? points[2].value : 0,
+        max(n > 3 ? points[3].value : 0,
+        max(n > 4 ? points[4].value : 0,
+        max(n > 5 ? points[5].value : 0,
+        max(n > 6 ? points[6].value : 0,
+        max(n > 7 ? points[7].value : 0,
+        max(n > 8 ? points[8].value : 0,
+        max(n > 9 ? points[9].value : 0,
+        max(n > 10 ? points[10].value : 0,
+            n > 11 ? points[11].value : 0))))))))))));
+    private property <float> span: max(n - 1, 1);
+
+    function px(i: int) -> float { 100 * i / span; }
+    function py(v: float) -> float { 96 - 88 * clamp(v / peak, 0, 1); }
+    function val(i: int) -> float { i < n ? points[i].value : 0; }
+    function dx(i: int) -> float { (px(i) - px(i - 1)) / 3; }
+
+    function join(i: int) -> string {
+        interpolation == LineInterpolation.step
+            ? "L \{round(px(i))} \{round(py(val(i - 1)))} L \{round(px(i))} \{round(py(val(i)))}"
+            : interpolation == LineInterpolation.linear
+                ? "L \{round(px(i))} \{round(py(val(i)))}"
+                : "C \{round(px(i - 1) + dx(i))} \{round(py(val(i - 1)))} \{round(px(i) - dx(i))} \{round(py(val(i)))} \{round(px(i))} \{round(py(val(i)))}";
+    }
+
+    // Parentheses are required: `?:` binds looser than `+`, so an ungrouped
+    // `n > 0 ? "M …" : "" + join` keeps only the move.
+    private property <string> line-path:
+        (n > 0 ? "M \{round(px(0))} \{round(py(val(0)))}" : "")
+        + (n > 1 ? join(1) : "")
+        + (n > 2 ? join(2) : "")
+        + (n > 3 ? join(3) : "")
+        + (n > 4 ? join(4) : "")
+        + (n > 5 ? join(5) : "")
+        + (n > 6 ? join(6) : "")
+        + (n > 7 ? join(7) : "")
+        + (n > 8 ? join(8) : "")
+        + (n > 9 ? join(9) : "")
+        + (n > 10 ? join(10) : "")
+        + (n > 11 ? join(11) : "");
+
+    horizontal-stretch: 1;
+    min-height: plot-height + 24px;
+
+    VerticalLayout {
+        spacing: 8px;
+        Rectangle {
+            height: plot-height;
+            ChartGrid { }
+            Path {
+                x: 0px;
+                y: 0px;
+                width: 100%;
+                height: 100%;
+                viewbox-width: 100;
+                viewbox-height: 100;
+                fit: ImageFit.fill;
+                stroke: stroke;
+                stroke-width: 2px;
+                commands: line-path;
+            }
+            if dots: Rectangle {
+                width: 100%;
+                height: 100%;
+                for point[index] in points: Rectangle {
+                    x: parent.width * px(index) / 100 - 3px;
+                    y: parent.height * py(point.value) / 100 - 3px;
+                    width: 6px;
+                    height: 6px;
+                    border-radius: 3px;
+                    background: stroke;
+                }
+            }
+        }
+        PlotLabels { points: root.points; tick-margin: root.tick-margin; }
+    }
+}
+
+export component AreaChart {
+    in property <[ChartPoint]> points;
+    in property <[SeriesPoint]> series;
+    in property <bool> stacked;
+    in property <LineInterpolation> interpolation: LineInterpolation.curve;
+    in property <color> fill: Theme.chart-2;
+    in property <color> fill-b: Theme.chart-4;
+    in property <int> tick-margin: 1;
+    in property <float> max-value;
+    in property <length> plot-height: 140px;
+
+    private property <int> n: stacked ? min(series.length, 12) : min(points.length, 12);
+    private property <float> raw-peak: stacked
+        ? max(1,
+            max(n > 0 ? series[0].a + series[0].b : 0,
+            max(n > 1 ? series[1].a + series[1].b : 0,
+            max(n > 2 ? series[2].a + series[2].b : 0,
+            max(n > 3 ? series[3].a + series[3].b : 0,
+            max(n > 4 ? series[4].a + series[4].b : 0,
+            max(n > 5 ? series[5].a + series[5].b : 0,
+            max(n > 6 ? series[6].a + series[6].b : 0,
+            max(n > 7 ? series[7].a + series[7].b : 0,
+            max(n > 8 ? series[8].a + series[8].b : 0,
+            max(n > 9 ? series[9].a + series[9].b : 0,
+            max(n > 10 ? series[10].a + series[10].b : 0,
+                n > 11 ? series[11].a + series[11].b : 0))))))))))))
+        : max(1,
+            max(n > 0 ? points[0].value : 0,
+            max(n > 1 ? points[1].value : 0,
+            max(n > 2 ? points[2].value : 0,
+            max(n > 3 ? points[3].value : 0,
+            max(n > 4 ? points[4].value : 0,
+            max(n > 5 ? points[5].value : 0,
+            max(n > 6 ? points[6].value : 0,
+            max(n > 7 ? points[7].value : 0,
+            max(n > 8 ? points[8].value : 0,
+            max(n > 9 ? points[9].value : 0,
+            max(n > 10 ? points[10].value : 0,
+                n > 11 ? points[11].value : 0))))))))))));
+    private property <float> peak: max-value > 0 ? max-value : raw-peak;
+    private property <float> span: max(n - 1, 1);
+
+    function px(i: int) -> float { 100 * i / span; }
+    function py(v: float) -> float { 96 - 88 * clamp(v / peak, 0, 1); }
+    function low(i: int) -> float { stacked ? series[i].a : points[i].value; }
+    function high(i: int) -> float { stacked ? series[i].a + series[i].b : points[i].value; }
+    function dx(i: int) -> float { (px(i) - px(i - 1)) / 3; }
+
+    function line-join(i: int, upper: bool) -> string {
+        interpolation == LineInterpolation.step
+            ? "L \{round(px(i))} \{round(py(upper ? high(i - 1) : low(i - 1)))} L \{round(px(i))} \{round(py(upper ? high(i) : low(i)))}"
+            : interpolation == LineInterpolation.linear
+                ? "L \{round(px(i))} \{round(py(upper ? high(i) : low(i)))}"
+                : "C \{round(px(i - 1) + dx(i))} \{round(py(upper ? high(i - 1) : low(i - 1)))} \{round(px(i) - dx(i))} \{round(py(upper ? high(i) : low(i)))} \{round(px(i))} \{round(py(upper ? high(i) : low(i)))}";
+    }
+
+    function series-line(upper: bool) -> string {
+        (n > 0 ? "M \{round(px(0))} \{round(py(upper ? high(0) : low(0)))}" : "")
+            + (n > 1 ? line-join(1, upper) : "")
+            + (n > 2 ? line-join(2, upper) : "")
+            + (n > 3 ? line-join(3, upper) : "")
+            + (n > 4 ? line-join(4, upper) : "")
+            + (n > 5 ? line-join(5, upper) : "")
+            + (n > 6 ? line-join(6, upper) : "")
+            + (n > 7 ? line-join(7, upper) : "")
+            + (n > 8 ? line-join(8, upper) : "")
+            + (n > 9 ? line-join(9, upper) : "")
+            + (n > 10 ? line-join(10, upper) : "")
+            + (n > 11 ? line-join(11, upper) : "");
+    }
+
+    private property <string> close: n > 0 ? " L \{round(px(n - 1))} 100 L 0 100 Z" : "";
+    private property <string> lower-fill: series-line(false) + close;
+    private property <string> upper-fill: stacked ? series-line(true) + close : "";
+
+    horizontal-stretch: 1;
+    min-height: plot-height + 24px;
+
+    VerticalLayout {
+        spacing: 8px;
+        Rectangle {
+            height: plot-height;
+            ChartGrid { }
+            Path {
+                x: 0px;
+                y: 0px;
+                width: 100%;
+                height: 100%;
+                viewbox-width: 100;
+                viewbox-height: 100;
+                fit: ImageFit.fill;
+                fill: fill.with-alpha(0.35);
+                commands: lower-fill;
+            }
+            if stacked: Path {
+                x: 0px;
+                y: 0px;
+                width: 100%;
+                height: 100%;
+                viewbox-width: 100;
+                viewbox-height: 100;
+                fit: ImageFit.fill;
+                fill: fill-b.with-alpha(0.35);
+                commands: upper-fill;
+            }
+            Path {
+                x: 0px;
+                y: 0px;
+                width: 100%;
+                height: 100%;
+                viewbox-width: 100;
+                viewbox-height: 100;
+                fit: ImageFit.fill;
+                stroke: fill;
+                stroke-width: 2px;
+                commands: series-line(false);
+            }
+            if stacked: Path {
+                x: 0px;
+                y: 0px;
+                width: 100%;
+                height: 100%;
+                viewbox-width: 100;
+                viewbox-height: 100;
+                fit: ImageFit.fill;
+                stroke: fill-b;
+                stroke-width: 2px;
+                commands: series-line(true);
+            }
+        }
+        if !stacked: PlotLabels { points: root.points; tick-margin: root.tick-margin; }
+        if stacked: HorizontalLayout {
+            width: 100%;
+            alignment: space-around;
+            for point[index] in series: Text {
+                horizontal-stretch: 1;
+                text: root.tick-margin < 1 || mod(index, root.tick-margin) == 0 ? point.label : "";
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
+    }
+}
+
+export component BarChart {
+    in property <[ChartPoint]> points;
+    in property <[StackPoint]> stacks;
+    in property <bool> stacked;
+    in property <BarAlign> alignment: BarAlign.bottom;
+    in property <bool> rounded;
+    in property <bool> mixed;
+    in property <bool> gradient;
+    in property <bool> show-labels;
+    in property <bool> value-axis;
+    in property <int> tick-margin: 1;
+    in property <color> fill: Theme.chart-2;
+    in property <length> bar-width: 22px;
+    in property <length> plot-height: 140px;
+
+    private property <int> n: stacked ? stacks.length : points.length;
+    private property <bool> horizontal: alignment == BarAlign.left || alignment == BarAlign.right;
+    private property <bool> from-end: alignment == BarAlign.top || alignment == BarAlign.right;
+    private property <float> lo: stacked ? 0 : min(0,
+        min(n > 0 ? points[0].value : 0,
+        min(n > 1 ? points[1].value : 0,
+        min(n > 2 ? points[2].value : 0,
+        min(n > 3 ? points[3].value : 0,
+        min(n > 4 ? points[4].value : 0,
+        min(n > 5 ? points[5].value : 0,
+        min(n > 6 ? points[6].value : 0,
+        min(n > 7 ? points[7].value : 0,
+        min(n > 8 ? points[8].value : 0,
+        min(n > 9 ? points[9].value : 0,
+        min(n > 10 ? points[10].value : 0,
+            n > 11 ? points[11].value : 0))))))))))));
+    private property <float> hi: stacked ? max(1,
+        max(n > 0 ? stacks[0].a + stacks[0].b + stacks[0].c + stacks[0].d : 0,
+        max(n > 1 ? stacks[1].a + stacks[1].b + stacks[1].c + stacks[1].d : 0,
+        max(n > 2 ? stacks[2].a + stacks[2].b + stacks[2].c + stacks[2].d : 0,
+        max(n > 3 ? stacks[3].a + stacks[3].b + stacks[3].c + stacks[3].d : 0,
+        max(n > 4 ? stacks[4].a + stacks[4].b + stacks[4].c + stacks[4].d : 0,
+        max(n > 5 ? stacks[5].a + stacks[5].b + stacks[5].c + stacks[5].d : 0,
+        max(n > 6 ? stacks[6].a + stacks[6].b + stacks[6].c + stacks[6].d : 0,
+            n > 7 ? stacks[7].a + stacks[7].b + stacks[7].c + stacks[7].d : 0))))))))
+        : max(1,
+            max(n > 0 ? points[0].value : 0,
+            max(n > 1 ? points[1].value : 0,
+            max(n > 2 ? points[2].value : 0,
+            max(n > 3 ? points[3].value : 0,
+            max(n > 4 ? points[4].value : 0,
+            max(n > 5 ? points[5].value : 0,
+            max(n > 6 ? points[6].value : 0,
+            max(n > 7 ? points[7].value : 0,
+            max(n > 8 ? points[8].value : 0,
+            max(n > 9 ? points[9].value : 0,
+            max(n > 10 ? points[10].value : 0,
+                n > 11 ? points[11].value : 0))))))))))));
+    private property <float> span: max(hi, -lo, 1);
+    private property <bool> around-zero: lo < 0;
+    private property <length> corner: rounded ? 8px : Theme.radius-sm;
+
+    function tone-of(index: int) -> color {
+        mixed ? Theme.chart-tone(index) : fill;
+    }
+
+    horizontal-stretch: 1;
+    min-height: horizontal ? 24px * max(n, 1) + 16px : plot-height + 28px;
+
+    VerticalLayout {
+        spacing: 8px;
+        if value-axis && !horizontal: HorizontalLayout {
+            spacing: 8px;
+            VerticalLayout {
+                width: 28px;
+                height: plot-height;
+                alignment: space-between;
+                Text { text: "\{round(hi)}"; color: Theme.muted-foreground; font-size: Theme.font-size-xs; }
+                Text { text: "\{round(hi / 2)}"; color: Theme.muted-foreground; font-size: Theme.font-size-xs; }
+                Text { text: "0"; color: Theme.muted-foreground; font-size: Theme.font-size-xs; }
+            }
+            Rectangle { horizontal-stretch: 1; height: plot-height; }
+        }
+        if !horizontal && stacked: HorizontalLayout {
+            height: plot-height;
+            spacing: 8px;
+            alignment: space-around;
+            padding-left: 4px;
+            padding-right: 4px;
+            for stack in stacks: VerticalLayout {
+                spacing: 0px;
+                alignment: end;
+                horizontal-stretch: 1;
+                Rectangle { height: plot-height * stack.d / span; background: Theme.chart-4; border-top-left-radius: corner; border-top-right-radius: corner; }
+                Rectangle { height: plot-height * stack.c / span; background: Theme.chart-3; }
+                Rectangle { height: plot-height * stack.b / span; background: Theme.chart-2; }
+                Rectangle { height: plot-height * stack.a / span; background: Theme.chart-1; }
+            }
+        }
+
+        if !horizontal && !stacked && around-zero: HorizontalLayout {
+            height: plot-height;
+            spacing: 8px;
+            alignment: space-around;
+            padding-left: 4px;
+            padding-right: 4px;
+            for point[index] in points: VerticalLayout {
+                horizontal-stretch: 1;
+                alignment: stretch;
+                VerticalLayout {
+                    vertical-stretch: 1;
+                    alignment: end;
+                    if point.value >= 0: Rectangle {
+                        width: bar-width;
+                        height: (plot-height / 2) * point.value / span;
+                        border-top-left-radius: corner;
+                        border-top-right-radius: corner;
+                        background: Theme.success;
+                        horizontal-stretch: 0;
+                    }
+                }
+                Rectangle { height: 1px; background: Theme.border; }
+                VerticalLayout {
+                    vertical-stretch: 1;
+                    alignment: start;
+                    if point.value < 0: Rectangle {
+                        width: bar-width;
+                        height: (plot-height / 2) * (-point.value) / span;
+                        border-bottom-left-radius: corner;
+                        border-bottom-right-radius: corner;
+                        background: Theme.danger;
+                        horizontal-stretch: 0;
+                    }
+                }
+            }
+        }
+
+        if !horizontal && !stacked && !around-zero: HorizontalLayout {
+            height: plot-height;
+            spacing: 8px;
+            alignment: space-around;
+            padding-left: 4px;
+            padding-right: 4px;
+            for point[index] in points: VerticalLayout {
+                horizontal-stretch: 1;
+                spacing: 4px;
+                alignment: from-end ? start : end;
+                if show-labels && from-end: Text {
+                    text: "\{round(point.value)}";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    horizontal-alignment: center;
+                }
+                Rectangle {
+                    width: bar-width;
+                    height: max(4px, plot-height * abs(point.value) / span);
+                    border-radius: rounded ? self.height / 2 : Theme.radius-sm;
+                    border-top-left-radius: from-end ? Theme.radius-sm : corner;
+                    border-top-right-radius: from-end ? Theme.radius-sm : corner;
+                    border-bottom-left-radius: from-end ? corner : Theme.radius-sm;
+                    border-bottom-right-radius: from-end ? corner : Theme.radius-sm;
+                    background: gradient
+                        ? @linear-gradient(180deg, root.tone-of(index), root.tone-of(index).with-alpha(0.7))
+                        : root.tone-of(index);
+                    horizontal-stretch: 0;
+                }
+                if show-labels && !from-end: Text {
+                    text: "\{round(point.value)}";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    horizontal-alignment: center;
+                }
+            }
+        }
+
+        if !horizontal && stacked: HorizontalLayout {
+            width: 100%;
+            alignment: space-around;
+            for stack[index] in stacks: Text {
+                horizontal-stretch: 1;
+                text: root.tick-margin < 1 || mod(index, root.tick-margin) == 0 ? stack.label : "";
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
+        if !horizontal && !stacked: HorizontalLayout {
+            width: 100%;
+            alignment: space-around;
+            for point[index] in points: Text {
+                horizontal-stretch: 1;
+                text: root.tick-margin < 1 || mod(index, root.tick-margin) == 0 ? point.label : "";
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
+
+        if horizontal: VerticalLayout {
+            spacing: 8px;
+            for point[index] in points: HorizontalLayout {
+                spacing: 8px;
+                height: 22px;
+                if !from-end: Text {
+                    width: 72px;
+                    text: point.label;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    vertical-alignment: center;
+                    overflow: elide;
+                }
+                track := Rectangle {
+                    horizontal-stretch: 1;
+                    height: 14px;
+                    y: 4px;
+                    Rectangle {
+                        x: from-end ? parent.width - self.width : 0px;
+                        y: 0px;
+                        height: 14px;
+                        width: max(8px, track.width * abs(point.value) / span);
+                        border-radius: rounded ? 7px : Theme.radius-sm;
+                        background: gradient
+                            ? @linear-gradient(90deg, root.tone-of(index), root.tone-of(index).with-alpha(0.7))
+                            : root.tone-of(index);
+                    }
+                }
+                if from-end: Text {
+                    width: 72px;
+                    text: point.label;
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    vertical-alignment: center;
+                    horizontal-alignment: right;
+                    overflow: elide;
+                }
+                if show-labels: Text {
+                    width: 48px;
+                    text: "\{round(point.value)}";
+                    color: Theme.muted-foreground;
+                    font-size: Theme.font-size-xs;
+                    vertical-alignment: center;
+                }
+            }
+        }
+    }
+}
+
+component PieSlice inherits Path {
+    in property <float> start;
+    in property <float> sweep;
+    in property <float> inner: 0;
+    in property <float> outer: 46;
+    in property <color> slice-fill;
+    in property <float> pad: 0;
+
+    private property <float> a0: (start + pad / 2) * 360 - 90;
+    private property <float> a1: (start + sweep - pad / 2) * 360 - 90;
+    private property <float> cx: 50;
+    private property <float> cy: 50;
+    private property <float> large: sweep > 0.5 ? 1 : 0;
+    private property <float> ox0: cx + outer * cos(a0 * 1deg);
+    private property <float> oy0: cy + outer * sin(a0 * 1deg);
+    private property <float> ox1: cx + outer * cos(a1 * 1deg);
+    private property <float> oy1: cy + outer * sin(a1 * 1deg);
+    private property <float> ix0: cx + inner * cos(a0 * 1deg);
+    private property <float> iy0: cy + inner * sin(a0 * 1deg);
+    private property <float> ix1: cx + inner * cos(a1 * 1deg);
+    private property <float> iy1: cy + inner * sin(a1 * 1deg);
+
+    x: 0px;
+    y: 0px;
+    width: 100%;
+    height: 100%;
+    viewbox-width: 100;
+    viewbox-height: 100;
+    fill: slice-fill;
+    commands: inner > 0
+        ? "M \{ox0} \{oy0} A \{outer} \{outer} 0 \{large} 1 \{ox1} \{oy1} L \{ix1} \{iy1} A \{inner} \{inner} 0 \{large} 0 \{ix0} \{iy0} Z"
+        : "M \{cx} \{cy} L \{ox0} \{oy0} A \{outer} \{outer} 0 \{large} 1 \{ox1} \{oy1} Z";
+}
+
+export component PieChart {
+    in property <[ChartPoint]> points;
+    in property <bool> donut;
+    in property <bool> show-labels;
+    in property <float> pad-angle;
+    in property <float> inner-radius: 0;
+    in property <float> outer-radius: 46;
+    in property <length> plot-size: 180px;
+
+    private property <int> n: min(points.length, 8);
+    private property <float> total: max(0.001,
+        (n > 0 ? points[0].value : 0)
+        + (n > 1 ? points[1].value : 0)
+        + (n > 2 ? points[2].value : 0)
+        + (n > 3 ? points[3].value : 0)
+        + (n > 4 ? points[4].value : 0)
+        + (n > 5 ? points[5].value : 0)
+        + (n > 6 ? points[6].value : 0)
+        + (n > 7 ? points[7].value : 0));
+    private property <float> hole: donut || inner-radius > 0 ? (inner-radius > 0 ? inner-radius : 28) : 0;
+
+    function prefix(index: int) -> float {
+        (index > 0 && n > 0 ? points[0].value : 0)
+        + (index > 1 && n > 1 ? points[1].value : 0)
+        + (index > 2 && n > 2 ? points[2].value : 0)
+        + (index > 3 && n > 3 ? points[3].value : 0)
+        + (index > 4 && n > 4 ? points[4].value : 0)
+        + (index > 5 && n > 5 ? points[5].value : 0)
+        + (index > 6 && n > 6 ? points[6].value : 0)
+        + (index > 7 && n > 7 ? points[7].value : 0);
+    }
+
+    function slice-tone(index: int) -> color {
+        Theme.chart-tone(index);
+    }
+
+    horizontal-stretch: 1;
+    height: plot-size + (show-labels ? 8px : 0);
+
+    Rectangle {
+        width: plot-size;
+        height: plot-size;
+        x: (parent.width - self.width) / 2;
+
+        for point[index] in points: PieSlice {
+            start: prefix(index) / total;
+            sweep: point.value / total;
+            inner: hole;
+            outer: outer-radius;
+            pad: pad-angle;
+            slice-fill: slice-tone(index);
+        }
+
+        if show-labels: Rectangle {
+            width: 100%;
+            height: 100%;
+            for point[index] in points: Text {
+                property <float> mid: (prefix(index) + point.value / 2) / total * 360 - 90;
+                x: parent.width / 2 + plot-size * 0.42 * cos(mid * 1deg) - self.width / 2;
+                y: parent.height / 2 + plot-size * 0.42 * sin(mid * 1deg) - self.height / 2;
+                text: point.label;
+                color: Theme.foreground;
+                font-size: Theme.font-size-xs;
+                font-weight: 600;
+            }
+        }
+    }
+}
+
+export component RadarChart {
+    in property <[RadarPoint]> points;
+    in property <bool> multiple;
+    in property <bool> dots;
+    in property <bool> lines-only;
+    in property <int> grid-levels: 4;
+    in property <color> stroke: Theme.chart-1;
+    in property <color> stroke-b: Theme.chart-2;
+    in property <float> max-value: 100;
+    in property <length> plot-size: 200px;
+
+    private property <int> n: min(max(points.length, 3), 8);
+    private property <float> cx: 50;
+    private property <float> cy: 50;
+    private property <float> radius: 32;
+
+    function ang(i: int) -> float { -90 + 360 * i / n; }
+    function gx(i: int, t: float) -> float { cx + radius * t * cos(ang(i) * 1deg); }
+    function gy(i: int, t: float) -> float { cy + radius * t * sin(ang(i) * 1deg); }
+    function ring(t: float) -> string {
+        "M \{gx(0, t)} \{gy(0, t)}"
+        + (n > 1 ? " L \{gx(1, t)} \{gy(1, t)}" : "")
+        + (n > 2 ? " L \{gx(2, t)} \{gy(2, t)}" : "")
+        + (n > 3 ? " L \{gx(3, t)} \{gy(3, t)}" : "")
+        + (n > 4 ? " L \{gx(4, t)} \{gy(4, t)}" : "")
+        + (n > 5 ? " L \{gx(5, t)} \{gy(5, t)}" : "")
+        + (n > 6 ? " L \{gx(6, t)} \{gy(6, t)}" : "")
+        + (n > 7 ? " L \{gx(7, t)} \{gy(7, t)}" : "")
+        + " Z";
+    }
+    function series-path(use-beta: bool) -> string {
+        "M \{gx(0, (use-beta ? points[0].beta : points[0].alpha) / max-value)} \{gy(0, (use-beta ? points[0].beta : points[0].alpha) / max-value)}"
+        + (n > 1 ? " L \{gx(1, (use-beta ? points[1].beta : points[1].alpha) / max-value)} \{gy(1, (use-beta ? points[1].beta : points[1].alpha) / max-value)}" : "")
+        + (n > 2 ? " L \{gx(2, (use-beta ? points[2].beta : points[2].alpha) / max-value)} \{gy(2, (use-beta ? points[2].beta : points[2].alpha) / max-value)}" : "")
+        + (n > 3 ? " L \{gx(3, (use-beta ? points[3].beta : points[3].alpha) / max-value)} \{gy(3, (use-beta ? points[3].beta : points[3].alpha) / max-value)}" : "")
+        + (n > 4 ? " L \{gx(4, (use-beta ? points[4].beta : points[4].alpha) / max-value)} \{gy(4, (use-beta ? points[4].beta : points[4].alpha) / max-value)}" : "")
+        + (n > 5 ? " L \{gx(5, (use-beta ? points[5].beta : points[5].alpha) / max-value)} \{gy(5, (use-beta ? points[5].beta : points[5].alpha) / max-value)}" : "")
+        + (n > 6 ? " L \{gx(6, (use-beta ? points[6].beta : points[6].alpha) / max-value)} \{gy(6, (use-beta ? points[6].beta : points[6].alpha) / max-value)}" : "")
+        + (n > 7 ? " L \{gx(7, (use-beta ? points[7].beta : points[7].alpha) / max-value)} \{gy(7, (use-beta ? points[7].beta : points[7].alpha) / max-value)}" : "")
+        + " Z";
+    }
+
+    horizontal-stretch: 1;
+    height: plot-size + 8px;
+
+    Rectangle {
+        width: plot-size;
+        height: plot-size;
+        x: (parent.width - self.width) / 2;
+
+        for level in grid-levels: Path {
+            x: 0px;
+            y: 0px;
+            width: 100%;
+            height: 100%;
+            viewbox-width: 100;
+            viewbox-height: 100;
+            stroke: Theme.border;
+            stroke-width: 1px;
+            commands: ring((level + 1) / grid-levels);
+        }
+
+        Path {
+            x: 0px;
+            y: 0px;
+            width: 100%;
+            height: 100%;
+            viewbox-width: 100;
+            viewbox-height: 100;
+            fill: lines-only ? transparent : stroke.with-alpha(0.28);
+            stroke: stroke;
+            stroke-width: 2px;
+            commands: series-path(false);
+        }
+
+        if multiple: Path {
+            x: 0px;
+            y: 0px;
+            width: 100%;
+            height: 100%;
+            viewbox-width: 100;
+            viewbox-height: 100;
+            fill: stroke-b.with-alpha(0.22);
+            stroke: stroke-b;
+            stroke-width: 2px;
+            commands: series-path(true);
+        }
+
+        if dots: Rectangle {
+            width: 100%;
+            height: 100%;
+            for point[index] in points: Rectangle {
+                x: parent.width * gx(index, point.alpha / max-value) / 100 - 3px;
+                y: parent.height * gy(index, point.alpha / max-value) / 100 - 3px;
+                width: 6px;
+                height: 6px;
+                border-radius: 3px;
+                background: stroke;
+            }
+        }
+
+        for point[index] in points: Text {
+            x: parent.width * gx(index, 1.18) / 100 - self.width / 2;
+            y: parent.height * gy(index, 1.18) / 100 - self.height / 2;
+            text: point.label;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+            horizontal-alignment: center;
+        }
+    }
+}
+
+export component CandlestickChart {
+    in property <[CandlePoint]> points;
+    in property <float> body-width: 0.8;
+    in property <int> tick-margin: 5;
+    in property <color> bullish: Theme.success;
+    in property <color> bearish: Theme.danger;
+    in property <float> min-price;
+    in property <float> max-price;
+    in property <length> plot-height: 140px;
+
+    private property <int> n: points.length;
+    private property <float> lo: min-price != 0 || max-price != 0 ? min-price : (n > 0 ? points[0].low : 0);
+    private property <float> hi: max-price > min-price ? max-price : (n > 0 ? points[0].high : 1);
+    private property <float> range: max(hi - lo, 1);
+
+    horizontal-stretch: 1;
+    min-height: plot-height + 24px;
+
+    VerticalLayout {
+        spacing: 8px;
+        HorizontalLayout {
+            height: plot-height;
+            spacing: 4px;
+            alignment: space-around;
+            padding-left: 8px;
+            padding-right: 8px;
+            for point in points: Rectangle {
+                horizontal-stretch: 1;
+                property <bool> up: point.close >= point.open;
+                property <float> top: max(point.open, point.close);
+                property <float> bot: min(point.open, point.close);
+                Rectangle {
+                    x: parent.width / 2 - 1px;
+                    y: parent.height * (hi - point.high) / range;
+                    width: 2px;
+                    height: parent.height * (point.high - point.low) / range;
+                    background: up ? bullish : bearish;
+                }
+                Rectangle {
+                    x: parent.width * (1 - body-width) / 2;
+                    y: parent.height * (hi - top) / range;
+                    width: parent.width * body-width;
+                    height: max(3px, parent.height * (top - bot) / range);
+                    background: up ? bullish : bearish;
+                    border-radius: 1px;
+                }
+            }
+        }
+        HorizontalLayout {
+            alignment: space-around;
+            for point[index] in points: Text {
+                horizontal-stretch: 1;
+                text: root.tick-margin < 1 || mod(index, root.tick-margin) == 0 ? point.label : "";
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                horizontal-alignment: center;
+                overflow: elide;
+            }
+        }
+    }
+}
+
+export component SankeyChart {
+    in property <[SankeyNode]> nodes;
+    in property <[SankeyLink]> links;
+    in property <length> node-width: 10px;
+    in property <length> plot-height: 220px;
+
+    function fill-of(tone: int) -> color {
+        tone == 0 ? Theme.chart-1
+            : tone == 1 ? Theme.chart-2
+            : tone == 2 ? Theme.chart-3
+            : tone == 3 ? Theme.chart-4
+            : Theme.chart-5;
+    }
+
+    horizontal-stretch: 1;
+    height: plot-height;
+
+    Rectangle {
+        width: 100%;
+        height: 100%;
+        clip: true;
+
+        for link in links: Path {
+            x: 0px;
+            y: 0px;
+            width: 100%;
+            height: 100%;
+            viewbox-width: 400;
+            viewbox-height: 220;
+            fill: fill-of(link.tone).with-alpha(0.28);
+            commands: "M \{20 + link.from-column * 140 + 10} \{18 + link.from-slot * 48} "
+                + "C \{20 + link.from-column * 140 + 70} \{18 + link.from-slot * 48} "
+                + "\{20 + link.to-column * 140 - 50} \{18 + link.to-slot * 48} "
+                + "\{20 + link.to-column * 140} \{18 + link.to-slot * 48} "
+                + "L \{20 + link.to-column * 140} \{18 + link.to-slot * 48 + max(8, link.value / 4)} "
+                + "C \{20 + link.to-column * 140 - 50} \{18 + link.to-slot * 48 + max(8, link.value / 4)} "
+                + "\{20 + link.from-column * 140 + 70} \{18 + link.from-slot * 48 + max(8, link.value / 4)} "
+                + "\{20 + link.from-column * 140 + 10} \{18 + link.from-slot * 48 + max(8, link.value / 4)} Z";
+        }
+
+        for node in nodes: Rectangle {
+            x: 16px + node.column * 140px;
+            y: 16px + node.slot * 48px;
+            width: node-width;
+            height: max(16px, plot-height * node.value / 400);
+            border-radius: 2px;
+            background: fill-of(node.tone);
+            Text {
+                x: node.column == 0 ? parent.width + 8px : -self.preferred-width - 8px;
+                y: 0px;
+                text: node.name;
+                color: Theme.foreground;
+                font-size: Theme.font-size-xs;
+            }
         }
     }
 }

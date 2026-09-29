@@ -46,6 +46,15 @@ export global Theme {
     out property <color> chart-4: dark ? #af57db : #e8c468;
     out property <color> chart-5: dark ? #e23670 : #f4a462;
 
+    // The five series colors, in legend order.
+    public pure function chart-tone(index: int) -> color {
+        if mod(index, 5) == 1 { return chart-2; }
+        if mod(index, 5) == 2 { return chart-3; }
+        if mod(index, 5) == 3 { return chart-4; }
+        if mod(index, 5) == 4 { return chart-5; }
+        return chart-1;
+    }
+
     out property <color> popover: dark ? #171717 : #ffffff;
     out property <color> sidebar: dark ? #111111 : #fafafa;
     out property <color> overlay: dark ? #000000a0 : #0000004d;

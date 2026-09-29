@@ -1,31 +1,525 @@
 import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
-import { BarChart, ChartLegend } from "../chart.slint";
+import {
+    LineChart, AreaChart, BarChart, PieChart, RadarChart, CandlestickChart, SankeyChart,
+    ChartLegend, LineInterpolation, BarAlign,
+    ChartPoint, SeriesPoint, StackPoint, RadarPoint, CandlePoint, SankeyNode, SankeyLink,
+} from "../chart.slint";
+
+component ChartCard inherits Rectangle {
+    in property <string> title;
+    in property <string> period;
+    in property <string> headline;
+    in property <string> note;
+
+    horizontal-stretch: 1;
+    border-width: 1px;
+    border-color: Theme.border;
+    border-radius: Theme.radius-lg;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 10px;
+        Text { text: root.title; color: Theme.foreground; font-weight: 600; wrap: word-wrap; }
+        if root.period != "": Text { text: root.period; color: Theme.muted-foreground; font-size: Theme.font-size-sm; }
+        @children
+        if root.headline != "": Text { text: root.headline; color: Theme.foreground; font-size: Theme.font-size-sm; wrap: word-wrap; }
+        if root.note != "": Text { text: root.note; color: Theme.muted-foreground; font-size: Theme.font-size-xs; wrap: word-wrap; }
+    }
+}
+
+component Rule inherits Rectangle {
+    height: 1px;
+    horizontal-stretch: 1;
+    background: Theme.border;
+}
 
 export component ChartExample inherits VerticalLayout {
     horizontal-stretch: 1;
     padding: Theme.page-padding(Theme.viewport);
-    spacing: 24px;
+    spacing: 16px;
     alignment: start;
 
-    BarChart {
-        height: 180px;
-        points: [
-            { label: "Mon", value: 40 },
-            { label: "Tue", value: 70 },
-            { label: "Wed", value: 55 },
-            { label: "Thu", value: 90 },
-            { label: "Fri", value: 30 },
-        ];
-    }
-    ChartLegend {
-        points: [
-            { label: "Mon", value: 40 },
-            { label: "Tue", value: 70 },
-            { label: "Wed", value: 55 },
-            { label: "Thu", value: 90 },
-            { label: "Fri", value: 30 },
-        ];
+    property <[SeriesPoint]> visitors: [
+        { label: "Apr 1", a: 42, b: 28 },
+        { label: "Apr 8", a: 48, b: 31 },
+        { label: "Apr 15", a: 51, b: 36 },
+        { label: "Apr 22", a: 46, b: 33 },
+        { label: "May 1", a: 55, b: 40 },
+        { label: "May 15", a: 61, b: 44 },
+        { label: "Jun 1", a: 58, b: 41 },
+        { label: "Jun 15", a: 64, b: 47 },
+    ];
+    property <[ChartPoint]> traffic: [
+        { label: "Direct", value: 38 },
+        { label: "Organic Search", value: 27 },
+        { label: "Social", value: 18 },
+        { label: "Referral", value: 11 },
+        { label: "Email", value: 6 },
+    ];
+    property <[ChartPoint]> browsers: [
+        { label: "Chrome", value: 48 },
+        { label: "Safari", value: 24 },
+        { label: "Edge", value: 14 },
+        { label: "Firefox", value: 9 },
+        { label: "Other", value: 5 },
+    ];
+    property <[ChartPoint]> plans: [
+        { label: "Free", value: 42 },
+        { label: "Starter", value: 28 },
+        { label: "Pro", value: 21 },
+        { label: "Enterprise", value: 9 },
+    ];
+    property <[ChartPoint]> regions: [
+        { label: "N. America", value: 48 },
+        { label: "Europe", value: 29 },
+        { label: "APAC", value: 16 },
+        { label: "LatAm", value: 7 },
+    ];
+    property <[RadarPoint]> scores: [
+        { label: "Usability", alpha: 88, beta: 72 },
+        { label: "Reliability", alpha: 74, beta: 91 },
+        { label: "Performance", alpha: 81, beta: 77 },
+        { label: "Support", alpha: 69, beta: 86 },
+        { label: "Design", alpha: 92, beta: 70 },
+        { label: "Value", alpha: 78, beta: 80 },
+    ];
+    property <[ChartPoint]> months: [
+        { label: "Jan", value: 42 },
+        { label: "Feb", value: 51 },
+        { label: "Mar", value: 47 },
+        { label: "Apr", value: 63 },
+        { label: "May", value: 58 },
+        { label: "Jun", value: 71 },
+        { label: "Jul", value: 66 },
+        { label: "Aug", value: 74 },
+        { label: "Sep", value: 69 },
+        { label: "Oct", value: 81 },
+        { label: "Nov", value: 76 },
+        { label: "Dec", value: 88 },
+    ];
+    property <[ChartPoint]> signups: [
+        { label: "Jan", value: 120 }, { label: "Feb", value: 148 }, { label: "Mar", value: 136 },
+        { label: "Apr", value: 172 }, { label: "May", value: 164 }, { label: "Jun", value: 190 },
+        { label: "Jul", value: 178 }, { label: "Aug", value: 204 }, { label: "Sep", value: 198 },
+        { label: "Oct", value: 226 }, { label: "Nov", value: 214 }, { label: "Dec", value: 240 },
+    ];
+    property <[ChartPoint]> orders: [
+        { label: "Jan", value: 32 }, { label: "Feb", value: 38 }, { label: "Mar", value: 35 },
+        { label: "Apr", value: 44 }, { label: "May", value: 41 }, { label: "Jun", value: 49 },
+        { label: "Jul", value: 46 }, { label: "Aug", value: 52 }, { label: "Sep", value: 48 },
+        { label: "Oct", value: 57 }, { label: "Nov", value: 53 }, { label: "Dec", value: 61 },
+    ];
+    property <[ChartPoint]> refunds: [
+        { label: "Jan", value: 4 }, { label: "Feb", value: 6 }, { label: "Mar", value: 5 },
+        { label: "Apr", value: 7 }, { label: "May", value: 6 }, { label: "Jun", value: 8 },
+        { label: "Jul", value: 7 }, { label: "Aug", value: 9 }, { label: "Sep", value: 8 },
+        { label: "Oct", value: 6 }, { label: "Nov", value: 7 }, { label: "Dec", value: 5 },
+    ];
+    property <[ChartPoint]> downloads: [
+        { label: "Jan", value: 220 }, { label: "Feb", value: 260 }, { label: "Mar", value: 240 },
+        { label: "Apr", value: 310 }, { label: "May", value: 290 }, { label: "Jun", value: 340 },
+        { label: "Jul", value: 320 }, { label: "Aug", value: 360 }, { label: "Sep", value: 350 },
+        { label: "Oct", value: 390 }, { label: "Nov", value: 370 }, { label: "Dec", value: 410 },
+    ];
+    property <[ChartPoint]> sessions: [
+        { label: "Jan", value: 1800 }, { label: "Feb", value: 2100 }, { label: "Mar", value: 1950 },
+        { label: "Apr", value: 2400 }, { label: "May", value: 2280 }, { label: "Jun", value: 2600 },
+        { label: "Jul", value: 2480 }, { label: "Aug", value: 2720 }, { label: "Sep", value: 2550 },
+        { label: "Oct", value: 2900 }, { label: "Nov", value: 2780 }, { label: "Dec", value: 3100 },
+    ];
+    property <[ChartPoint]> products: [
+        { label: "Alpha", value: 4200 },
+        { label: "Beta", value: 3100 },
+        { label: "Gamma", value: 2400 },
+        { label: "Delta", value: 1800 },
+        { label: "Epsilon", value: 1200 },
+    ];
+    property <[ChartPoint]> pages: [
+        { label: "/home", value: 8200 },
+        { label: "/pricing", value: 5400 },
+        { label: "/docs", value: 4100 },
+        { label: "/blog", value: 2700 },
+        { label: "/about", value: 1600 },
+    ];
+    property <[ChartPoint]> cash: [
+        { label: "Jan", value: 12 }, { label: "Feb", value: -4 }, { label: "Mar", value: 8 },
+        { label: "Apr", value: 15 }, { label: "May", value: -6 }, { label: "Jun", value: 11 },
+        { label: "Jul", value: 9 }, { label: "Aug", value: -2 }, { label: "Sep", value: 14 },
+        { label: "Oct", value: 7 }, { label: "Nov", value: -5 }, { label: "Dec", value: 18 },
+    ];
+    property <[StackPoint]> devices: [
+        { label: "Apr 1", a: 40, b: 28, c: 12, d: 6 },
+        { label: "Apr 2", a: 42, b: 30, c: 11, d: 7 },
+        { label: "Apr 3", a: 38, b: 32, c: 14, d: 5 },
+        { label: "Apr 4", a: 45, b: 29, c: 13, d: 8 },
+        { label: "Apr 5", a: 41, b: 34, c: 12, d: 6 },
+        { label: "Apr 6", a: 36, b: 31, c: 10, d: 4 },
+        { label: "Apr 7", a: 39, b: 27, c: 11, d: 5 },
+        { label: "Apr 8", a: 44, b: 33, c: 15, d: 7 },
+    ];
+    property <[ChartPoint]> conversion: [
+        { label: "Jan", value: 2.1 }, { label: "Feb", value: 2.4 }, { label: "Mar", value: 2.2 },
+        { label: "Apr", value: 2.8 }, { label: "May", value: 2.6 }, { label: "Jun", value: 3.1 },
+        { label: "Jul", value: 2.9 }, { label: "Aug", value: 3.3 }, { label: "Sep", value: 3.0 },
+        { label: "Oct", value: 3.5 }, { label: "Nov", value: 3.2 }, { label: "Dec", value: 3.6 },
+    ];
+    property <[ChartPoint]> deploys: [
+        { label: "Jan", value: 12 }, { label: "Feb", value: 18 }, { label: "Mar", value: 15 },
+        { label: "Apr", value: 22 }, { label: "May", value: 19 }, { label: "Jun", value: 24 },
+        { label: "Jul", value: 21 }, { label: "Aug", value: 27 }, { label: "Sep", value: 23 },
+        { label: "Oct", value: 29 }, { label: "Nov", value: 26 }, { label: "Dec", value: 31 },
+    ];
+    property <[ChartPoint]> storage: [
+        { label: "Jan", value: 12 }, { label: "Feb", value: 14 }, { label: "Mar", value: 13 },
+        { label: "Apr", value: 16 }, { label: "May", value: 18 }, { label: "Jun", value: 17 },
+        { label: "Jul", value: 19 }, { label: "Aug", value: 21 }, { label: "Sep", value: 20 },
+        { label: "Oct", value: 23 }, { label: "Nov", value: 22 }, { label: "Dec", value: 24 },
+    ];
+    property <[SeriesPoint]> year-over-year: [
+        { label: "Jan", a: 36, b: 42 }, { label: "Feb", a: 40, b: 51 }, { label: "Mar", a: 38, b: 47 },
+        { label: "Apr", a: 44, b: 63 }, { label: "May", a: 48, b: 58 }, { label: "Jun", a: 50, b: 71 },
+        { label: "Jul", a: 52, b: 66 }, { label: "Aug", a: 55, b: 74 }, { label: "Sep", a: 53, b: 69 },
+        { label: "Oct", a: 58, b: 81 }, { label: "Nov", a: 56, b: 76 }, { label: "Dec", a: 61, b: 88 },
+    ];
+    property <[CandlePoint]> candles: [
+        { label: "Mar 3", open: 102, high: 108, low: 100, close: 106 },
+        { label: "Mar 4", open: 106, high: 110, low: 103, close: 104 },
+        { label: "Mar 5", open: 104, high: 107, low: 98, close: 99 },
+        { label: "Mar 6", open: 99, high: 105, low: 97, close: 103 },
+        { label: "Mar 7", open: 103, high: 112, low: 102, close: 111 },
+        { label: "Mar 10", open: 111, high: 114, low: 107, close: 109 },
+        { label: "Mar 11", open: 109, high: 118, low: 108, close: 116 },
+        { label: "Mar 12", open: 116, high: 119, low: 111, close: 113 },
+        { label: "Mar 13", open: 113, high: 117, low: 109, close: 110 },
+        { label: "Mar 14", open: 110, high: 121, low: 108, close: 120 },
+        { label: "Mar 17", open: 120, high: 124, low: 115, close: 118 },
+        { label: "Mar 18", open: 118, high: 126, low: 117, close: 125 },
+    ];
+    property <[SankeyNode]> fy25-nodes: [
+        { name: "Revenue", value: 97, column: 0, slot: 1, tone: 0 },
+        { name: "Gross profit", value: 18, column: 1, slot: 0, tone: 1 },
+        { name: "Cost of sales", value: 79, column: 1, slot: 2, tone: 4 },
+        { name: "Operating income", value: 5, column: 2, slot: 0, tone: 2 },
+        { name: "Operating expenses", value: 13, column: 2, slot: 1, tone: 3 },
+    ];
+    property <[SankeyLink]> fy25-links: [
+        { from-column: 0, from-slot: 1, to-column: 1, to-slot: 0, value: 72, tone: 1 },
+        { from-column: 0, from-slot: 1, to-column: 1, to-slot: 2, value: 90, tone: 4 },
+        { from-column: 1, from-slot: 0, to-column: 2, to-slot: 0, value: 40, tone: 2 },
+        { from-column: 1, from-slot: 0, to-column: 2, to-slot: 1, value: 52, tone: 3 },
+    ];
+    property <[SankeyNode]> fy24-nodes: [
+        { name: "Revenue", value: 97, column: 0, slot: 1, tone: 0 },
+        { name: "Gross profit", value: 20, column: 1, slot: 0, tone: 1 },
+        { name: "Cost of sales", value: 77, column: 1, slot: 2, tone: 4 },
+        { name: "Operating income", value: 7, column: 2, slot: 0, tone: 2 },
+        { name: "Operating expenses", value: 13, column: 2, slot: 1, tone: 3 },
+    ];
+    property <[SankeyLink]> fy24-links: [
+        { from-column: 0, from-slot: 1, to-column: 1, to-slot: 0, value: 76, tone: 1 },
+        { from-column: 0, from-slot: 1, to-column: 1, to-slot: 2, value: 86, tone: 4 },
+        { from-column: 1, from-slot: 0, to-column: 2, to-slot: 0, value: 48, tone: 2 },
+        { from-column: 1, from-slot: 0, to-column: 2, to-slot: 1, value: 50, tone: 3 },
+    ];
+
+    ChartCard {
+        title: "Visitors";
+        period: "April – June 2025";
+        headline: "Trending up by 12.4% this week";
+        note: "1.2k visitors over the last three months";
+        AreaChart { series: visitors; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
+        ChartLegend { points: [{ label: "Desktop", value: 0 }, { label: "Mobile", value: 0 }]; }
     }
 
+    Rule { }
+
+    ChartCard {
+        title: "Traffic Sources";
+        period: "June 2025";
+        headline: "Direct brings 38% of traffic";
+        note: "5.4k visitors across five channels";
+        PieChart { points: traffic; }
+        ChartLegend { points: traffic; }
+    }
+    ChartCard {
+        title: "Browser Share";
+        period: "June 2025";
+        headline: "Chrome leads by 24 points";
+        note: "Share of sessions by browser family";
+        PieChart { points: browsers; donut: true; }
+        ChartLegend { points: browsers; }
+    }
+    ChartCard {
+        title: "Plan Mix";
+        period: "June 2025";
+        headline: "58% of accounts are on a paid plan";
+        note: "9.4k accounts in total";
+        PieChart { points: plans; donut: true; pad-angle: 0.02; }
+        ChartLegend { points: plans; }
+    }
+    ChartCard {
+        title: "Revenue by Region";
+        period: "Q2 2025";
+        headline: "$77 of $100 comes from the two largest regions";
+        note: "Recognized revenue, in US dollars";
+        PieChart { points: regions; donut: true; show-labels: true; inner-radius: 22; outer-radius: 38; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "Product Score";
+        period: "Alpha, Q2 review";
+        headline: "Scores 80 on average";
+        note: "Six review dimensions, scored out of 100";
+        RadarChart { points: scores; }
+    }
+    ChartCard {
+        title: "Alpha vs Beta";
+        period: "Q2 review";
+        headline: "Alpha leads by 6 points overall";
+        note: "Alpha wins on usability, Beta on reliability";
+        RadarChart { points: scores; multiple: true; }
+        ChartLegend { points: [{ label: "Alpha", value: 0 }, { label: "Beta", value: 0 }]; }
+    }
+    ChartCard {
+        title: "Review Grades";
+        period: "Alpha, Q2 review";
+        headline: "Two dimensions graded A";
+        note: "A from 85, B from 70, C below";
+        RadarChart { points: scores; dots: true; }
+    }
+    ChartCard {
+        title: "Beta Profile";
+        period: "Q2 review";
+        headline: "Strongest on reliability and support";
+        note: "Outline only, five grid rings";
+        RadarChart { points: scores; lines-only: true; grid-levels: 5; stroke: Theme.chart-4; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "Monthly Revenue";
+        period: "2025";
+        headline: "Trending up by 15.8% this month";
+        note: "$776 recognized this year";
+        BarChart { points: months; rounded: true; fill: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "Revenue by Region";
+        period: "Q2 2025";
+        headline: "N. America ahead of Europe by 19";
+        note: "One shade per region";
+        BarChart { points: regions; mixed: true; rounded: true; show-labels: true; }
+        ChartLegend { points: regions; }
+    }
+    ChartCard {
+        title: "Visitors by Device";
+        period: "First week of April";
+        headline: "612 visitors in eight days";
+        note: "Stacked by device, a custom Plot";
+        BarChart { stacks: devices; stacked: true; }
+        ChartLegend { points: [{ label: "Desktop", value: 0 }, { label: "Mobile", value: 0 }, { label: "Tablet", value: 0 }, { label: "Watch", value: 0 }]; }
+    }
+    ChartCard {
+        title: "Signups";
+        period: "2025";
+        headline: "Trending up by 12.1% this month";
+        note: "2.1k new accounts this year; fully rounded bars";
+        BarChart { points: signups; rounded: true; show-labels: true; fill: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "Orders";
+        period: "2025";
+        headline: "Trending up by 15.1% this month";
+        note: "Bottom aligned: bars grow up from the axis";
+        BarChart { points: orders; alignment: BarAlign.bottom; show-labels: true; }
+    }
+    ChartCard {
+        title: "Refunds";
+        period: "2025";
+        headline: "Trending down by 28.6% this month";
+        note: "Top aligned: bars hang from the axis";
+        BarChart { points: refunds; alignment: BarAlign.top; show-labels: true; fill: Theme.chart-3; }
+    }
+    ChartCard {
+        title: "Top Products";
+        period: "Units sold, Q2 2025";
+        headline: "Alpha outsells the next product by 1.1k";
+        note: "Left aligned: labels beside horizontal bars";
+        BarChart { points: products; alignment: BarAlign.left; show-labels: true; }
+    }
+    ChartCard {
+        title: "Page Views";
+        period: "June 2025";
+        headline: "/home is the most visited page";
+        note: "Right aligned: bars grow leftward";
+        BarChart { points: pages; alignment: BarAlign.right; show-labels: true; fill: Theme.chart-4; }
+    }
+    ChartCard {
+        title: "Net Cash Flow";
+        period: "2025";
+        headline: "$77 net for the year";
+        note: "Revenue less expenses; the axis sits at zero";
+        BarChart { points: cash; }
+        HorizontalLayout {
+            spacing: 12px;
+            Rectangle { y: 4px; width: 8px; height: 8px; border-radius: 2px; background: Theme.success; }
+            Text { text: "Surplus"; color: Theme.muted-foreground; font-size: Theme.font-size-xs; }
+            Rectangle { y: 4px; width: 8px; height: 8px; border-radius: 2px; background: Theme.danger; }
+            Text { text: "Deficit"; color: Theme.muted-foreground; font-size: Theme.font-size-xs; }
+        }
+    }
+    ChartCard {
+        title: "Downloads";
+        period: "2025";
+        headline: "Trending up by 10.8% this month";
+        note: "Shaded across the width, not along the length";
+        BarChart { points: downloads; gradient: true; show-labels: true; }
+    }
+    ChartCard {
+        title: "Refunds";
+        period: "2025";
+        headline: "Trending down by 28.6% this month";
+        note: "The shading stays with the bar as it hangs";
+        BarChart { points: refunds; alignment: BarAlign.top; gradient: true; fill: Theme.chart-4; show-labels: true; }
+    }
+    ChartCard {
+        title: "Page Views";
+        period: "June 2025";
+        headline: "22k views across the top five pages";
+        note: "Horizontal bars shade top to bottom";
+        BarChart { points: pages; alignment: BarAlign.left; gradient: true; show-labels: true; }
+    }
+    ChartCard {
+        title: "Top Products";
+        period: "Units sold, Q2 2025";
+        headline: "12.7k units across the catalogue";
+        note: "The same shading on right-aligned bars";
+        BarChart { points: products; alignment: BarAlign.right; gradient: true; fill: Theme.chart-4; show-labels: true; }
+    }
+    ChartCard {
+        title: "Sessions";
+        period: "2025";
+        headline: "Trending up by 11.5% this month";
+        note: "Fully rounded bars keep their shading";
+        BarChart { points: sessions; rounded: true; gradient: true; fill: Theme.chart-3; show-labels: true; }
+    }
+    ChartCard {
+        title: "Orders";
+        period: "2025";
+        headline: "Trending up by 15.1% this month";
+        note: "A chart-wide diagonal shade";
+        BarChart { points: orders; gradient: true; show-labels: true; fill: Theme.chart-1; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "Monthly Recurring Revenue";
+        period: "2025";
+        headline: "Trending up by 15.8% this month";
+        note: "Natural cubic spline through twelve months";
+        LineChart { points: months; stroke: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "Conversion Rate";
+        period: "2025";
+        headline: "Trending up by 12.5% this month";
+        note: "Straight segments between months";
+        LineChart { points: conversion; interpolation: LineInterpolation.linear; stroke: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "Active Subscriptions";
+        period: "2025";
+        headline: "Trending up by 8.8% this month";
+        note: "Step after: the value holds until the next month";
+        LineChart { points: months; interpolation: LineInterpolation.step; stroke: Theme.chart-3; }
+    }
+    ChartCard {
+        title: "Deploys";
+        period: "Per month, 2025";
+        headline: "Trending up by 19.2% this month";
+        note: "A dot on every month";
+        LineChart { points: deploys; dots: true; stroke: Theme.chart-2; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "Active Users";
+        period: "2025";
+        headline: "Trending up by 15.8% this month";
+        note: "Filled to the baseline";
+        AreaChart { points: months; fill: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "Sessions";
+        period: "2025";
+        headline: "Trending up by 11.5% this month";
+        note: "Linear interpolation";
+        AreaChart { points: sessions; interpolation: LineInterpolation.linear; fill: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "Storage Used";
+        period: "Terabytes, 2025";
+        headline: "Trending up by 9.1% this month";
+        note: "Step after, filled";
+        AreaChart { points: storage; interpolation: LineInterpolation.step; fill: Theme.chart-3; }
+    }
+    ChartCard {
+        title: "Revenue vs Last Year";
+        period: "2025";
+        headline: "Trending up by 36.1% year over year";
+        note: "Gradient fills fade to the baseline";
+        AreaChart { series: year-over-year; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
+        ChartLegend { points: [{ label: "2024", value: 0 }, { label: "2025", value: 0 }]; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "ACME Daily";
+        period: "Mar 3 – Mar 18 2025 · Daily";
+        headline: "Trending up by 22.5% over 12 sessions";
+        note: "Open, high, low, close";
+        CandlestickChart { points: candles; min-price: 90; max-price: 130; tick-margin: 2; }
+    }
+    ChartCard {
+        title: "ACME Daily";
+        period: "Mar 3 – Mar 18 2025 · Narrow bodies";
+        headline: "Trending up by 22.5% over 12 sessions";
+        note: "Open, high, low, close";
+        CandlestickChart { points: candles; body-width: 0.5; min-price: 90; max-price: 130; tick-margin: 2; }
+    }
+    ChartCard {
+        title: "ACME Daily";
+        period: "Mar 3 – Mar 18 2025 · Wide bodies";
+        headline: "Trending up by 22.5% over 12 sessions";
+        note: "Open, high, low, close";
+        CandlestickChart { points: candles; body-width: 1.0; min-price: 90; max-price: 130; tick-margin: 2; }
+    }
+    ChartCard {
+        title: "ACME Daily";
+        period: "Mar 3 – Mar 18 2025 · Wider ticks";
+        headline: "Trending up by 22.5% over 12 sessions";
+        note: "Open, high, low, close";
+        CandlestickChart { points: candles; min-price: 90; max-price: 130; tick-margin: 3; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "TSLA Income Statement";
+        period: "FY 2025";
+        note: "Simplified flow from revenue to operating income";
+        SankeyChart { nodes: fy25-nodes; links: fy25-links; }
+    }
+    ChartCard {
+        title: "TSLA Income Statement";
+        period: "FY 2024";
+        note: "Simplified flow from revenue to operating income";
+        SankeyChart { nodes: fy24-nodes; links: fy24-links; }
+    }
 }

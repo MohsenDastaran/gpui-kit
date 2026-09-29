@@ -1,14 +1,21 @@
-import { BarChart, ChartLegend } from "chart.slint";
 import { Theme } from "theme.slint";
+import { LineChart, AreaChart, BarChart, PieChart, RadarChart, CandlestickChart, SankeyChart, ChartLegend, LineInterpolation, BarAlign } from "chart.slint";
 
 export component Example inherits Window {
     preferred-width: 480px;
-    preferred-height: 360px;
+    preferred-height: 400px;
     VerticalLayout {
         horizontal-stretch: 1;
         padding: Theme.page-padding(Theme.viewport);
         spacing: 12px;
         alignment: start;
-        BarChart { horizontal-stretch: 1; points: [{ label: "Mon", value: 8.0 }, { label: "Tue", value: 10.0 }, { label: "Wed", value: 20.0 }, { label: "Thu", value: 16.0 }]; }
+        SankeyChart { nodes: [
+            { name: "收入", value: 97, column: 0, slot: 1, tone: 0 },
+            { name: "毛利", value: 18, column: 1, slot: 0, tone: 1 },
+            { name: "成本", value: 79, column: 1, slot: 2, tone: 4 },
+        ]; links: [
+            { from-column: 0, from-slot: 1, to-column: 1, to-slot: 0, value: 72, tone: 1 },
+            { from-column: 0, from-slot: 1, to-column: 1, to-slot: 2, value: 90, tone: 4 },
+        ]; node-width: 8px; }
     }
 }
