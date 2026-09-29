@@ -1,5 +1,5 @@
 import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { GroupBox } from "../group-box.slint";
 import { Calendar } from "../calendar.slint";
 
 export component CalendarExample inherits VerticalLayout {
@@ -8,8 +8,13 @@ export component CalendarExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "September 2026"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Calendar";
         Calendar { year: 2026; month: 9; selected-day: 26; }
     }
 
+    GroupBox {
+        title: "Two columns";
+        Calendar { year: 2026; month: 9; selected-day: 26; columns: 2; }
+    }
 }
