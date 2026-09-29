@@ -2,15 +2,17 @@ import { Theme } from "theme.slint";
 
 export enum Placement { top, bottom, left, right }
 
-// A delayed hover label. Mirrors GPUI Component's `Tooltip`.
+// A delayed hover label. Uses a popup so the label is not clipped by the
+// control it describes (reaction pills, buttons, bubbles).
 export component Tooltip {
     in property <string> text;
     in property <Placement> placement: Placement.top;
     in property <duration> delay: 400ms;
 
-    private property <bool> open;
     private property <bool> hovering;
 
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
     min-width: host.preferred-width;
     min-height: host.preferred-height;
 
@@ -22,11 +24,13 @@ export component Tooltip {
                 wait.running = true;
             } else {
                 wait.running = false;
-                root.open = false;
+                popup.close();
             }
         }
 
         VerticalLayout {
+            horizontal-stretch: 0;
+            alignment: start;
             @children
         }
     }
@@ -36,34 +40,39 @@ export component Tooltip {
         running: false;
         triggered => {
             self.running = false;
-            if root.hovering {
-                root.open = true;
+            if root.hovering && root.text != "" {
+                popup.show();
             }
         }
     }
 
-    if open && text != "": tip := Rectangle {
+    popup := PopupWindow {
+        close-policy: no-auto-close;
         x: placement == Placement.right ? host.width + 8px
             : placement == Placement.left ? -self.width - 8px
             : (host.width - self.width) / 2;
         y: placement == Placement.bottom ? host.height + 8px
             : placement == Placement.top ? -self.height - 8px
             : (host.height - self.height) / 2;
-        border-radius: Theme.radius-md;
-        background: Theme.foreground;
-        drop-shadow-blur: 8px;
-        drop-shadow-offset-y: 2px;
-        drop-shadow-color: Theme.shadow;
 
-        HorizontalLayout {
-            padding-left: 8px;
-            padding-right: 8px;
-            padding-top: 4px;
-            padding-bottom: 4px;
-            Text {
-                text: root.text;
-                color: Theme.background;
-                font-size: Theme.font-size-xs;
+        Rectangle {
+            border-radius: Theme.radius-md;
+            background: Theme.foreground;
+            drop-shadow-blur: 8px;
+            drop-shadow-offset-y: 2px;
+            drop-shadow-color: Theme.shadow;
+
+            HorizontalLayout {
+                padding-left: 8px;
+                padding-right: 8px;
+                padding-top: 4px;
+                padding-bottom: 4px;
+                Text {
+                    text: root.text;
+                    color: Theme.background;
+                    font-size: Theme.font-size-xs;
+                    wrap: no-wrap;
+                }
             }
         }
     }

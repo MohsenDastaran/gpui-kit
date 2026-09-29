@@ -1,43 +1,162 @@
-import { Theme } from "theme.slint";
+import { Theme, ButtonVariant, ControlSize } from "theme.slint";
 import { Avatar, AvatarSize } from "avatar.slint";
 import { MessageRole } from "message.slint";
 
-// A chat bubble. Mirrors GPUI Component's `Bubble`.
+export enum BubbleVariant { filled, secondary, muted, tinted, outline, ghost, destructive }
+export enum BubbleAlignment { start, end }
+export enum BubbleReactionSide { top, bottom }
+
+// Pill for emoji, labels, or icon buttons. Size to the row; do not stretch in a column.
+export component BubbleReactions inherits Rectangle {
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    width: row.preferred-width;
+    height: row.preferred-height;
+    border-radius: self.height / 2;
+    border-width: 3px;
+    border-color: Theme.background;
+    background: Theme.muted;
+    clip: false;
+
+    row := HorizontalLayout {
+        horizontal-stretch: 0;
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 4px;
+        padding-bottom: 4px;
+        spacing: 4px;
+        alignment: center;
+        @children
+    }
+}
+
+// Aligns a content-sized reaction pill under a bubble edge (GPUI `left-3` / `right-3`).
+export component BubbleReactionRow inherits HorizontalLayout {
+    in property <BubbleAlignment> align: BubbleAlignment.start;
+    horizontal-stretch: 1;
+    min-width: 0px;
+    alignment: align == BubbleAlignment.end ? end : start;
+    padding-left: align == BubbleAlignment.start ? 12px : 0px;
+    padding-right: align == BubbleAlignment.end ? 12px : 0px;
+
+    @children
+}
+
+// Bubble plus a reaction pill with stable spacing (no negative overlap clipping).
+export component BubbleWithReactions inherits VerticalLayout {
+    in property <BubbleAlignment> column-align: BubbleAlignment.start;
+    horizontal-stretch: 0;
+    spacing: 6px;
+    alignment: column-align == BubbleAlignment.end ? end : start;
+
+    @children
+}
+
+// Consecutive bubbles from one sender.
+export component BubbleGroup inherits VerticalLayout {
+    in property <BubbleAlignment> align: BubbleAlignment.start;
+    horizontal-stretch: 1;
+    min-width: 0px;
+    spacing: 8px;
+    alignment: align == BubbleAlignment.end ? end : start;
+    @children
+}
+
+// A chat bubble. Mirrors GPUI Component's `Bubble`: variants, alignment,
+// optional avatars, timestamps, grouped stacks, and composable content.
 export component Bubble {
     in property <MessageRole> role: MessageRole.assistant;
+    in property <BubbleAlignment> alignment: role == MessageRole.user ? BubbleAlignment.end : BubbleAlignment.start;
+    in property <BubbleVariant> variant: BubbleVariant.filled;
     in property <string> text;
     in property <string> time;
+    in property <bool> show-avatar: true;
+    in property <bool> custom-style;
+    in property <color> custom-fill: Theme.success.with-alpha(0.15);
+    in property <color> custom-text: Theme.success;
+    in property <color> custom-border: Theme.success.with-alpha(0.35);
+
+    private property <bool> ghost: variant == BubbleVariant.ghost;
+    private property <length> max-bubble-width: min(480px, Theme.viewport * 0.8);
+    private property <color> surface-fill: custom-style ? custom-fill
+        : variant == BubbleVariant.filled ? Theme.primary
+        : variant == BubbleVariant.secondary || variant == BubbleVariant.muted ? Theme.muted
+        : variant == BubbleVariant.tinted ? Theme.primary.mix(Theme.background, Theme.dark ? 0.76 : 0.88)
+        : variant == BubbleVariant.outline ? Theme.background
+        : variant == BubbleVariant.destructive ? Theme.destructive.with-alpha(Theme.dark ? 0.2 : 0.1)
+        : transparent;
+    private property <color> surface-text: custom-style ? custom-text
+        : variant == BubbleVariant.filled ? Theme.primary-foreground
+        : variant == BubbleVariant.secondary ? Theme.secondary-foreground
+        : variant == BubbleVariant.destructive ? Theme.destructive
+        : Theme.foreground;
+    private property <color> surface-border: custom-style ? custom-border
+        : variant == BubbleVariant.outline ? Theme.border
+        : transparent;
+    private property <length> surface-radius: ghost ? 0px : Theme.radius-xl;
+    private property <length> surface-pad-x: ghost ? 0px : 12px;
+    private property <length> surface-pad-y: ghost ? 0px : 8px;
+    private property <length> surface-border-width: variant == BubbleVariant.outline || custom-style ? 1px : 0px;
+
+    horizontal-stretch: 1;
+    min-width: 0px;
 
     HorizontalLayout {
         spacing: 8px;
-        alignment: role == MessageRole.user ? end : start;
+        alignment: alignment == BubbleAlignment.end ? end : start;
 
-        if role == MessageRole.assistant: Avatar { initials: "A"; size: AvatarSize.xsmall; }
+        if show-avatar && alignment == BubbleAlignment.start: Avatar {
+            initials: "A";
+            size: AvatarSize.xsmall;
+        }
 
         VerticalLayout {
-            alignment: start;
-            max-width: 320px;
-            Rectangle {
-                border-radius: Theme.radius-lg;
-                background: role == MessageRole.user ? Theme.primary : Theme.muted;
-                HorizontalLayout {
-                    padding: 10px;
-                    Text {
+            horizontal-stretch: ghost ? 1 : 0;
+            min-width: 0px;
+            max-width: ghost ? 100000px : max-bubble-width;
+            alignment: alignment == BubbleAlignment.end ? end : start;
+            spacing: 4px;
+
+            surface := Rectangle {
+                horizontal-stretch: ghost ? 1 : 0;
+                min-width: 0px;
+                border-radius: surface-radius;
+                border-width: surface-border-width;
+                border-color: surface-border;
+                background: surface-fill;
+                clip: true;
+
+                content := VerticalLayout {
+                    padding-left: surface-pad-x;
+                    padding-right: surface-pad-x;
+                    padding-top: surface-pad-y;
+                    padding-bottom: surface-pad-y;
+                    spacing: 8px;
+                    alignment: start;
+                    min-width: 0px;
+
+                    if text != "": Text {
                         text: root.text;
-                        color: role == MessageRole.user ? Theme.primary-foreground : Theme.foreground;
+                        color: surface-text;
                         font-size: Theme.font-size-sm;
                         wrap: word-wrap;
                     }
+                    @children
                 }
             }
+
             if time != "": Text {
                 text: time;
                 color: Theme.muted-foreground;
                 font-size: 10px;
-                horizontal-alignment: role == MessageRole.user ? right : left;
+                horizontal-alignment: alignment == BubbleAlignment.end ? right : left;
             }
         }
 
-        if role == MessageRole.user: Avatar { initials: "U"; size: AvatarSize.xsmall; fill: Theme.primary; }
+        if show-avatar && alignment == BubbleAlignment.end: Avatar {
+            initials: "U";
+            size: AvatarSize.xsmall;
+            fill: Theme.primary;
+        }
     }
 }

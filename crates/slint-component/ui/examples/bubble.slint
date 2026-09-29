@@ -1,15 +1,329 @@
-import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
-import { Bubble } from "../bubble.slint";
-import { MessageRole } from "../message.slint";
+import { Theme, ButtonVariant, ControlSize } from "../theme.slint";
+import { GroupBox } from "../group-box.slint";
+import { Button } from "../button.slint";
+import { Tooltip } from "../tooltip.slint";
+import {
+    Bubble,
+    BubbleGroup,
+    BubbleReactions,
+    BubbleReactionRow,
+    BubbleWithReactions,
+    BubbleVariant,
+    BubbleAlignment,
+} from "../bubble.slint";
 
 export component BubbleExample inherits VerticalLayout {
     horizontal-stretch: 1;
+    max-width: 680px;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
-    Bubble { role: MessageRole.assistant; text: "Ready when you are."; time: "9:41"; }
-    Bubble { role: MessageRole.user; text: "Show me the login block."; time: "9:42"; }
+    property <bool> details-open;
 
+    GroupBox {
+        title: "Variants";
+        VerticalLayout {
+            spacing: 16px;
+            alignment: start;
+            Bubble {
+                show-avatar: false;
+                text: "A strong primary bubble.";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.secondary;
+                text: "The neutral secondary bubble.";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.muted;
+                text: "A lower-emphasis muted bubble.";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.tinted;
+                text: "A softly tinted primary bubble.";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.outline;
+                text: "A bordered bubble for rich content.";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.destructive;
+                text: "A failed action with its reason in text.";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.ghost;
+                text: "Ghost content is unframed and can use the full row width.";
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Alignment";
+        VerticalLayout {
+            spacing: 12px;
+            alignment: start;
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.secondary;
+                text: "Incoming message";
+            }
+            Bubble {
+                show-avatar: false;
+                alignment: BubbleAlignment.end;
+                text: "Outgoing message";
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Reactions";
+        VerticalLayout {
+            spacing: 24px;
+            padding-top: 8px;
+            padding-bottom: 8px;
+            alignment: start;
+            BubbleWithReactions {
+                column-align: BubbleAlignment.start;
+                Bubble {
+                    horizontal-stretch: 0;
+                    show-avatar: false;
+                    variant: BubbleVariant.outline;
+                    text: "This bubble has reaction feedback.";
+                }
+                BubbleReactionRow {
+                    align: BubbleAlignment.start;
+                    BubbleReactions {
+                        HorizontalLayout {
+                            spacing: 4px;
+                            alignment: center;
+                            Text {
+                                text: "👍";
+                                font-family: "Noto Emoji";
+                                font-size: Theme.font-size-sm;
+                                horizontal-stretch: 0;
+                            }
+                            Text {
+                                text: "2";
+                                color: Theme.foreground;
+                                font-size: Theme.font-size-sm;
+                                horizontal-stretch: 0;
+                            }
+                        }
+                    }
+                }
+            }
+            HorizontalLayout {
+                horizontal-stretch: 1;
+                alignment: end;
+                BubbleWithReactions {
+                    column-align: BubbleAlignment.end;
+                    BubbleReactionRow {
+                        align: BubbleAlignment.end;
+                        BubbleReactions {
+                            HorizontalLayout {
+                                spacing: 4px;
+                                alignment: center;
+                                Text {
+                                    text: "✨";
+                                    font-family: "Noto Emoji";
+                                    font-size: Theme.font-size-sm;
+                                    horizontal-stretch: 0;
+                                }
+                                Text {
+                                    text: "1";
+                                    color: Theme.foreground;
+                                    font-size: Theme.font-size-sm;
+                                    horizontal-stretch: 0;
+                                }
+                            }
+                        }
+                    }
+                    Bubble {
+                        horizontal-stretch: 0;
+                        show-avatar: false;
+                        alignment: BubbleAlignment.end;
+                        text: "Reactions can attach to any edge.";
+                    }
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Group";
+        VerticalLayout {
+            spacing: 20px;
+            alignment: start;
+            BubbleGroup {
+                Bubble {
+                    show-avatar: false;
+                    variant: BubbleVariant.secondary;
+                    text: "Can you tell me what changed?";
+                }
+                Bubble {
+                    show-avatar: false;
+                    variant: BubbleVariant.secondary;
+                    text: "The registry route was stale.";
+                }
+            }
+            BubbleGroup {
+                align: BubbleAlignment.end;
+                Bubble {
+                    show-avatar: false;
+                    alignment: BubbleAlignment.end;
+                    text: "I removed the stale route.";
+                }
+                Bubble {
+                    show-avatar: false;
+                    alignment: BubbleAlignment.end;
+                    text: "The updated registry is ready to review.";
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Links and buttons";
+        VerticalLayout {
+            spacing: 12px;
+            alignment: start;
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.outline;
+                text: "The implementation guide is available online.";
+                Text {
+                    text: "Open the component documentation";
+                    color: Theme.primary;
+                    font-size: Theme.font-size-sm;
+                }
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.muted;
+                HorizontalLayout {
+                    spacing: 12px;
+                    alignment: center;
+                    Text {
+                        text: "The generated report is ready.";
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                        wrap: word-wrap;
+                    }
+                    Button {
+                        text: "Open report";
+                        variant: ButtonVariant.ghost;
+                        size: ControlSize.small;
+                    }
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Collapsible content";
+        Bubble {
+            show-avatar: false;
+            variant: BubbleVariant.muted;
+            text: "The accessibility review found two focus states that need more contrast.";
+            VerticalLayout {
+                spacing: 8px;
+                alignment: start;
+                if root.details-open: VerticalLayout {
+                    spacing: 8px;
+                    Text {
+                        text: "Dialog and sheet controls already keep their focus rings visible.";
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                        wrap: word-wrap;
+                    }
+                    Text {
+                        text: "Update the menu focus token separately from its pointer hover state.";
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-sm;
+                        wrap: word-wrap;
+                    }
+                }
+                Button {
+                    text: root.details-open ? "Show less" : "Show more";
+                    icon: "chevrons-up-down";
+                    variant: ButtonVariant.ghost;
+                    size: ControlSize.small;
+                    clicked => { root.details-open = !root.details-open; }
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Tooltip";
+        HorizontalLayout {
+            horizontal-stretch: 1;
+            alignment: end;
+            BubbleWithReactions {
+                column-align: BubbleAlignment.end;
+                Bubble {
+                    horizontal-stretch: 0;
+                    show-avatar: false;
+                    alignment: BubbleAlignment.end;
+                    text: "The updated registry route is live.";
+                }
+                BubbleReactionRow {
+                    align: BubbleAlignment.end;
+                    Tooltip {
+                        text: "Read today at 4:32 PM";
+                        BubbleReactions {
+                            Button {
+                                icon: "circle-check";
+                                variant: ButtonVariant.ghost;
+                                size: ControlSize.xsmall;
+                                accessible-label: "Read today at 4:32 PM";
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Popover";
+        BubbleWithReactions {
+            column-align: BubbleAlignment.start;
+            Bubble {
+                horizontal-stretch: 0;
+                show-avatar: false;
+                variant: BubbleVariant.destructive;
+                text: "The build command could not finish.";
+            }
+            BubbleReactionRow {
+                align: BubbleAlignment.start;
+                Tooltip {
+                    text: "Build command failed. The workspace lockfile could not be found.";
+                    BubbleReactions {
+                        Button {
+                            icon: "info";
+                            variant: ButtonVariant.ghost;
+                            size: ControlSize.xsmall;
+                            accessible-label: "Show error details";
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Custom style";
+        Bubble {
+            show-avatar: false;
+            custom-style: true;
+            text: "Custom semantic color";
+        }
+    }
 }

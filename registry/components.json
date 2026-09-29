@@ -1596,8 +1596,20 @@
           "target": "avatar.slint"
         },
         {
+          "src": "crates/slint-component/ui/icon.slint",
+          "target": "icon.slint"
+        },
+        {
           "src": "crates/slint-component/ui/theme.slint",
           "target": "theme.slint"
+        },
+        {
+          "src": "crates/slint-component/ui/icons/box.svg",
+          "target": "icons/box.svg"
+        },
+        {
+          "src": "crates/slint-component/ui/icons/user.svg",
+          "target": "icons/user.svg"
         }
       ],
       "badge": [

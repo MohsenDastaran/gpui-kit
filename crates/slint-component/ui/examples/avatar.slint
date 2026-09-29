@@ -1,54 +1,85 @@
 import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { GroupBox } from "../group-box.slint";
 import { Avatar, AvatarGroup, AvatarSize } from "../avatar.slint";
 
 export component AvatarExample inherits VerticalLayout {
     horizontal-stretch: 1;
-    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    max-width: 680px;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
-        GridLayout { spacing: 12px;            Avatar {
-                row: Theme.wrap-row(0, root.wrap-cols);
-                col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
-                 initials: "XS"; size: AvatarSize.xsmall; }
+    property <image> portrait: @image-url("assets/avatar-sample.svg");
+
+    GroupBox {
+        title: "Image";
+        VerticalLayout {
+            spacing: 12px;
+            alignment: start;
             Avatar {
-                row: Theme.wrap-row(1, root.wrap-cols);
-                col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
-                 initials: "SM"; size: AvatarSize.small; }
-            Avatar {
-                row: Theme.wrap-row(2, root.wrap-cols);
-                col: Theme.wrap-col(2, root.wrap-cols);
-                horizontal-stretch: 0;
-                 initials: "MD"; }
-            Avatar {
-                row: Theme.wrap-row(3, root.wrap-cols);
-                col: Theme.wrap-col(3, root.wrap-cols);
-                horizontal-stretch: 0;
-                 initials: "LG"; size: AvatarSize.large; }
-            Avatar {
-                row: Theme.wrap-row(4, root.wrap-cols);
-                col: Theme.wrap-col(4, root.wrap-cols);
-                horizontal-stretch: 0;
-                 initials: "XL"; size: AvatarSize.xlarge; }
-        
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
+                source: root.portrait;
+                initials: "JL";
             }
-}
-    }
-    GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
-        AvatarGroup {
-            Avatar { initials: "YK"; }
-            Avatar { initials: "AL"; fill: Theme.primary; }
-            Avatar { initials: "MJ"; }
+            Avatar {
+                source: root.portrait;
+            }
         }
     }
 
+    GroupBox {
+        title: "Fallback";
+        VerticalLayout {
+            spacing: 12px;
+            alignment: start;
+            Avatar { initials: "JL"; }
+            Avatar { }
+            Avatar { icon: "box"; }
+        }
+    }
+
+    GroupBox {
+        title: "Group";
+        VerticalLayout {
+            spacing: 20px;
+            alignment: start;
+            AvatarGroup {
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+            }
+            AvatarGroup {
+                limit: 5;
+                ellipsis: true;
+                overflow-count: 11;
+                avatar-size: AvatarSize.medium;
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar { source: root.portrait; horizontal-stretch: 0; }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Custom shape";
+        Avatar {
+            source: root.portrait;
+            custom-edge: 100px;
+            radius: 20px;
+        }
+    }
+
+    GroupBox {
+        title: "Custom style";
+        Avatar {
+            source: root.portrait;
+            custom-edge: 100px;
+            border-width: 3px;
+            border-color: Theme.foreground;
+            shadow-blur: 4px;
+            shadow-offset-y: 2px;
+            shadow-color: Theme.shadow;
+        }
+    }
 }

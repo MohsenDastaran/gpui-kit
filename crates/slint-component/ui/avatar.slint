@@ -1,29 +1,49 @@
 import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
 
 export enum AvatarSize { xsmall, small, medium, large, xlarge }
 
-// A user portrait. Mirrors GPUI Component's `Avatar`: an image, initials
-// fallback, and sizes. `AvatarGroup` overlaps a row of avatars.
+// A user portrait. Mirrors GPUI Component's `Avatar`: an image, initials or
+// icon fallback, sizes, grouped overlap, and optional custom radius or chrome.
 export component Avatar {
     in property <image> source;
     in property <string> initials;
     in property <AvatarSize> size: AvatarSize.medium;
     in property <color> fill: Theme.secondary;
+    in property <string> icon: "user";
+    // Overrides `size` when greater than zero.
+    in property <length> custom-edge;
+    // Zero uses a circle. Set an explicit length for rounded-rectangle avatars.
+    in property <length> radius;
+    in property <length> border-width: 1px;
+    in property <color> border-color: Theme.border;
+    in property <length> shadow-blur;
+    in property <length> shadow-offset-y: 1px;
+    in property <color> shadow-color: Theme.shadow;
 
-    private property <length> edge: size == AvatarSize.xsmall ? 20px
+    private property <length> edge: custom-edge > 0px ? custom-edge
+        : size == AvatarSize.xsmall ? 20px
         : size == AvatarSize.small ? 24px
         : size == AvatarSize.large ? 40px
         : size == AvatarSize.xlarge ? 56px
         : 32px;
+    private property <length> corner: radius > 0px ? radius : edge / 2;
 
     width: edge;
     height: edge;
     horizontal-stretch: 0;
 
     Rectangle {
-        border-radius: self.width / 2;
+        width: 100%;
+        height: 100%;
+        border-radius: corner;
+        border-width: root.border-width;
+        border-color: root.border-color;
         background: fill;
         clip: true;
+        drop-shadow-blur: root.shadow-blur;
+        drop-shadow-offset-y: root.shadow-offset-y;
+        drop-shadow-color: root.shadow-color;
 
         if source.width > 0: Image {
             width: 100%;
@@ -42,12 +62,32 @@ export component Avatar {
             horizontal-alignment: center;
             vertical-alignment: center;
         }
+
+        if source.width == 0 && initials == "": Icon {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            name: icon;
+            size: edge * 0.45;
+            color: Theme.muted-foreground;
+        }
     }
 }
 
+// Overlapping avatars. GPUI defaults to showing three; set `limit` and
+// `ellipsis` for overflow rows like the story gallery.
 export component AvatarGroup inherits HorizontalLayout {
-    in property <int> max: 5;
+    in property <int> limit: 3;
+    in property <bool> ellipsis;
+    in property <int> overflow-count;
+    in property <AvatarSize> avatar-size: AvatarSize.medium;
     spacing: -8px;
     alignment: start;
+
     @children
+
+    if ellipsis && overflow-count > limit: Avatar {
+        initials: "⋯";
+        size: avatar-size;
+        fill: Theme.secondary;
+    }
 }
