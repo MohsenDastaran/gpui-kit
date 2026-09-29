@@ -1,18 +1,29 @@
 import { Carousel } from "carousel.slint";
 import { Theme } from "theme.slint";
-
+import { Button } from "button.slint";
 export component Example inherits Window {
-    preferred-width: 480px;
-    preferred-height: 280px;
+    preferred-width: 520px;
+    preferred-height: 440px;
+    property <int> selected;
     VerticalLayout {
         horizontal-stretch: 1;
         padding: Theme.page-padding(Theme.viewport);
         spacing: 12px;
-        alignment: start;
-        Carousel { horizontal-stretch: 1; slides: [
-                { title: "Previous project", body: "Back" },
-                { title: "Back", body: "Next project" },
-                { title: "Next project", body: "Forward" }
-            ]; }
+        alignment: center;
+        HorizontalLayout {
+            alignment: center;
+            spacing: 12px;
+            Button {
+                text: "Back";
+                enabled: selected > 0;
+                clicked => { selected = max(0, selected - 1); }
+            }
+            Carousel { count: 3; index <=> selected; controls: false; frame: 220px; }
+            Button {
+                text: "Forward";
+                enabled: selected < 2;
+                clicked => { selected = min(2, selected + 1); }
+            }
+        }
     }
 }

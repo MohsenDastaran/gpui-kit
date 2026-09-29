@@ -1,81 +1,299 @@
-import { Theme, ButtonVariant, ControlSize } from "theme.slint";
+import { Theme, ControlSize } from "theme.slint";
+import { Icon } from "icon.slint";
 import { Button } from "button.slint";
 
-export struct Slide {
-    title: string,
-    body: string,
-}
+// One slide: a bordered card with a centered label. Square in the horizontal
+// carousel; the vertical carousel sets a shorter height.
+component CarouselSlide inherits Rectangle {
+    in property <string> label;
+    in property <length> side-width;
+    in property <length> side-height;
+    in property <length> label-size: 36px;
+    callback pressed();
 
-// A slide show. Mirrors GPUI Component's `Carousel`.
-export component Carousel {
-    in property <[Slide]> slides;
-    in-out property <int> index: 0;
+    width: side-width;
+    height: side-height;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: Theme.radius-xl;
+    border-width: 1px;
+    border-color: Theme.border;
+    background: Theme.background;
 
-    function go(delta: int) {
-        if slides.length == 0 {
-            return;
-        }
-        root.index = mod(index + delta + slides.length, slides.length);
+    Text {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        text: label;
+        font-size: label-size;
+        font-weight: 600;
+        color: Theme.foreground;
+        horizontal-alignment: center;
+        vertical-alignment: center;
     }
 
-    min-height: 180px;
+    TouchArea {
+        x: 0px;
+        y: 0px;
+        width: 100%;
+        height: 100%;
+        clicked => { root.pressed(); }
+    }
+}
 
-    Rectangle {
-        border-radius: Theme.radius-lg;
-        border-width: 1px;
-        border-color: Theme.border;
-        background: Theme.muted;
-        clip: true;
+// Circular previous/next control. A non-empty label replaces the chevron
+// and the control grows into a pill, matching a custom GPUI control.
+component CarouselStep inherits Rectangle {
+    in property <string> icon;
+    in property <string> label;
+    in property <bool> enabled: true;
+    in property <length> side: 32px;
+    in property <length> icon-size: 16px;
+    callback activated();
 
-        VerticalLayout {
-            padding: 24px;
-            spacing: 8px;
-            alignment: center;
-            Text {
-                text: slides.length > 0 ? slides[index].title : "";
-                color: Theme.foreground;
-                font-size: Theme.font-size-lg;
-                font-weight: 600;
-                horizontal-alignment: center;
+    private property <bool> icon-only: label == "";
+
+    height: side;
+    width: icon-only ? side : caption.preferred-width + 28px;
+    horizontal-stretch: 0;
+    vertical-stretch: 0;
+    border-radius: self.height / 2;
+    border-width: 1px;
+    border-color: enabled ? Theme.border : Theme.border.with-alpha(0.4);
+    background: enabled && area.has-hover ? Theme.accent : transparent;
+
+    if icon-only: Icon {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        name: icon;
+        size: icon-size;
+        color: root.enabled ? Theme.foreground : Theme.muted-foreground;
+    }
+
+    caption := Text {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        text: label;
+        font-size: Theme.font-size-sm;
+        color: root.enabled ? Theme.foreground : Theme.muted-foreground;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+
+    area := TouchArea {
+        x: 0px;
+        y: 0px;
+        width: 100%;
+        height: 100%;
+        enabled: root.enabled;
+        clicked => { root.activated(); }
+    }
+}
+
+// Browses one or more related items. Previous and next sit outside the
+// viewport; numbered pagination is optional and drawn underneath.
+export component Carousel {
+    in property <int> count: 3;
+    in-out property <int> index: 0;
+    in property <bool> looping: false;
+    in property <bool> vertical: false;
+    // How many items the viewport shows at once.
+    in property <int> visible-items: 1;
+    in property <bool> pagination: false;
+    in property <bool> controls: true;
+    in property <string> previous-text;
+    in property <string> next-text;
+    // Viewport size along the scroll axis. Horizontal carousels are square,
+    // so this is also the slide width.
+    in property <length> frame: 320px;
+    in property <length> cross: 256px;
+    in property <length> label-size: 36px;
+    in property <ControlSize> control-size: ControlSize.medium;
+    callback changed(int);
+
+    private property <length> gap: 12px;
+    private property <int> span: max(visible-items, 1);
+    private property <int> last-index: max(0, count - span);
+    private property <int> origin: looping ? mod(index, max(count, 1)) : clamp(index, 0, last-index);
+    private property <length> card-width: vertical ? cross : (span <= 1 ? frame : (frame - gap * (span - 1)) / span);
+    private property <length> card-height: vertical ? (frame - gap * (span - 1)) / span : card-width;
+    private property <length> control-side: control-size == ControlSize.large ? 40px
+        : control-size == ControlSize.small ? 24px
+        : control-size == ControlSize.xsmall ? 20px
+        : 32px;
+    private property <length> control-icon: control-size == ControlSize.large ? 18px : 16px;
+    private property <bool> can-previous: looping ? count > 1 : origin > 0;
+    private property <bool> can-next: looping ? count > 1 : origin < last-index;
+
+    function step(delta: int) {
+        if count <= 1 {
+            return;
+        }
+        if looping {
+            index = mod(index + delta + count, count);
+        } else if delta < 0 && index > 0 {
+            index = index + delta;
+        } else if delta > 0 && index < last-index {
+            index = index + delta;
+        } else {
+            return;
+        }
+        root.changed(index);
+        keys.focus();
+    }
+
+    function jump(to: int) {
+        if count <= 0 {
+            return;
+        }
+        index = looping ? mod(to + count, count) : clamp(to, 0, last-index);
+        root.changed(index);
+        keys.focus();
+    }
+
+    horizontal-stretch: 1;
+    vertical-stretch: 0;
+
+    keys := FocusScope {
+        horizontal-stretch: 1;
+
+        key-pressed(event) => {
+            if !root.vertical && event.text == Key.LeftArrow {
+                root.step(-1);
+                return accept;
             }
-            Text {
-                text: slides.length > 0 ? slides[index].body : "";
-                color: Theme.muted-foreground;
-                font-size: Theme.font-size-sm;
-                wrap: word-wrap;
-                horizontal-alignment: center;
+            if !root.vertical && event.text == Key.RightArrow {
+                root.step(1);
+                return accept;
             }
+            if root.vertical && event.text == Key.UpArrow {
+                root.step(-1);
+                return accept;
+            }
+            if root.vertical && event.text == Key.DownArrow {
+                root.step(1);
+                return accept;
+            }
+            if event.text == Key.Home {
+                root.jump(0);
+                return accept;
+            }
+            if event.text == Key.End {
+                root.jump(root.count - 1);
+                return accept;
+            }
+            reject
         }
 
-        HorizontalLayout {
-            y: parent.height - 40px;
-            padding-left: 12px;
-            padding-right: 12px;
-            Button {
-                icon: "chevron-left";
-                variant: ButtonVariant.ghost;
-                size: ControlSize.small;
-                clicked => { root.go(-1); }
-            }
-            HorizontalLayout {
+        VerticalLayout {
+            horizontal-stretch: 1;
+            alignment: center;
+            spacing: 16px;
+
+            if !root.vertical: HorizontalLayout {
                 horizontal-stretch: 1;
-                spacing: 6px;
                 alignment: center;
-                for _[i] in slides: Rectangle {
-                    width: 8px;
-                    height: 8px;
-                    border-radius: 4px;
-                    background: i == index ? Theme.primary : Theme.border;
-                    TouchArea {
-                        clicked => { root.index = i; }
+                spacing: 16px;
+
+                if root.controls: VerticalLayout {
+                    alignment: center;
+                    CarouselStep {
+                        icon: "chevron-left";
+                        label: root.previous-text;
+                        enabled: root.can-previous;
+                        side: root.control-side;
+                        icon-size: root.control-icon;
+                        activated => { root.step(-1); }
+                    }
+                }
+
+                HorizontalLayout {
+                    width: root.frame;
+                    spacing: root.gap;
+                    for slot in root.span: CarouselSlide {
+                        label: "\{root.origin + slot + 1}";
+                        side-width: root.card-width;
+                        side-height: root.card-height;
+                        label-size: root.label-size;
+                        pressed => { keys.focus(); }
+                    }
+                }
+
+                if root.controls: VerticalLayout {
+                    alignment: center;
+                    CarouselStep {
+                        icon: "chevron-right";
+                        label: root.next-text;
+                        enabled: root.can-next;
+                        side: root.control-side;
+                        icon-size: root.control-icon;
+                        activated => { root.step(1); }
                     }
                 }
             }
-            Button {
-                icon: "chevron-right";
-                variant: ButtonVariant.ghost;
-                size: ControlSize.small;
-                clicked => { root.go(1); }
+
+            if root.vertical: VerticalLayout {
+                horizontal-stretch: 1;
+                alignment: center;
+                spacing: 16px;
+
+                if root.controls: HorizontalLayout {
+                    horizontal-stretch: 1;
+                    alignment: center;
+                    CarouselStep {
+                        icon: "chevron-up";
+                        label: root.previous-text;
+                        enabled: root.can-previous;
+                        side: root.control-side;
+                        icon-size: root.control-icon;
+                        activated => { root.step(-1); }
+                    }
+                }
+
+                HorizontalLayout {
+                    horizontal-stretch: 1;
+                    alignment: center;
+                    VerticalLayout {
+                        width: root.cross;
+                        height: root.frame;
+                        spacing: root.gap;
+                        alignment: center;
+                        for slot in root.span: CarouselSlide {
+                            label: "\{root.origin + slot + 1}";
+                            side-width: root.card-width;
+                            side-height: root.card-height;
+                            label-size: root.label-size;
+                            pressed => { keys.focus(); }
+                        }
+                    }
+                }
+
+                if root.controls: HorizontalLayout {
+                    horizontal-stretch: 1;
+                    alignment: center;
+                    CarouselStep {
+                        icon: "chevron-down";
+                        label: root.next-text;
+                        enabled: root.can-next;
+                        side: root.control-side;
+                        icon-size: root.control-icon;
+                        activated => { root.step(1); }
+                    }
+                }
+            }
+
+            if root.pagination: HorizontalLayout {
+                horizontal-stretch: 1;
+                alignment: center;
+                spacing: 8px;
+
+                for page in root.count: Button {
+                    text: "\{page + 1}";
+                    size: root.control-size;
+                    selected: page == root.origin;
+                    clicked => { root.jump(page); }
+                }
             }
         }
     }

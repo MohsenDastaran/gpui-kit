@@ -1,17 +1,22 @@
 import { Carousel } from "carousel.slint";
 import { Theme } from "theme.slint";
-
 export component Example inherits Window {
-    preferred-width: 480px;
-    preferred-height: 280px;
+    preferred-width: 520px;
+    preferred-height: 480px;
+    property <int> selected;
     VerticalLayout {
         horizontal-stretch: 1;
         padding: Theme.page-padding(Theme.viewport);
         spacing: 12px;
-        alignment: start;
-        Carousel { horizontal-stretch: 1; slides: [
-                { title: "Overview", body: "Slide" },
-                { title: "Details", body: "Slide" }
-            ]; }
+        alignment: center;
+        Text {
+            text: "当前项：\{selected + 1}";
+            color: Theme.foreground;
+            horizontal-alignment: center;
+        }
+        Carousel {
+            count: 3;
+            changed(index) => { selected = index; }
+        }
     }
 }

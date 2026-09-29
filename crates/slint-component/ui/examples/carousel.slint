@@ -1,6 +1,37 @@
 import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
+import { Button } from "../button.slint";
 import { Carousel } from "../carousel.slint";
+
+component ExampleSection inherits Rectangle {
+    in property <string> title;
+    in property <string> body;
+
+    horizontal-stretch: 1;
+    border-width: 1px;
+    border-color: Theme.border;
+    border-radius: Theme.radius-lg;
+
+    VerticalLayout {
+        padding: 16px;
+        spacing: 12px;
+
+        Text {
+            text: root.title;
+            color: Theme.foreground;
+            font-weight: 600;
+            wrap: word-wrap;
+        }
+
+        if root.body != "": Text {
+            text: root.body;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-sm;
+            wrap: word-wrap;
+        }
+
+        @children
+    }
+}
 
 export component CarouselExample inherits VerticalLayout {
     horizontal-stretch: 1;
@@ -8,13 +39,90 @@ export component CarouselExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    Carousel {
-        height: 200px;
-        slides: [
-            { title: "Welcome", body: "A desktop component gallery." },
-            { title: "Copy", body: "Take the .slint files you need." },
-            { title: "Theme", body: "Everything reads Theme tokens." },
-        ];
+    ExampleSection {
+        title: "Basic";
+        body: "Browse one full-width item at a time with Left and Right.";
+
+        Carousel {
+            count: 3;
+            pagination: true;
+        }
     }
 
+    ExampleSection {
+        title: "Custom controls";
+        body: "Replace control content and accessibility labels while retaining navigation behavior.";
+
+        Carousel {
+            count: 3;
+            previous-text: "Back";
+            next-text: "Forward";
+        }
+    }
+
+    ExampleSection {
+        title: "Multiple items";
+        body: "A fractional basis shows several items at once.";
+
+        Carousel {
+            count: 5;
+            visible-items: 3;
+            label-size: 24px;
+        }
+    }
+
+    ExampleSection {
+        title: "Vertical";
+        body: "Use Up and Down to navigate a vertical carousel.";
+
+        Carousel {
+            count: 3;
+            vertical: true;
+            visible-items: 2;
+            frame: 192px;
+            cross: 256px;
+            label-size: 30px;
+        }
+    }
+
+    ExampleSection {
+        title: "Looping";
+        body: "Looping navigation wraps from the last slide to the first.";
+
+        Carousel {
+            count: 4;
+            looping: true;
+        }
+    }
+
+    ExampleSection {
+        title: "Controlled";
+        body: "The selected index is owned by application state and can be changed programmatically.";
+
+        controlled-carousel := Carousel {
+            count: 3;
+            index: 1;
+        }
+
+        HorizontalLayout {
+            alignment: center;
+            spacing: 8px;
+
+            Text {
+                text: "Selected slide: \{controlled-carousel.index + 1}";
+                color: Theme.foreground;
+                vertical-alignment: center;
+            }
+
+            Button {
+                text: "Go to first";
+                clicked => { controlled-carousel.index = 0; }
+            }
+
+            Button {
+                text: "Go to last";
+                clicked => { controlled-carousel.index = 2; }
+            }
+        }
+    }
 }
