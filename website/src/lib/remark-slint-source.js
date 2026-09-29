@@ -5,8 +5,8 @@ import { visit } from 'unist-util-visit';
 // Component pages show a Slint version beside each GPUI sample.
 // The import panel is the import that works after `uni-kit add`: files live in
 // `ui/components`, and that directory is on the Slint include path.
-// When `ui/usage/<slug>/<locale>/*.slint` exists, each file is one usage sample,
-// in filename order, paired with that locale's Rust samples after the import.
+// When `ui/usage/<slug>/en/*.slint` exists, each file is one usage sample,
+// in filename order, paired with the Rust samples after the import.
 // A shared `ui/usage/<slug>/*.slint` folder is the fallback. Otherwise the
 // gallery example fills the first usage panel.
 
@@ -17,9 +17,6 @@ const COPY = {
   en: {
     installed:
       'Installed in ui/components. That directory is on the Slint include path, so import by file name:',
-  },
-  'zh-CN': {
-    installed: '安装到 ui/components。该目录已加入 Slint 的 include path，按文件名导入：',
   },
 };
 
@@ -35,7 +32,7 @@ export function hasSlintExample(slug, root = process.cwd()) {
 /** True when this slug has one Slint sample per usage section. */
 export function hasSlintUsage(slug, root = process.cwd()) {
   const ui = slintRoot(root);
-  return usageSnippets(ui, slug, 'en').length > 0 || usageSnippets(ui, slug, 'zh-CN').length > 0;
+  return usageSnippets(ui, slug, 'en').length > 0;
 }
 
 function usageDirectory(ui, slug, locale) {
@@ -68,8 +65,7 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
     const path = String(file?.path ?? file?.history?.[0] ?? '');
     const slug = COMPONENT_PAGE.exec(path)?.[1];
     if (!slug || !hasSlintExample(slug, root)) return;
-    const locale = /[\\/]zh-CN[\\/]/.test(path) ? 'zh-CN' : 'en';
-    const copy = COPY[locale];
+    const copy = COPY.en;
 
     const rust = [];
     visit(tree, 'code', (node, index, parent) => {
@@ -82,7 +78,7 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
       parent.children.splice(parent.children.indexOf(node) + 1, 0, ...nodes);
     after(imports, code(importBlock(ui, slug, copy)));
 
-    const snippets = usageSnippets(ui, slug, locale);
+    const snippets = usageSnippets(ui, slug, 'en');
     if (snippets.length > 0) {
       snippets.forEach((value, index) => {
         const target = rust[index + 1];

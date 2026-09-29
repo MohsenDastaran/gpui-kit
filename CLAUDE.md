@@ -18,11 +18,6 @@ task hierarchy, interaction promise, desktop conventions, spacing, alignment,
 theme tokens, component boundaries, naming, and crate architecture. Review the
 finished work against both guides before considering it complete.
 
-For Chinese documentation and UI, apply the terminology rules in Design Guides.
-Keep established framework, component, and API names in their canonical English
-form when translation would reduce precision; write the surrounding Chinese as
-natural Chinese rather than word-for-word translation.
-
 ## Project Overview
 
 GPUI Kit is a Rust desktop application framework built on GPUI, published at <https://gpui-kit.com>. It ships as three crates: `gpui-base` (unstyled behavior and infrastructure), `gpui-shell` (JavaScript extensions for a Rust host), and `gpui-component` (GPUI Component, the styled component library with 60+ cross-platform desktop UI components, inspired by macOS/Windows controls and combined with shadcn/ui design). Applications depend on the umbrella crate `gpui-kit` (`crates/kit`), which pins the matching `gpui-pre-*` snapshot of GPUI and puts GPUI at its root (`use gpui_kit::*;`) with `gpui_kit::platform`, `gpui_kit::base`, `gpui_kit::component` and `gpui_kit::assets` reachable by name, so they never list GPUI itself. `gpui-shell` is not part of `gpui-kit` and is not published yet (its `llrt_*` dependencies are git-only); use it as a git dependency.
@@ -284,13 +279,12 @@ The `Icon` element does not include SVG files by default. You need to:
 Uses `rust-i18n` crate.
 
 - Localization files are located in `crates/component/locales/`.
-- Only add `en`, `zh-CN`, `zh-HK` by default.
+- Only add `en`, `zh-HK` by default.
 
 ## Documentation
 
 - The documentation site source is in `website/`.
-- Site docs have two locales: English (`website/docs/`) and Chinese (`website/zh-CN/docs/`).
-- When modifying any documentation file, always sync changes to both `en` and `zh-CN` versions.
+- Site docs are English (`website/docs/`).
 - `docs/` holds internal architecture specifications (RFC, migration status, reviews).
   These are single-language and are not published to the site; see `docs/README.md`.
 - `skills/gpui-kit/references/coding-guides.md` and

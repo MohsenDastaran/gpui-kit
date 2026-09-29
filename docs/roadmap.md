@@ -2,7 +2,7 @@
 
 Copy-paste components and blocks on the existing GPUI Kit site. People copy source into their own apps. `gpui-base` stays a crate dependency. Slint and later frameworks are hand-written sources plus a tab on the same pages.
 
-The site is already Astro at [https://gpui-kit.com](https://gpui-kit.com) (`website/`, English and zh-CN). This roadmap adds the gallery to that site. It does not start a second site.
+The site is already Astro at [https://gpui-kit.com](https://gpui-kit.com) (`website/`, English). This roadmap adds the gallery to that site. It does not start a second site.
 
 **Current phase = the first empty checkbox in Progress.** Tick a phase only when its **Done when** line is true.
 
@@ -27,7 +27,6 @@ website/                         # existing Astro site
 ├── component/                   # current GPUI Kit docs
 ├── blocks/                      # phase 7
 ├── templates/                   # phase 8 pages
-└── zh-CN/                       # same sections in Chinese
 crates/
 ├── base/                        # gpui-base (real dependency, never copied)
 ├── component/                   # GPUI copy sources
@@ -58,11 +57,11 @@ registry/                        # uni-kit CLI and components.json
 
 ## 2. GPUI catalog you can copy from the site
 
-The component pages are the GPUI copy-paste set: `website/component/` and `website/zh-CN/component/`. A person copies a sample into an app that depends on `gpui-kit`. That crate already brings `gpui-component` and `gpui-base`, so the sample is usage, not a second copy of the component source.
+The component pages are the GPUI copy-paste set: `website/component/`. A person copies a sample into an app that depends on `gpui-kit`. That crate already brings `gpui-component` and `gpui-base`, so the sample is usage, not a second copy of the component source.
 
 `theme.md` is the theme guide and has no component sample. Every other catalog page has Rust you can copy. `CodeBlock` copies the block on the page.
 
-**Done when:** those pages are on the site in both locales, and copying a block yields the Rust shown there.
+**Done when:** those pages are on the site, and copying a block yields the Rust shown there.
 
 ---
 
@@ -78,14 +77,14 @@ The Slint mapping is written in phase 5, with the Slint components.
 
 ## 4. Framework selector on the website
 
-Built on the existing Astro site. The GPUI Kit docs stay as they are (usage, API, both locales).
+Built on the existing Astro site. The GPUI Kit docs stay as they are (usage, API).
 
 1. Every catalog component page has a GPUI / Slint selector below the live example (`website/src/lib/rehype-framework-code.js`). The choice is saved in `localStorage` (`selected-framework`) and applied before first paint, so a return visit never flashes the other framework.
 2. Each code block on those pages is a pair of panels: `data-framework-panel="gpui"` holds the existing Rust, and `data-framework-panel="slint"` shows “No Slint version of this example yet.” until phase 5 fills it.
 3. Switching reloads the page’s code in place (`website/src/lib/framework-switch.ts`): a progress bar runs under the nav, the blocks turn into a shimmering skeleton, then the chosen framework fades in. Reduced motion switches instantly. Arrow keys move between the two options, and the change is announced to screen readers.
-4. Each code block has a copy button (`CodeBlock`), in both locales.
+4. Each code block has a copy button (`CodeBlock`).
 
-**Done when:** the dev server shows every catalog component with a working selector in both locales. GPUI source is visible and copyable. Slint blocks are ready and hidden until Slint is selected.
+**Done when:** the dev server shows every catalog component with a working selector. GPUI source is visible and copyable. Slint blocks are ready and hidden until Slint is selected.
 
 ---
 
@@ -97,7 +96,7 @@ Built on the existing Astro site. The GPUI Kit docs stay as they are (usage, API
 2. `ui/theme.slint` maps `tokens/tokens.json` (see `tokens/README.md`). Components read `Theme` and nothing else.
 3. `scripts/check.sh` type-checks each example with the gallery's Slint version. The gallery window (`ui/gallery.slint`) shows one example, chosen by page slug.
 4. The website live example follows the selector (`ComponentExample.vue`): GPUI stays at `/gallery`, Slint loads `/slint-gallery?component=<slug>`. Another framework later adds a source in the same map. Both iframes stay mounted after first open, so switching back is instant.
-5. `remark-slint-source.js` fills the Import and the first Usage Slint panel from those files, in both locales. Phase 6 replaces that with one sample per section.
+5. `remark-slint-source.js` fills the Import and the first Usage Slint panel from those files. Phase 6 replaces that with one sample per section.
 
 **Done when:** every catalog page shows Slint source under the selector, and selecting Slint shows the Slint WASM example.
 
@@ -112,9 +111,9 @@ Check and finish the main controls before the rest of the catalog:
 1. Button, Input, Textarea, Checkbox, Radio, Switch, Select, Label, Icon, Dialog.
 2. Every remaining catalog slug.
 
-For each one, in both locales:
+For each one:
 
-1. Match the GPUI page: one `ui/usage/<slug>/<locale>/*.slint` file per Rust sample, in the same order. When both locales share the same samples, `ui/usage/<slug>/*.slint` is enough.
+1. Match the GPUI page: one `ui/usage/<slug>/en/*.slint` file per Rust sample, in the same order. When samples are shared, `ui/usage/<slug>/*.slint` is enough.
 2. Imports are bare file names. Do not import gallery-only files such as GroupBox.
 
 **Done when:** every catalog page’s Slint panels are separate samples like Alert Dialog, and each sample compiles after that component is installed.
@@ -130,10 +129,10 @@ Build these in both frameworks:
 - **Settings** — toggles, radio choices, text fields, save
 
 1. Put the GPUI source with the copyable components, and the Slint source in `crates/slint-component/`.
-2. Add a Blocks tab: `website/blocks/{name}.md` and `website/zh-CN/blocks/{name}.md`.
+2. Add a Blocks tab: `website/blocks/{name}.md`.
 3. Each page uses the same framework selector and copy button.
 
-**Done when:** all three blocks are on the site, in both locales, with copy-paste source for GPUI and Slint.
+**Done when:** all three blocks are on the site, with copy-paste source for GPUI and Slint.
 
 ---
 
@@ -147,10 +146,10 @@ Templates are apps a person copies. They are not installed by a command.
 - **Login** — blank plus the Login block
 - **Dashboard** — blank plus the Dashboard block
 
-1. Add a Templates tab, English and zh-CN, with the tree to copy and what the app contains.
+1. Add a Templates tab, in English, with the tree to copy and what the app contains.
 2. When Slint blocks exist, add a Slint variant of each template the same way (a directory people copy, listed on the same pages).
 
-**Done when:** each template builds after it is copied into a new directory, and both locales link to it.
+**Done when:** each template builds after it is copied into a new directory, and the site links to it.
 
 ---
 
@@ -161,7 +160,7 @@ The repository is already public and Apache-2.0. The site is already at [https:/
 1. Publish the selector, the full component catalog, the three blocks, and the templates on that site.
 2. Say on the Blocks and component pages that this gallery is source you copy. There is no installer.
 
-**Done when:** those pages are live on [https://gpui-kit.com](https://gpui-kit.com) in both locales.
+**Done when:** those pages are live on [https://gpui-kit.com](https://gpui-kit.com).
 
 ---
 
@@ -188,4 +187,4 @@ The repository is already public and Apache-2.0. The site is already at [https:/
 
 ## Later
 
-egui, Iced, or another toolkit can join after phase 9, one at a time, once its API is stable: hand-write the full catalog and the 3 blocks, add a value to the selector, and add the snippets in both locales.
+egui, Iced, or another toolkit can join after phase 9, one at a time, once its API is stable: hand-write the full catalog and the 3 blocks, add a value to the selector, and add the snippets on the English pages.

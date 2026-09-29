@@ -18,7 +18,7 @@ GPUI and Slint are in the catalog now. egui, QuickGUI, and other toolkits join t
 | [Slint](https://slint.dev) | `npx uni-kit add slint <component>` copies the `.slint` files into `ui/components/`. | On the site |
 | egui, QuickGUI, and others | The same pages, once the source exists. | [Roadmap](docs/roadmap.md) |
 
-The site docs stay one site, in English and zh-CN. A framework selector on each component page switches the live example and the copyable source. GPUI samples assume an app that depends on `gpui-kit` (that crate already brings `gpui-component` and `gpui-base`). Slint samples are the files under `crates/slint-component/ui/`.
+The site docs stay one site, in English. A framework selector on each component page switches the live example and the copyable source. GPUI samples assume an app that depends on `gpui-kit` (that crate already brings `gpui-component` and `gpui-base`). Slint samples are the files under `crates/slint-component/ui/`.
 
 ```bash
 npx uni-kit add slint alert-dialog

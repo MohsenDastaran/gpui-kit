@@ -175,10 +175,6 @@ const SECTIONS = (root: string) => [
   { dir: join(root, 'component'), prefix: 'component' },
   { dir: join(root, 'shell'), prefix: 'shell' },
   { dir: join(root, 'base'), prefix: 'base' },
-  { dir: join(root, 'zh-CN/docs'), prefix: 'zh-CN/docs' },
-  { dir: join(root, 'zh-CN/component'), prefix: 'zh-CN/component' },
-  { dir: join(root, 'zh-CN/shell'), prefix: 'zh-CN/shell' },
-  { dir: join(root, 'zh-CN/base'), prefix: 'zh-CN/base' },
 ];
 
 /**
@@ -207,10 +203,6 @@ export function buildLlmsContent(websiteRoot: string): string {
     { dir: join(websiteRoot, 'component'), prefix: 'component' },
     { dir: join(websiteRoot, 'shell'), prefix: 'shell' },
     { dir: join(websiteRoot, 'base'), prefix: 'base' },
-    { dir: join(websiteRoot, 'zh-CN/docs'), prefix: 'zh-CN/docs' },
-    { dir: join(websiteRoot, 'zh-CN/component'), prefix: 'zh-CN/component' },
-    { dir: join(websiteRoot, 'zh-CN/shell'), prefix: 'zh-CN/shell' },
-    { dir: join(websiteRoot, 'zh-CN/base'), prefix: 'zh-CN/base' },
   ];
 
   const header = `# ${SITE_TITLE}\n\n> ${SITE_DESCRIPTION}\n\n---\n`;

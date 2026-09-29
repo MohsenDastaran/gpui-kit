@@ -33,11 +33,7 @@ const socialTitle = ogTitle ?? pageTitle;
 const base = import.meta.env.BASE_URL;
 
 const path = Astro.url.pathname;
-const isZh = lang.toLowerCase().startsWith('zh');
-const englishPath = isZh ? path.replace(/^\/zh-CN(?=\/|$)/, '') || '/' : path;
-const chinesePath = isZh ? path : `/zh-CN${path === '/' ? '' : path}`;
-const englishUrl = new URL(englishPath, SITE_URL).href;
-const chineseUrl = new URL(chinesePath, SITE_URL).href;
+const pageUrl = new URL(path, SITE_URL).href;
 
 const defaultStructuredData = {
   '@context': 'https://schema.org',
@@ -77,9 +73,8 @@ const jsonLd = JSON.stringify(structuredData ?? defaultStructuredData).replace(/
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={OG_IMAGE} />
     <link rel="canonical" href={canonical} />
-    {alternates && <link rel="alternate" hreflang="en" href={englishUrl} />}
-    {alternates && <link rel="alternate" hreflang="zh-CN" href={chineseUrl} />}
-    {alternates && <link rel="alternate" hreflang="x-default" href={englishUrl} />}
+    {alternates && <link rel="alternate" hreflang="en" href={pageUrl} />}
+    {alternates && <link rel="alternate" hreflang="x-default" href={pageUrl} />}
     <script type="application/ld+json" set:html={jsonLd} />
 
     <!-- Theme: apply before paint to avoid FOUC -->

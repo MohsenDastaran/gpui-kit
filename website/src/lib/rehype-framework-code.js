@@ -18,12 +18,6 @@ const COPY = {
     covered: (name) => `This example is GPUI-specific. The ${name} usage near the top of the page covers this component.`,
     status: (name) => `Showing ${name} code`,
   },
-  'zh-CN': {
-    label: '框架',
-    missing: (name) => `此示例暂无 ${name} 版本。`,
-    covered: (name) => `此示例仅适用于 GPUI。页面上方的 ${name} 用法已涵盖该组件。`,
-    status: (name) => `正在显示 ${name} 代码`,
-  },
 };
 
 const COMPONENT_PAGE = /[\\/]component[\\/]([^\\/]+)\.md$/;
@@ -89,7 +83,7 @@ export function rehypeFrameworkCode() {
   return (tree, file) => {
     const path = String(file?.path ?? file?.history?.[0] ?? '');
     if (!COMPONENT_PAGE.test(path)) return;
-    const copy = /[\\/]zh-CN[\\/]/.test(path) ? COPY['zh-CN'] : COPY.en;
+    const copy = COPY.en;
     const slug = COMPONENT_PAGE.exec(path)?.[1];
     const covered = {
       gpui: false,

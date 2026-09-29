@@ -223,9 +223,7 @@ through motion alone.
 - Capability previews are **diagrams**, not product mocks: they share one
   padding box and one gap, and they may use `--data-*` to read as UI. A diagram
   that needs a scrollbar needs its track too, or it looks like a glitch.
-- Landing-page copy lives in one bilingual `copy` object in `HomeApp.vue`. Both
-  locales must be updated together, matching the site-wide rule that
-  `website/docs/` and `website/zh-CN/docs/` stay in sync.
+- Landing-page copy lives in `HomeApp.vue`.
 - Live examples should demonstrate the documented component's real behavior
   and use the same source as its native example.
 
@@ -295,8 +293,8 @@ apps through PRs in [longbridge/gpui-kit-showcases](https://github.com/longbridg
 | File | Role |
 | --- | --- |
 | `src/styles/global.css` | Tokens, `.mac-window`, docs-nav/doc-content typography |
-| `src/components/HomeApp.vue` | Landing page: markup, bilingual copy, page-scoped styles |
-| `src/components/AppsApp.vue` | App Stories page: the showcase list, bilingual copy, page-scoped styles |
+| `src/components/HomeApp.vue` | Landing page: markup, copy, page-scoped styles |
+| `src/components/AppsApp.vue` | App Stories page: the showcase list, copy, page-scoped styles |
 | `src/components/Nav.astro` | Docs/base/shell navbar: search, GitHub star, language, appearance, mobile drawer |
 | `src/components/ComponentExample.vue` | Windowed live example on component pages |
 | `src/lib/sidebar.ts` | Sidebar generation from the docs content collection |

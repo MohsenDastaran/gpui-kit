@@ -5,15 +5,9 @@ export interface Props {
   lang?: 'en' | 'zh-CN';
   currentPath?: string;
   starCount?: number;
-  /**
-   * Language-switch target for a page with no translated counterpart, such as
-   * 404. Without it the switch derives the target from the current path, which
-   * only resolves when both locales publish that page.
-   */
-  langSwitchHref?: string;
 }
 
-const { lang = 'en', currentPath = '', starCount = 0, langSwitchHref: langSwitchOverride } = Astro.props;
+const { lang = 'en', currentPath = '', starCount = 0 } = Astro.props;
 const base = import.meta.env.BASE_URL;
 const isZh = lang === 'zh-CN';
 
@@ -23,56 +17,22 @@ function url(path: string) {
 
 const starLabel = starCount >= 1000 ? `${(starCount / 1000).toFixed(1)}k` : `${starCount}`;
 
-const navLinks = isZh
-  ? [
-      { text: '文档', href: url('zh-CN/docs') },
-      { text: '组件', href: url('zh-CN/component') },
-      { text: 'Base', href: url('zh-CN/base') },
-      { text: 'Shell', href: url('zh-CN/shell') },
-      { text: '应用案例', href: url('zh-CN/apps') },
-    ]
-  : [
-      { text: 'Docs', href: url('docs') },
-      { text: 'Component', href: url('component') },
-      { text: 'Base', href: url('base') },
-      { text: 'Shell', href: url('shell') },
-      { text: 'App Stories', href: url('apps') },
-    ];
+const navLinks = [
+  { text: 'Docs', href: url('docs') },
+  { text: 'Component', href: url('component') },
+  { text: 'Base', href: url('base') },
+  { text: 'Shell', href: url('shell') },
+  { text: 'App Stories', href: url('apps') },
+];
 
-const resourceLinks = isZh
-  ? [
-      { text: 'API Doc', href: 'https://docs.rs/gpui-kit' },
-      { text: '贡献者', href: url('zh-CN/contributors') },
-      { text: '版本发布', href: url('zh-CN/releases') },
-      { text: 'Issues', href: 'https://github.com/longbridge/gpui-kit/issues' },
-      { text: '讨论', href: 'https://github.com/longbridge/gpui-kit/discussions' },
-    ]
-  : [
-      { text: 'API Doc', href: 'https://docs.rs/gpui-kit' },
-      { text: 'Contributors', href: url('contributors') },
-      { text: 'Releases', href: url('releases') },
-      { text: 'Issues', href: 'https://github.com/longbridge/gpui-kit/issues' },
-      { text: 'Discussion', href: 'https://github.com/longbridge/gpui-kit/discussions' },
-    ];
+const resourceLinks = [
+  { text: 'API Doc', href: 'https://docs.rs/gpui-kit' },
+  { text: 'Contributors', href: url('contributors') },
+  { text: 'Releases', href: url('releases') },
+  { text: 'Issues', href: 'https://github.com/longbridge/gpui-kit/issues' },
+  { text: 'Discussion', href: 'https://github.com/longbridge/gpui-kit/discussions' },
+];
 
-// Swap the locale segment rather than substituting substrings: the site is
-// `trailingSlash: 'never'`, so the two roots are `/` and `/zh-CN` with no
-// trailing slash, and a plain replace either leaves one behind or fails to
-// match the bare `/zh-CN` root at all.
-const siteRoot = base.replace(/\/+$/, '');
-const zhRoot = `${siteRoot}/zh-CN`;
-
-function swapLocale(path: string) {
-  if (isZh) {
-    const rest = path.startsWith(zhRoot) ? path.slice(zhRoot.length) : path;
-    return rest || siteRoot || '/';
-  }
-  const rest = path.startsWith(siteRoot) ? path.slice(siteRoot.length) : path;
-  return `${zhRoot}${rest === '/' ? '' : rest}`;
-}
-
-const langSwitchHref = langSwitchOverride ?? swapLocale(currentPath);
-const langLabel = isZh ? 'EN' : '中';
 const resourcesLabel = isZh ? '资源' : 'Resources';
 ---
 
@@ -132,11 +92,6 @@ const resourcesLabel = isZh ? '资源' : 'Resources';
           <path d="M9 18c-4.51 2-5-2-7-2"/>
         </svg>
         <span class="github-star-btn__label">{starLabel}</span>
-      </a>
-
-      <!-- Language switch -->
-      <a href={langSwitchHref} class="site-nav__lang-btn site-nav__link">
-        <span>{langLabel}</span>
       </a>
 
       <!-- Theme toggle -->
@@ -263,15 +218,9 @@ const resourcesLabel = isZh ? '资源' : 'Resources';
   font-variant-numeric: tabular-nums;
 }
 
-.site-nav__lang-btn {
-  font-size: 0.8125rem;
-  font-weight: 560;
-}
-
 /* Give toolbar labels the same centered line box as their icons. */
 .site-nav__actions .site-nav__link { height: 2rem; padding-block: 0; }
-.github-star-btn__label,
-.site-nav__lang-btn > span {
+.github-star-btn__label {
   display: inline-flex;
   align-items: center;
   height: 1rem;

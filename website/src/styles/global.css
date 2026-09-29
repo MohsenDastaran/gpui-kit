@@ -1735,7 +1735,7 @@ html[lang^="zh"]
 
   /* Once it is an icon it belongs to the row of icon buttons beside it, not to
      the input it was: the frame and fill go, leaving hover as the only
-     background — the same treatment the star, language and theme controls get. */
+     background — the same treatment the star and theme controls get. */
   .site-nav__search-btn {
     border-color: transparent;
     background: transparent;
@@ -1753,12 +1753,11 @@ html[lang^="zh"]
     display: none;
   }
 
-  /* Once the labels go, these are five icons in a row and each needs the same
-     square target — otherwise the star and language controls shrink to their
-     glyphs and the gaps between the five read as uneven. */
+  /* Once the labels go, these are four icons in a row and each needs the same
+     square target — otherwise the star control shrinks to its glyph and the
+     gaps between the four read as uneven. */
   .site-nav__search-btn,
   .github-star-btn,
-  .site-nav__lang-btn,
   .theme-toggle,
   .site-nav__burger {
     width: 2rem;

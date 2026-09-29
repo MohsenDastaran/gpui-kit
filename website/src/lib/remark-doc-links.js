@@ -6,8 +6,8 @@ import { dirname, relative, resolve, sep } from 'node:path';
 // target file back to the route that renders it.
 //
 // The content lives in directories that mirror the routes — `docs/x.md` is
-// `/docs/x`, `zh-CN/base/y.md` is `/zh-CN/base/y` — so the route is just the
-// path relative to the site root, minus the extension, with `index` dropped.
+// `/docs/x` — so the route is just the path relative to the site root, minus
+// the extension, with `index` dropped.
 
 const SITE_ROOT = resolve(process.cwd());
 

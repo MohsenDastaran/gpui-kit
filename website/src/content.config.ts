@@ -20,11 +20,6 @@ const component = defineCollection({
   schema: pageSchema,
 });
 
-const zhComponent = defineCollection({
-  loader: componentMarkdownLoader('./zh-CN/component'),
-  schema: pageSchema,
-});
-
 const shell = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './shell' }),
   schema: pageSchema,
@@ -35,28 +30,9 @@ const base = defineCollection({
   schema: pageSchema,
 });
 
-const zhDocs = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './zh-CN/docs' }),
-  schema: pageSchema,
-});
-
-const zhShell = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './zh-CN/shell' }),
-  schema: pageSchema,
-});
-
-const zhBase = defineCollection({
-  loader: glob({ pattern: '**/*.md', base: './zh-CN/base' }),
-  schema: pageSchema,
-});
-
 export const collections = {
   docs,
   component,
   shell,
   base,
-  'zh-docs': zhDocs,
-  'zh-component': zhComponent,
-  'zh-shell': zhShell,
-  'zh-base': zhBase,
 };
