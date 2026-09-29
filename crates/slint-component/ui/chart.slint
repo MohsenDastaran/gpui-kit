@@ -883,6 +883,14 @@ export component SankeyChart {
     in property <length> node-width: 10px;
     in property <length> plot-height: 220px;
 
+    // Viewbox units. Nodes and ribbons both use these, then the path fills the plot.
+    private property <int> node-n: min(nodes.length, 8);
+    private property <int> link-n: min(links.length, 8);
+    private property <float> left-gutter: 150;
+    private property <float> right-gutter: 280;
+    private property <float> top-gutter: 70;
+    private property <float> slot-gap: 150;
+
     function fill-of(tone: int) -> color {
         tone == 0 ? Theme.chart-1
             : tone == 1 ? Theme.chart-2
@@ -891,45 +899,200 @@ export component SankeyChart {
             : Theme.chart-5;
     }
 
+    function node-col(i: int) -> int { i < node-n ? nodes[i].column : -1; }
+    function node-slot(i: int) -> int { i < node-n ? nodes[i].slot : -1; }
+    function node-val(i: int) -> float { i < node-n ? nodes[i].value : 0; }
+    function link-from-col(i: int) -> int { i < link-n ? links[i].from-column : -1; }
+    function link-from-slot(i: int) -> int { i < link-n ? links[i].from-slot : -1; }
+    function link-to-col(i: int) -> int { i < link-n ? links[i].to-column : -1; }
+    function link-to-slot(i: int) -> int { i < link-n ? links[i].to-slot : -1; }
+    function link-mag(i: int) -> float { i < link-n ? sqrt(max(links[i].value, 0)) : 0; }
+
+    function has-node(col: int, slot: int) -> bool {
+        (node-n > 0 && node-col(0) == col && node-slot(0) == slot)
+            || (node-n > 1 && node-col(1) == col && node-slot(1) == slot)
+            || (node-n > 2 && node-col(2) == col && node-slot(2) == slot)
+            || (node-n > 3 && node-col(3) == col && node-slot(3) == slot)
+            || (node-n > 4 && node-col(4) == col && node-slot(4) == slot)
+            || (node-n > 5 && node-col(5) == col && node-slot(5) == slot)
+            || (node-n > 6 && node-col(6) == col && node-slot(6) == slot)
+            || (node-n > 7 && node-col(7) == col && node-slot(7) == slot)
+    }
+
+    function column-count() -> int {
+        max(node-col(0), max(node-col(1), max(node-col(2), max(node-col(3),
+            max(node-col(4), max(node-col(5), max(node-col(6), node-col(7)))))))) + 1
+    }
+
+    function out-total(col: int, slot: int) -> float {
+        (link-n > 0 && link-from-col(0) == col && link-from-slot(0) == slot ? link-mag(0) : 0)
+            + (link-n > 1 && link-from-col(1) == col && link-from-slot(1) == slot ? link-mag(1) : 0)
+            + (link-n > 2 && link-from-col(2) == col && link-from-slot(2) == slot ? link-mag(2) : 0)
+            + (link-n > 3 && link-from-col(3) == col && link-from-slot(3) == slot ? link-mag(3) : 0)
+            + (link-n > 4 && link-from-col(4) == col && link-from-slot(4) == slot ? link-mag(4) : 0)
+            + (link-n > 5 && link-from-col(5) == col && link-from-slot(5) == slot ? link-mag(5) : 0)
+            + (link-n > 6 && link-from-col(6) == col && link-from-slot(6) == slot ? link-mag(6) : 0)
+            + (link-n > 7 && link-from-col(7) == col && link-from-slot(7) == slot ? link-mag(7) : 0)
+    }
+
+    function in-total(col: int, slot: int) -> float {
+        (link-n > 0 && link-to-col(0) == col && link-to-slot(0) == slot ? link-mag(0) : 0)
+            + (link-n > 1 && link-to-col(1) == col && link-to-slot(1) == slot ? link-mag(1) : 0)
+            + (link-n > 2 && link-to-col(2) == col && link-to-slot(2) == slot ? link-mag(2) : 0)
+            + (link-n > 3 && link-to-col(3) == col && link-to-slot(3) == slot ? link-mag(3) : 0)
+            + (link-n > 4 && link-to-col(4) == col && link-to-slot(4) == slot ? link-mag(4) : 0)
+            + (link-n > 5 && link-to-col(5) == col && link-to-slot(5) == slot ? link-mag(5) : 0)
+            + (link-n > 6 && link-to-col(6) == col && link-to-slot(6) == slot ? link-mag(6) : 0)
+            + (link-n > 7 && link-to-col(7) == col && link-to-slot(7) == slot ? link-mag(7) : 0)
+    }
+
+    // Links that leave above this one, so ribbons stack down the source bar.
+    function out-before(col: int, slot: int, to-slot: int) -> float {
+        (link-n > 0 && link-from-col(0) == col && link-from-slot(0) == slot && link-to-slot(0) < to-slot ? link-mag(0) : 0)
+            + (link-n > 1 && link-from-col(1) == col && link-from-slot(1) == slot && link-to-slot(1) < to-slot ? link-mag(1) : 0)
+            + (link-n > 2 && link-from-col(2) == col && link-from-slot(2) == slot && link-to-slot(2) < to-slot ? link-mag(2) : 0)
+            + (link-n > 3 && link-from-col(3) == col && link-from-slot(3) == slot && link-to-slot(3) < to-slot ? link-mag(3) : 0)
+            + (link-n > 4 && link-from-col(4) == col && link-from-slot(4) == slot && link-to-slot(4) < to-slot ? link-mag(4) : 0)
+            + (link-n > 5 && link-from-col(5) == col && link-from-slot(5) == slot && link-to-slot(5) < to-slot ? link-mag(5) : 0)
+            + (link-n > 6 && link-from-col(6) == col && link-from-slot(6) == slot && link-to-slot(6) < to-slot ? link-mag(6) : 0)
+            + (link-n > 7 && link-from-col(7) == col && link-from-slot(7) == slot && link-to-slot(7) < to-slot ? link-mag(7) : 0)
+    }
+
+    function in-before(col: int, slot: int, from-slot: int) -> float {
+        (link-n > 0 && link-to-col(0) == col && link-to-slot(0) == slot && link-from-slot(0) < from-slot ? link-mag(0) : 0)
+            + (link-n > 1 && link-to-col(1) == col && link-to-slot(1) == slot && link-from-slot(1) < from-slot ? link-mag(1) : 0)
+            + (link-n > 2 && link-to-col(2) == col && link-to-slot(2) == slot && link-from-slot(2) < from-slot ? link-mag(2) : 0)
+            + (link-n > 3 && link-to-col(3) == col && link-to-slot(3) == slot && link-from-slot(3) < from-slot ? link-mag(3) : 0)
+            + (link-n > 4 && link-to-col(4) == col && link-to-slot(4) == slot && link-from-slot(4) < from-slot ? link-mag(4) : 0)
+            + (link-n > 5 && link-to-col(5) == col && link-to-slot(5) == slot && link-from-slot(5) < from-slot ? link-mag(5) : 0)
+            + (link-n > 6 && link-to-col(6) == col && link-to-slot(6) == slot && link-from-slot(6) < from-slot ? link-mag(6) : 0)
+            + (link-n > 7 && link-to-col(7) == col && link-to-slot(7) == slot && link-from-slot(7) < from-slot ? link-mag(7) : 0)
+    }
+
+    function flow-of(i: int) -> float {
+        i < node-n ? max(node-val(i), max(in-total(node-col(i), node-slot(i)), out-total(node-col(i), node-slot(i)))) : 0
+    }
+
+    function flow-peak() -> float {
+        max(1, max(flow-of(0), max(flow-of(1), max(flow-of(2), max(flow-of(3),
+            max(flow-of(4), max(flow-of(5), max(flow-of(6), flow-of(7)))))))))
+    }
+
+    function band(col: int, slot: int) -> float {
+        has-node(col, slot) ? max(36, 480 * sqrt(max(value-at(col, slot), max(in-total(col, slot), out-total(col, slot)))) / sqrt(flow-peak())) : 0
+    }
+
+    function value-at(col: int, slot: int) -> float {
+        (node-n > 0 && node-col(0) == col && node-slot(0) == slot ? node-val(0) : 0)
+            + (node-n > 1 && node-col(1) == col && node-slot(1) == slot ? node-val(1) : 0)
+            + (node-n > 2 && node-col(2) == col && node-slot(2) == slot ? node-val(2) : 0)
+            + (node-n > 3 && node-col(3) == col && node-slot(3) == slot ? node-val(3) : 0)
+            + (node-n > 4 && node-col(4) == col && node-slot(4) == slot ? node-val(4) : 0)
+            + (node-n > 5 && node-col(5) == col && node-slot(5) == slot ? node-val(5) : 0)
+            + (node-n > 6 && node-col(6) == col && node-slot(6) == slot ? node-val(6) : 0)
+            + (node-n > 7 && node-col(7) == col && node-slot(7) == slot ? node-val(7) : 0)
+    }
+
+    function later-slot(col: int, slot: int) -> bool {
+        (slot < 1 && has-node(col, 1)) || (slot < 2 && has-node(col, 2)) || (slot < 3 && has-node(col, 3))
+    }
+
+    function gap-after(col: int, slot: int) -> float {
+        has-node(col, slot) && later-slot(col, slot) ? slot-gap : 0
+    }
+
+    function column-span(col: int) -> float {
+        band(col, 0) + gap-after(col, 0) + band(col, 1) + gap-after(col, 1) + band(col, 2) + gap-after(col, 2) + band(col, 3)
+    }
+
+    function node-y(col: int, slot: int) -> float {
+        top-gutter + (1000 - top-gutter - column-span(col)) / 2
+            + (slot > 0 ? band(col, 0) + gap-after(col, 0) : 0)
+            + (slot > 1 ? band(col, 1) + gap-after(col, 1) : 0)
+            + (slot > 2 ? band(col, 2) + gap-after(col, 2) : 0)
+    }
+
+    function bar-units() -> float { 1000 * node-width / max(root.width, 1px); }
+
+    function col-x(c: int) -> float {
+        left-gutter + (1000 - left-gutter - right-gutter - bar-units()) * c / max(column-count() - 1, 1)
+    }
+
+    function src-top(fc: int, fs: int, ts: int) -> float {
+        node-y(fc, fs) + band(fc, fs) * out-before(fc, fs, ts) / max(out-total(fc, fs), 0.001)
+    }
+
+    function src-span(fc: int, fs: int, value: float) -> float {
+        band(fc, fs) * sqrt(max(value, 0)) / max(out-total(fc, fs), 0.001)
+    }
+
+    function dst-top(tc: int, ts: int, fs: int) -> float {
+        node-y(tc, ts) + band(tc, ts) * in-before(tc, ts, fs) / max(in-total(tc, ts), 0.001)
+    }
+
+    function dst-span(tc: int, ts: int, value: float) -> float {
+        band(tc, ts) * sqrt(max(value, 0)) / max(in-total(tc, ts), 0.001)
+    }
+
+    function ribbon(fc: int, fs: int, tc: int, ts: int, value: float) -> string {
+        "M \{round(col-x(fc) + bar-units())} \{round(src-top(fc, fs, ts))} "
+            + "C \{round(col-x(fc) + bar-units() + (col-x(tc) - col-x(fc) - bar-units()) / 2)} \{round(src-top(fc, fs, ts))} "
+            + "\{round(col-x(tc) - (col-x(tc) - col-x(fc) - bar-units()) / 2)} \{round(dst-top(tc, ts, fs))} "
+            + "\{round(col-x(tc))} \{round(dst-top(tc, ts, fs))} "
+            + "L \{round(col-x(tc))} \{round(dst-top(tc, ts, fs) + dst-span(tc, ts, value))} "
+            + "C \{round(col-x(tc) - (col-x(tc) - col-x(fc) - bar-units()) / 2)} \{round(dst-top(tc, ts, fs) + dst-span(tc, ts, value))} "
+            + "\{round(col-x(fc) + bar-units() + (col-x(tc) - col-x(fc) - bar-units()) / 2)} \{round(src-top(fc, fs, ts) + src-span(fc, fs, value))} "
+            + "\{round(col-x(fc) + bar-units())} \{round(src-top(fc, fs, ts) + src-span(fc, fs, value))} Z"
+    }
+
     horizontal-stretch: 1;
     height: plot-height;
 
     Rectangle {
         width: 100%;
         height: 100%;
-        clip: true;
 
         for link in links: Path {
             x: 0px;
             y: 0px;
             width: 100%;
             height: 100%;
-            viewbox-width: 400;
-            viewbox-height: 220;
-            fill: fill-of(link.tone).with-alpha(0.28);
-            commands: "M \{20 + link.from-column * 140 + 10} \{18 + link.from-slot * 48} "
-                + "C \{20 + link.from-column * 140 + 70} \{18 + link.from-slot * 48} "
-                + "\{20 + link.to-column * 140 - 50} \{18 + link.to-slot * 48} "
-                + "\{20 + link.to-column * 140} \{18 + link.to-slot * 48} "
-                + "L \{20 + link.to-column * 140} \{18 + link.to-slot * 48 + max(8, link.value / 4)} "
-                + "C \{20 + link.to-column * 140 - 50} \{18 + link.to-slot * 48 + max(8, link.value / 4)} "
-                + "\{20 + link.from-column * 140 + 70} \{18 + link.from-slot * 48 + max(8, link.value / 4)} "
-                + "\{20 + link.from-column * 140 + 10} \{18 + link.from-slot * 48 + max(8, link.value / 4)} Z";
+            viewbox-width: 1000;
+            viewbox-height: 1000;
+            fit: ImageFit.fill;
+            fill: fill-of(link.tone).with-alpha(0.35);
+            commands: ribbon(link.from-column, link.from-slot, link.to-column, link.to-slot, link.value);
         }
 
         for node in nodes: Rectangle {
-            x: 16px + node.column * 140px;
-            y: 16px + node.slot * 48px;
+            x: parent.width * col-x(node.column) / 1000;
+            y: parent.height * node-y(node.column, node.slot) / 1000;
             width: node-width;
-            height: max(16px, plot-height * node.value / 400);
+            height: parent.height * band(node.column, node.slot) / 1000;
             border-radius: 2px;
             background: fill-of(node.tone);
-            Text {
-                x: node.column == 0 ? parent.width + 8px : -self.preferred-width - 8px;
-                y: 0px;
+
+            if node.column == 0: Text {
+                x: -self.preferred-width - 8px;
+                y: (parent.height - self.preferred-height) / 2;
                 text: node.name;
                 color: Theme.foreground;
                 font-size: Theme.font-size-xs;
+            }
+            if node.column > 0 && node.column + 1 == root.column-count(): Text {
+                x: parent.width + 8px;
+                y: (parent.height - self.preferred-height) / 2;
+                text: node.name;
+                color: Theme.foreground;
+                font-size: Theme.font-size-xs;
+            }
+            if node.column > 0 && node.column + 1 != root.column-count(): Text {
+                x: (parent.width - self.preferred-width) / 2;
+                y: -self.preferred-height - 4px;
+                text: node.name;
+                color: Theme.foreground;
+                font-size: Theme.font-size-xs;
+                overflow: elide;
             }
         }
     }
