@@ -39,10 +39,12 @@
       }
       canvas {
         display: block;
-        /* Inline pixel sizes from the preferred 800px window lose to this,
-           otherwise the iframe clips the right padding until a resize. */
+        /* Inline sizes from the window constraints lose to this. max-width
+           in particular clamps the used width below the iframe. */
         width: 100% !important;
         height: 100% !important;
+        max-width: none !important;
+        max-height: none !important;
         outline: none;
       }
       #loading {

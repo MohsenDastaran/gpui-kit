@@ -1202,6 +1202,14 @@
           "target": "progress.slint"
         },
         {
+          "src": "crates/slint-component/ui/shimmer.slint",
+          "target": "shimmer.slint"
+        },
+        {
+          "src": "crates/slint-component/ui/spinner.slint",
+          "target": "spinner.slint"
+        },
+        {
           "src": "crates/slint-component/ui/theme.slint",
           "target": "theme.slint"
         },

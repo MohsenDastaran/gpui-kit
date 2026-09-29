@@ -94,6 +94,11 @@ export component Gallery inherits Window {
     default-font-size: Theme.font-size-md;
     preferred-width: 800px;
     preferred-height: 600px;
+    // A child that does not stretch, such as an attachment chip, would
+    // otherwise publish its own width as this window's maximum. On the web
+    // that maximum is written onto the canvas as max-width, so the iframe
+    // cannot grow the surface. The cap has to stay above any frame size.
+    max-width: 10000px;
 
     VerticalLayout {
         Scrollable {

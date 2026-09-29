@@ -2,59 +2,362 @@ import { Theme, ButtonVariant, ControlSize } from "theme.slint";
 import { Icon } from "icon.slint";
 import { Button } from "button.slint";
 import { Progress } from "progress.slint";
+import { ShimmerText } from "shimmer.slint";
+import { Spinner } from "spinner.slint";
 
-// A file chip. Mirrors GPUI Component's `Attachment`.
+export enum AttachmentStatus { pending, uploading, processing, failed, complete }
+export enum AttachmentAxis { horizontal, vertical }
+
+// A file or media chip. Mirrors GPUI Component's `Attachment`: optional media,
+// metadata, and actions, lifecycle states, sizes, and a vertical preview.
+// `name` and `size` are the title and description. `progress` below 100 draws
+// a bar. Set `closable` to show the remove control (on by default).
+component AttachmentMediaSlot inherits Rectangle {
+    in property <length> side;
+    in property <length> glyph;
+    in property <string> icon;
+    in property <color> icon-color;
+    in property <image> preview;
+    in property <bool> dimmed;
+    in property <bool> overlay;
+    in property <color> fill;
+
+    width: side;
+    height: side;
+    border-radius: Theme.radius-md;
+    background: fill;
+    clip: true;
+
+    if preview.width > 0: Image {
+        width: 100%;
+        height: 100%;
+        source: preview;
+        image-fit: cover;
+        opacity: dimmed ? 0.6 : 1;
+    }
+    if preview.width == 0: Icon {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        name: icon;
+        size: glyph;
+        color: icon-color;
+    }
+    if overlay: Spinner {
+        x: (parent.width - self.width) / 2;
+        y: (parent.height - self.height) / 2;
+        size: ControlSize.small;
+    }
+}
+
+component AttachmentMeta inherits VerticalLayout {
+    in property <string> name;
+    in property <string> size;
+    in property <float> progress;
+    in property <bool> loading-title;
+    in property <bool> shimmer-styled;
+    in property <length> title-size;
+    in property <color> title-color;
+    in property <color> description-color;
+    in property <bool> inset;
+
+    // Intrinsic size of the labels. Elide keeps a tiny minimum so a stretched
+    // card can shrink, while preferred-width stays the full string.
+    horizontal-stretch: 1;
+    min-width: 0px;
+    spacing: 2px;
+    padding: inset ? 8px : 0px;
+
+    if name != "" && loading-title && shimmer-styled: ShimmerText {
+        text: name;
+        font-size: title-size;
+        font-weight: 500;
+        wrap: no-wrap;
+        overflow: TextOverflow.elide;
+        color: title-color;
+        highlight-color: Theme.primary;
+        spread: 0.45;
+        reverse: true;
+    }
+    if name != "" && loading-title && !shimmer-styled: ShimmerText {
+        text: name;
+        font-size: title-size;
+        font-weight: 500;
+        wrap: no-wrap;
+        overflow: TextOverflow.elide;
+        color: title-color;
+    }
+    if name != "" && !loading-title: Text {
+        text: name;
+        color: title-color;
+        font-size: title-size;
+        font-weight: 500;
+        wrap: no-wrap;
+        overflow: TextOverflow.elide;
+    }
+    if size != "": Text {
+        text: size;
+        color: description-color;
+        font-size: Theme.font-size-xs;
+        wrap: no-wrap;
+        overflow: TextOverflow.elide;
+    }
+    if progress < 100: Progress {
+        value: progress;
+        size: ControlSize.xsmall;
+    }
+}
+
+component AttachmentActionRow inherits HorizontalLayout {
+    in property <string> action;
+    in property <ControlSize> action-size;
+    in property <bool> closable;
+    in property <string> remove-icon;
+    in property <ButtonVariant> remove-variant;
+    callback removed();
+    callback action-clicked();
+
+    horizontal-stretch: 0;
+    spacing: 4px;
+    alignment: center;
+
+    if action != "": Button {
+        text: action;
+        variant: ButtonVariant.ghost;
+        size: action-size;
+        clicked => { root.action-clicked(); }
+    }
+    if closable: Button {
+        icon: remove-icon;
+        variant: remove-variant;
+        size: ControlSize.xsmall;
+        accessible-label: "Remove";
+        clicked => { root.removed(); }
+    }
+}
+
+// A horizontal row of attachments that scrolls when they do not fit.
+export component AttachmentGroup {
+    horizontal-stretch: 1;
+    min-width: 0px;
+
+    Flickable {
+        horizontal-stretch: 1;
+        height: row.preferred-height;
+        viewport-height: self.height;
+        viewport-width: max(self.width, row.preferred-width);
+
+        row := HorizontalLayout {
+            spacing: 12px;
+            alignment: start;
+            @children
+        }
+    }
+}
+
 export component Attachment {
     in property <string> name;
     in property <string> size;
     in property <float> progress: 100;
+    in property <AttachmentStatus> status: AttachmentStatus.complete;
+    in property <ControlSize> density: ControlSize.medium;
+    in property <AttachmentAxis> axis: AttachmentAxis.horizontal;
+    in property <string> icon: "file-text";
+    in property <image> preview;
+    in property <bool> show-media: true;
+    in property <bool> show-meta: true;
+    in property <bool> closable: true;
+    in property <bool> overlay;
+    in property <bool> clickable;
+    // Kept so callers can ask for ellipsis. Titles always elide: the preferred
+    // width stays the full string, and a narrower card shows the ellipsis.
+    in property <bool> truncate;
+    // Set false to keep a stable title while the attachment is still loading.
+    in property <bool> shimmer: true;
+    in property <bool> shimmer-styled;
+    in property <string> action;
+    in property <ControlSize> action-size: ControlSize.xsmall;
+    in property <string> remove-icon: "x";
+    in property <ButtonVariant> remove-variant: ButtonVariant.ghost;
+    // 0 uses the density. A positive length overrides the media box.
+    in property <length> media-box;
+    in property <color> fill: Theme.background;
+    in property <color> title-color: Theme.foreground;
+    in property <color> icon-color: root.failed && root.preview.width == 0 ? Theme.destructive : Theme.foreground;
+    in property <color> media-background: root.failed && root.preview.width == 0 ? Theme.destructive.with-alpha(0.1) : Theme.muted;
+    in property <color> description-color: root.failed ? Theme.destructive.with-alpha(0.8) : Theme.muted-foreground;
+    in property <color> border-color: root.failed ? Theme.destructive.with-alpha(0.3)
+        : root.status == AttachmentStatus.pending ? Theme.muted-foreground.with-alpha(0.45)
+        : Theme.border;
     callback removed();
+    callback clicked();
+    callback action-clicked();
 
-    HorizontalLayout {
-        spacing: 10px;
-        padding: 10px;
+    private property <bool> failed: status == AttachmentStatus.failed;
+    private property <bool> loading-title: shimmer && (status == AttachmentStatus.uploading || status == AttachmentStatus.processing);
+    private property <bool> dim-preview: preview.width > 0 && status != AttachmentStatus.pending && status != AttachmentStatus.complete;
+    private property <bool> vertical: axis == AttachmentAxis.vertical;
+    private property <length> pad: density == ControlSize.xsmall ? 4px
+        : density == ControlSize.small ? 6px
+        : density == ControlSize.large ? 12px
+        : 8px;
+    private property <length> gap: density == ControlSize.xsmall ? 6px
+        : density == ControlSize.small ? 10px
+        : density == ControlSize.large ? 12px
+        : 8px;
+    private property <length> media-side: media-box > 0px ? media-box
+        : density == ControlSize.xsmall ? 28px
+        : density == ControlSize.small ? 32px
+        : density == ControlSize.large ? 48px
+        : 40px;
+    private property <length> glyph: density == ControlSize.large || media-box >= 48px ? 20px
+        : density == ControlSize.xsmall ? 14px
+        : 16px;
+    private property <length> title-size: density == ControlSize.xsmall || density == ControlSize.small ? Theme.font-size-xs
+        : density == ControlSize.large ? Theme.font-size-md
+        : Theme.font-size-sm;
+    private property <length> radius: density == ControlSize.xsmall ? Theme.radius-lg : Theme.radius-xl;
+    private property <bool> has-actions: closable || action != "";
+    // GPUI vertical attachments are 7.5rem with metadata and 6rem without.
+    private property <length> column-width: show-meta ? 120px : 96px;
+    private property <length> title-line: title-size * 1.25;
+    private property <length> desc-line: Theme.font-size-xs * 1.25;
+    private property <length> label-height: (name != "" && show-meta ? title-line : 0px)
+        + (size != "" && show-meta ? desc-line + (name != "" ? 2px : 0px) : 0px)
+        + (show-meta && progress < 100 ? 6px : 0px);
+    private property <length> actions-height: has-actions ? (action != "" ? 24px : 20px) : 0px;
+    private property <length> row-height: pad * 2 + max(
+        show-media ? media-side : 0px,
+        show-meta ? label-height : 0px,
+        actions-height);
+    private property <length> column-height: (show-media ? column-width : 0px)
+        + (show-meta ? label-height + 16px : 0px);
+    private property <length> card-height: vertical ? column-height : row-height;
 
-        Rectangle {
-            width: 36px;
-            height: 36px;
-            border-radius: Theme.radius-md;
-            background: Theme.muted;
-            Icon {
-                x: 10px;
-                y: 10px;
-                name: "file";
-                size: 16px;
-                color: Theme.foreground;
+    // `preferred-height` alone did not size the item in nested GroupBox layouts;
+    // the inner `height: 100%` rectangle then collapsed to a few pixels.
+    horizontal-stretch: vertical ? 0 : 1;
+    min-width: vertical ? column-width : 160px;
+    max-width: vertical ? column-width : 10000px;
+    height: card-height;
+
+    card := Rectangle {
+        horizontal-stretch: 1;
+        width: 100%;
+        height: 100%;
+        border-radius: root.radius;
+        border-width: 1px;
+        border-color: root.border-color;
+        background: root.clickable && card-touch.has-hover ? Theme.muted.with-alpha(0.5) : root.fill;
+        clip: true;
+
+        // Under the content, so action buttons keep their own clicks.
+        // x/y keep this overlay out of the card's preferred size.
+        card-touch := TouchArea {
+            x: 0px;
+            y: 0px;
+            width: 100%;
+            height: 100%;
+            enabled: root.clickable;
+            clicked => { root.clicked(); }
+        }
+
+        if !root.vertical: HorizontalLayout {
+            width: parent.width;
+            height: parent.height;
+            padding: root.pad;
+            spacing: root.gap;
+            alignment: stretch;
+            cross-axis-alignment: center;
+
+            if root.show-media: AttachmentMediaSlot {
+                side: root.media-side;
+                glyph: root.glyph;
+                icon: root.icon;
+                icon-color: root.icon-color;
+                preview: root.preview;
+                dimmed: root.dim-preview;
+                overlay: root.overlay;
+                fill: root.media-background;
+            }
+
+            if root.show-meta: AttachmentMeta {
+                name: root.name;
+                size: root.size;
+                progress: root.progress;
+                loading-title: root.loading-title;
+                shimmer-styled: root.shimmer-styled;
+                title-size: root.title-size;
+                title-color: root.title-color;
+                description-color: root.description-color;
+            }
+
+            if root.has-actions: AttachmentActionRow {
+                action: root.action;
+                action-size: root.action-size;
+                closable: root.closable;
+                remove-icon: root.remove-icon;
+                remove-variant: root.remove-variant;
+                removed => { root.removed(); }
+                action-clicked => { root.action-clicked(); }
             }
         }
 
-        VerticalLayout {
-            horizontal-stretch: 1;
-            spacing: 4px;
-            Text {
-                text: name;
-                color: Theme.foreground;
-                font-size: Theme.font-size-sm;
-                font-weight: 500;
-                overflow: elide;
-            }
-            Text {
-                text: size;
-                color: Theme.muted-foreground;
-                font-size: Theme.font-size-xs;
-            }
-            if progress < 100: Progress {
-                value: progress;
-                size: ControlSize.xsmall;
-            }
-        }
+        if root.vertical: VerticalLayout {
+            width: parent.width;
+            height: parent.height;
+            alignment: start;
 
-        Button {
-            icon: "x";
-            variant: ButtonVariant.ghost;
-            size: ControlSize.xsmall;
-            accessible-label: "Remove";
-            clicked => { root.removed(); }
+            if root.show-media: Rectangle {
+                width: 100%;
+                height: root.column-width;
+                background: root.media-background;
+                clip: true;
+
+                if root.preview.width > 0: Image {
+                    width: 100%;
+                    height: 100%;
+                    source: root.preview;
+                    image-fit: cover;
+                    opacity: root.dim-preview ? 0.6 : 1;
+                }
+                if root.preview.width == 0: Icon {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    name: root.icon;
+                    size: root.glyph;
+                    color: root.icon-color;
+                }
+                if root.overlay: Spinner {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    size: ControlSize.small;
+                    color: Theme.foreground;
+                }
+                if root.has-actions: AttachmentActionRow {
+                    x: parent.width - self.width - 8px;
+                    y: 8px;
+                    action: root.action;
+                    action-size: root.action-size;
+                    closable: root.closable;
+                    remove-icon: root.remove-icon;
+                    remove-variant: root.remove-variant;
+                    removed => { root.removed(); }
+                    action-clicked => { root.action-clicked(); }
+                }
+            }
+
+            if root.show-meta: AttachmentMeta {
+                name: root.name;
+                size: root.size;
+                progress: root.progress;
+                loading-title: root.loading-title;
+                shimmer-styled: root.shimmer-styled;
+                title-size: root.title-size;
+                title-color: root.title-color;
+                description-color: root.description-color;
+                inset: true;
+            }
         }
     }
 }
+

@@ -1,16 +1,255 @@
-import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "../group-box.slint";
-import { Attachment } from "../attachment.slint";
+import { Theme, ButtonVariant, ControlSize } from "../theme.slint";
+import { GroupBox } from "../group-box.slint";
+import { Button } from "../button.slint";
+import { Attachment, AttachmentGroup, AttachmentStatus, AttachmentAxis } from "../attachment.slint";
 
 export component AttachmentExample inherits VerticalLayout {
+    // GPUI's attachment story caps each section at 42.5rem. Horizontal cards
+    // then stretch across that column, with the remove control on the trailing edge.
     horizontal-stretch: 1;
+    max-width: 680px;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Files"; variant: GroupBoxVariant.outline;
-        Attachment { name: "design.pdf"; size: "240 KB"; }
-        Attachment { name: "photo.png"; size: "1.2 MB"; progress: 64; }
+    property <string> notice;
+    property <image> preview: @image-url("assets/attachment-preview.svg");
+
+    GroupBox {
+        title: "File metadata";
+        Attachment {
+            name: "quarterly-report.pdf";
+            size: "PDF · 2.4 MB";
+        }
+        Attachment {
+            name: "research-data.csv";
+            size: "CSV · 840 KB";
+            density: ControlSize.small;
+            closable: false;
+        }
     }
 
+    GroupBox {
+        title: "Whole-card click";
+        Attachment {
+            name: "design-mockups.png";
+            size: "PNG · 1.8 MB";
+            clickable: true;
+            clicked => { root.notice = "Opening design-mockups.png…"; }
+            removed => { root.notice = "Removed design-mockups.png"; }
+        }
+        if root.notice != "": Text {
+            text: root.notice;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-sm;
+            wrap: word-wrap;
+        }
+    }
+
+    GroupBox {
+        title: "Upload states";
+        Attachment {
+            name: "meeting-notes.pdf";
+            size: "Ready to upload";
+            status: AttachmentStatus.pending;
+            closable: false;
+        }
+        Attachment {
+            name: "design-assets.zip";
+            size: "Uploading · 68%";
+            status: AttachmentStatus.uploading;
+            progress: 68;
+        }
+        Attachment {
+            name: "transcript.pdf";
+            size: "Processing document";
+            status: AttachmentStatus.processing;
+            shimmer-styled: true;
+            closable: false;
+        }
+        Attachment {
+            name: "archive.zip";
+            size: "Upload failed";
+            status: AttachmentStatus.failed;
+            action: "Retry";
+            remove-icon: "trash";
+            remove-variant: ButtonVariant.danger;
+        }
+        Attachment {
+            name: "published-report.pdf";
+            size: "Uploaded · 1.8 MB";
+            status: AttachmentStatus.complete;
+            icon: "circle-check";
+            icon-color: Theme.success;
+        }
+    }
+
+    GroupBox {
+        title: "Optional slots";
+        Attachment {
+            show-meta: false;
+            closable: false;
+        }
+        Attachment {
+            name: "metadata-only.txt";
+            size: "Text · 1 KB";
+            show-media: false;
+            closable: false;
+        }
+        Attachment {
+            name: "ready-for-review.pdf";
+            show-media: false;
+            closable: false;
+            action: "Open";
+            action-size: ControlSize.small;
+        }
+    }
+
+    GroupBox {
+        title: "Thumbnail";
+        Attachment {
+            name: "sdk-preview.svg";
+            size: "SVG · 1280 × 720";
+            axis: AttachmentAxis.vertical;
+            preview: root.preview;
+        }
+    }
+
+    GroupBox {
+        title: "Image overlays";
+        Attachment {
+            name: "preview.svg";
+            size: "Uploading · 72%";
+            axis: AttachmentAxis.vertical;
+            status: AttachmentStatus.uploading;
+            preview: root.preview;
+            overlay: true;
+            closable: false;
+        }
+    }
+
+    GroupBox {
+        title: "Sizes";
+        Attachment {
+            name: "large.pdf";
+            size: "Large · PDF · 3.1 MB";
+            density: ControlSize.large;
+            closable: false;
+        }
+        Attachment {
+            name: "medium.pdf";
+            size: "Medium · PDF · 2.4 MB";
+            closable: false;
+        }
+        Attachment {
+            name: "small.csv";
+            size: "Small · CSV · 840 KB";
+            density: ControlSize.small;
+            closable: false;
+        }
+        Attachment {
+            name: "xsmall.txt";
+            density: ControlSize.xsmall;
+            closable: false;
+        }
+        Attachment {
+            name: "custom-media.pdf";
+            size: "Large media in a small attachment";
+            density: ControlSize.small;
+            media-box: 48px;
+            closable: false;
+        }
+    }
+
+    GroupBox {
+        title: "Group";
+        AttachmentGroup {
+            Attachment {
+                name: "default.pdf";
+                size: "PDF · 2.4 MB";
+                closable: false;
+            }
+            Attachment {
+                name: "small.csv";
+                size: "CSV · 840 KB";
+                density: ControlSize.small;
+                closable: false;
+            }
+            Attachment {
+                name: "compact.txt";
+                density: ControlSize.xsmall;
+                closable: false;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Orientation";
+        Attachment {
+            name: "horizontal.pdf";
+            size: "Horizontal layout";
+            closable: false;
+        }
+        Attachment {
+            name: "vertical.pdf";
+            size: "Vertical layout";
+            axis: AttachmentAxis.vertical;
+            closable: false;
+        }
+    }
+
+    GroupBox {
+        title: "Status inheritance";
+        Attachment {
+            name: "inherited-title.pdf";
+            size: "Inherited loading appearance";
+            status: AttachmentStatus.uploading;
+            closable: false;
+        }
+        Attachment {
+            name: "stable-title.pdf";
+            size: "Explicit title status disables its shimmer";
+            status: AttachmentStatus.uploading;
+            shimmer: false;
+            closable: false;
+        }
+    }
+
+    GroupBox {
+        title: "Long filenames";
+        Attachment {
+            width: 288px;
+            truncate: true;
+            name: "accessibility-review-and-keyboard-navigation-findings.pdf";
+            size: "Final report · reviewed by the desktop experience team";
+            closable: false;
+        }
+    }
+
+    GroupBox {
+        title: "Attachment trigger";
+        HorizontalLayout {
+            alignment: start;
+            Button {
+                text: "Add files…";
+                icon: "file-text";
+                outline: true;
+                horizontal-stretch: 0;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Custom style";
+        Attachment {
+            name: "custom-theme.json";
+            size: "JSON · 16 KB";
+            closable: false;
+            fill: Theme.accent;
+            border-color: Theme.accent.with-alpha(0.5);
+            title-color: Theme.primary;
+            icon-color: Theme.primary;
+            media-background: Theme.primary.with-alpha(0.12);
+        }
+    }
 }
