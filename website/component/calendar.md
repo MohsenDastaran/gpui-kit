@@ -66,10 +66,6 @@ Calendar::new(&state)
 // Show 2 months side by side
 Calendar::new(&state)
     .number_of_months(2)
-
-// Show 3 months
-Calendar::new(&state)
-    .number_of_months(3)
 ```
 
 ### Calendar Sizes

@@ -65,9 +65,6 @@ Calendar::new(&state)
 ```rust
 Calendar::new(&state)
     .number_of_months(2)
-
-Calendar::new(&state)
-    .number_of_months(3)
 ```
 
 ### 尺寸

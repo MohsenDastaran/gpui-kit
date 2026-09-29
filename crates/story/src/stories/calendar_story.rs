@@ -12,7 +12,8 @@ use crate::section;
 pub struct CalendarStory {
     focus_handle: FocusHandle,
     calendar: Entity<CalendarState>,
-    calendar_wide: Entity<CalendarState>,
+    calendar_two: Entity<CalendarState>,
+    calendar_three: Entity<CalendarState>,
     calendar_with_disabled_matcher: Entity<CalendarState>,
 }
 
@@ -37,13 +38,15 @@ impl CalendarStory {
 
     fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
         let calendar = cx.new(|cx| CalendarState::new(window, cx));
-        let calendar_wide = cx.new(|cx| CalendarState::new(window, cx));
+        let calendar_two = cx.new(|cx| CalendarState::new(window, cx));
+        let calendar_three = cx.new(|cx| CalendarState::new(window, cx));
         let calendar_with_disabled_matcher =
             cx.new(|cx| CalendarState::new(window, cx).disabled_matcher(vec![0, 3, 6]));
 
         Self {
             calendar,
-            calendar_wide,
+            calendar_two,
+            calendar_three,
             calendar_with_disabled_matcher,
             focus_handle: cx.focus_handle(),
         }
@@ -67,10 +70,14 @@ impl Render for CalendarStory {
                     .child(Calendar::new(&self.calendar)),
             )
             .child(
-                section("Multiple months")
-                    .description("Three months shown together.")
-                    .w_128()
-                    .child(Calendar::new(&self.calendar_wide).number_of_months(3)),
+                section("Two months")
+                    .description("Two months shown side by side.")
+                    .child(Calendar::new(&self.calendar_two).number_of_months(2)),
+            )
+            .child(
+                section("Three months")
+                    .description("Three months shown together with spacing between columns.")
+                    .child(Calendar::new(&self.calendar_three).number_of_months(3)),
             )
             .child(
                 section("Disabled dates")

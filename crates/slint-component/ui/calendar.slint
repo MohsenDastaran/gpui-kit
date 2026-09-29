@@ -123,8 +123,8 @@ component CalendarMonth {
 }
 
 // A month grid. Mirrors GPUI Component's `Calendar`. `columns` is 1 for a
-// single month and 2 for two months side by side. The grid stays at the
-// width of its day cells.
+// single month, or 2–3 for multiple months side by side with spacing between
+// them. The grid stays at the width of its day cells.
 export component Calendar {
     in-out property <int> year: 2026;
     in-out property <int> month: 9;
