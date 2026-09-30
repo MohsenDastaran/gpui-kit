@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { NumberInput } from "../number-input.slint";
 
@@ -21,6 +21,31 @@ export component NumberInputExample inherits VerticalLayout {
             value: 19.99;
             prefix: "$";
             step: 0.5;
+        }
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        NumberInput {
+            value: 4;
+            size: ControlSize.small;
+        }
+        NumberInput {
+            value: 4;
+        }
+        NumberInput {
+            value: 4;
+            size: ControlSize.large;
+        }
+    }
+
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        NumberInput {
+            value: 8;
+            enabled: false;
         }
     }
 

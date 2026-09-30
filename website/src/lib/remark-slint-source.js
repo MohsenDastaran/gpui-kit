@@ -283,16 +283,190 @@ export function prettyPrintSlint(src) {
   return out.join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 
-function usageSnippets(ui, slug) {
+function headingText(node) {
+  return (node.children ?? [])
+    .map((child) => (child.type === 'text' ? child.value : ''))
+    .join('')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function sameTitle(heading, title) {
+  return heading.localeCompare(title, undefined, { sensitivity: 'accent' }) === 0;
+}
+
+export function usageBoxes(ui, slug) {
   const path = join(ui, 'examples', `${slug}.slint`);
   if (!existsSync(path)) return [];
-  const boxes = extractGroupBoxes(readFileSync(path, 'utf8'));
-  // Gallery samples are the titled GroupBoxes; an untitled wrapper is layout
-  // chrome and has no code-button heading, so it is not a usage snippet.
-  return boxes
-    .filter((box) => /^\s*title:\s*"[^"]+"\s*;/m.test(box.inner))
-    .map((box) => prettyPrintSlint(stripGalleryLayout(box.inner)))
+  return extractGroupBoxes(readFileSync(path, 'utf8'))
+    .map((box) => {
+      const title = box.inner.match(/^\s*title:\s*"([^"]+)"\s*;/m)?.[1] ?? '';
+      if (!title) return null;
+      const value = prettyPrintSlint(stripGalleryLayout(box.inner));
+      return value ? { title, value } : null;
+    })
     .filter(Boolean);
+}
+
+function usageSnippets(ui, slug) {
+  return usageBoxes(ui, slug).map((box) => box.value);
+}
+
+// Headings that demonstrate a behavior the gallery already runs under another
+// GroupBox title. The sample reuses that box instead of a second copy.
+const ALIASES = {
+  accordion: {
+    'With Borders': 'Single',
+    'Handle Toggle Events': 'Single',
+    'Nested Accordions': 'Icons and custom content',
+  },
+  alert: {
+    'Alert with Title': 'Default',
+    'Closable Alerts': 'Default',
+    'Success Notification': 'Variants',
+    'System Status Banner': 'Banner',
+    'Form Validation Errors': 'Variants',
+  },
+  'alert-dialog': {
+    'Prevent Dialog from Closing': 'Prevent close',
+    'Session Timeout': 'Custom footer',
+    'Update Available': 'Custom content',
+  },
+  avatar: {
+    'Team Display': 'Group',
+    'Anonymous User': 'Fallback',
+  },
+  badge: {
+    'Count Formatting': 'Icon',
+    'Notification Indicators': 'Icon',
+  },
+  button: {
+    'Icon Types': 'Icons and states',
+    'Spinner Icon': 'Icons and states',
+    'Loading State with Icons': 'Icons and states',
+    'Button States': 'Icons and states',
+    Sizeable: 'Sizes',
+  },
+  calendar: {
+    'Multiple Months Display': 'Two columns',
+  },
+  checkbox: {
+    'Disabled State': 'Basic',
+    'Checkbox List': 'Basic',
+  },
+  clipboard: {
+    'Basic Clipboard': 'Copy',
+  },
+  collapsible: {
+    'Animated reveal': 'Details',
+  },
+  'data-table': {
+    'Sorting Implementation': 'Invoices',
+    'Selection Modes': 'Invoices',
+  },
+  'date-picker': {
+    'With Initial Date': 'Date',
+  },
+  'hover-card': {
+    'User Profile Preview': 'Hover',
+  },
+  icon: {
+    'Basic Icon': 'Icons',
+    'Icon with Custom Color': 'Icons',
+    'Animated Loading Icon': 'Icons',
+  },
+  input: {
+    'With Default Value': 'Basic',
+    'Cleanable Input': 'Prefix, suffix and clear button',
+    'Search Input': 'Prefix, suffix and clear button',
+    'Currency Input': 'Prefix, suffix and clear button',
+    'Disabled Input': 'States',
+    'Read-only Input': 'States',
+    'Input Validation': 'States',
+    'Clean on ESC': 'Password',
+    'Input Masking': 'Password',
+  },
+  kbd: {
+    'Basic Keyboard Shortcut': 'Shortcuts',
+    'Multiple Modifiers': 'Shortcuts',
+  },
+  label: {
+    'Basic Label': 'Form labels',
+  },
+  'number-input': {
+    'Basic Number Input': 'Quantity',
+    'With Min/Max/Step': 'Quantity',
+    'With Prefix and Suffix': 'Quantity',
+    'Floating Point Input': 'Quantity',
+  },
+  pagination: {
+    'Basic Pagination': 'Pages',
+    'Large Dataset Pagination': 'Pages',
+  },
+  popover: {
+    'Basic Popover': 'Click',
+  },
+  radio: {
+    'Disabled State': 'Standalone',
+  },
+  'otp-input': {
+    'Basic OTP Input': 'Verification',
+    'PIN Entry': 'Different Length Codes',
+  },
+  rating: {
+    'Controlled Rating': 'Rate this',
+    'Click Behavior': 'Rate this',
+    'Read-only Display': 'Disabled State',
+  },
+  select: {
+    Placeholder: 'Framework',
+  },
+  skeleton: {
+    'Basic Skeleton': 'Loading',
+    'Text Line Skeleton': 'Loading',
+    'Rectangle Skeleton': 'Loading',
+  },
+  slider: {
+    'Basic Slider': 'Volume',
+  },
+  spinner: {
+    'Loading States': 'Colors',
+    'Size Variations': 'Sizes',
+    'In UI Components': 'In context',
+  },
+  stepper: {
+    'Basic Stepper': 'With icons',
+    'Disabled State': 'Sizes and disabled',
+  },
+  switch: {
+    'With Label': 'Basic',
+    'Disabled State': 'Basic',
+  },
+  table: {
+    'Text Alignment': 'Column widths',
+    'Without Border (via Styled)': 'Striped, bordered and sizes',
+  },
+  tag: {
+    'Tag Variants': 'Tags',
+    'Outline Tags': 'Tags',
+  },
+  tooltip: {
+    'Basic Tooltip with Text': 'Hover the button',
+  },
+};
+
+// A titled GroupBox is attached to every Usage sample with that title, or with
+// a heading aliased to it. One gallery sample can fill several doc blocks that
+// show the same behavior.
+export function assignSnippets(samples, boxes, aliases = {}) {
+  const assigned = new Map();
+  samples.forEach((sample, index) => {
+    const want = aliases[sample.heading] ?? sample.heading;
+    const box = boxes.findIndex((item) => sameTitle(want, item.title));
+    if (box < 0) return;
+    assigned.set(index, boxes[box].value);
+  });
+  return assigned;
 }
 
 function importBlock(ui, slug, copy) {
@@ -341,9 +515,13 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
     if (!slug || !hasSlintExample(slug, root)) return;
     const copy = COPY.en;
 
+    let heading = '';
     const rust = [];
-    visit(tree, 'code', (node, index, parent) => {
-      if (node.lang !== 'slint' && parent && index !== undefined) rust.push({ node, parent });
+    visit(tree, (node, index, parent) => {
+      if (node.type === 'heading') heading = headingText(node);
+      if (node.type === 'code' && node.lang !== 'slint' && parent && index !== undefined) {
+        rust.push({ node, parent, heading });
+      }
     });
     const [imports, usage] = rust;
     if (!imports || !usage) return;
@@ -352,12 +530,10 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
       parent.children.splice(parent.children.indexOf(node) + 1, 0, ...nodes);
     after(imports, code(importBlock(ui, slug, copy)));
 
-    const snippets = usageSnippets(ui, slug);
-    if (snippets.length > 0) {
-      snippets.forEach((value, index) => {
-        const target = rust[index + 1];
-        if (target) after(target, code(value));
-      });
+    const boxes = usageBoxes(ui, slug);
+    if (boxes.length > 0) {
+      const assigned = assignSnippets(rust.slice(1), boxes, ALIASES[slug] ?? {});
+      assigned.forEach((value, index) => after(rust[index + 1], code(value)));
       return;
     }
 

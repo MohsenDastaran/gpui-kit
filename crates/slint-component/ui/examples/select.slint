@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Select } from "../select.slint";
 
@@ -17,6 +17,51 @@ export component SelectExample inherits VerticalLayout {
                 { label: "GPUI", value: "gpui" },
                 { label: "Slint", value: "slint" },
                 { label: "egui", value: "egui" }
+            ];
+            selected: 0;
+        }
+    }
+
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
+        Select {
+            size: ControlSize.small;
+            placeholder: "Small";
+            items: [
+                { label: "GPUI", value: "gpui" },
+                { label: "Slint", value: "slint" },
+            ];
+            selected: 0;
+        }
+        Select {
+            placeholder: "Medium";
+            items: [
+                { label: "GPUI", value: "gpui" },
+                { label: "Slint", value: "slint" },
+            ];
+            selected: 1;
+        }
+        Select {
+            size: ControlSize.large;
+            placeholder: "Large";
+            items: [
+                { label: "GPUI", value: "gpui" },
+                { label: "Slint", value: "slint" },
+            ];
+            selected: 0;
+        }
+    }
+
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        Select {
+            enabled: false;
+            placeholder: "Choose a framework";
+            items: [
+                { label: "GPUI", value: "gpui" },
+                { label: "Slint", value: "slint" },
             ];
             selected: 0;
         }

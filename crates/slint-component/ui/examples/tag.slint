@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Tag, TagVariant } from "../tag.slint";
 import { Status } from "../theme.slint";
@@ -43,6 +43,22 @@ export component TagExample inherits VerticalLayout {
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
+        }
+    }
+
+    GroupBox {
+        title: "Tag Sizes";
+        variant: GroupBoxVariant.outline;
+        Tag {
+            text: "Small";
+            size: ControlSize.small;
+        }
+        Tag {
+            text: "Medium";
+        }
+        Tag {
+            text: "Large";
+            size: ControlSize.large;
         }
     }
 

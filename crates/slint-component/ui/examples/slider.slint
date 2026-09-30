@@ -21,4 +21,32 @@ export component SliderExample inherits VerticalLayout {
         }
     }
 
+    GroupBox {
+        title: "Custom Step Intervals";
+        variant: GroupBoxVariant.outline;
+        Slider {
+            value: 20;
+            step: 10;
+        }
+    }
+
+    GroupBox {
+        title: "Min/Max Configuration";
+        variant: GroupBoxVariant.outline;
+        Slider {
+            value: 21;
+            minimum: -10;
+            maximum: 40;
+        }
+    }
+
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        Slider {
+            value: 30;
+            enabled: false;
+        }
+    }
+
 }

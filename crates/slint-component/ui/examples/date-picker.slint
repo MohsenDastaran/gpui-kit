@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { DatePicker } from "../date-picker.slint";
 
@@ -12,6 +12,18 @@ export component DatePickerExample inherits VerticalLayout {
         title: "Date";
         variant: GroupBoxVariant.outline;
         DatePicker {}
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        DatePicker {
+            size: ControlSize.small;
+        }
+        DatePicker {}
+        DatePicker {
+            size: ControlSize.large;
+        }
     }
 
 }

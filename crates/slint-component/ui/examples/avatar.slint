@@ -110,4 +110,24 @@ export component AvatarExample inherits VerticalLayout {
             shadow-color: Theme.shadow;
         }
     }
+
+    GroupBox {
+        title: "Avatar Sizes";
+        Avatar {
+            initials: "XS";
+            size: AvatarSize.xsmall;
+        }
+        Avatar {
+            initials: "SM";
+            size: AvatarSize.small;
+        }
+        Avatar {
+            initials: "MD";
+            size: AvatarSize.medium;
+        }
+        Avatar {
+            initials: "LG";
+            size: AvatarSize.large;
+        }
+    }
 }

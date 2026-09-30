@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Rating } from "../rating.slint";
 
@@ -18,6 +18,40 @@ export component RatingExample inherits VerticalLayout {
         Text {
             text: "\{root.stars} of 5";
             color: Theme.muted-foreground;
+        }
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        Rating {
+            value: 3;
+            size: ControlSize.small;
+        }
+        Rating {
+            value: 3;
+        }
+        Rating {
+            value: 4;
+            size: ControlSize.large;
+        }
+    }
+
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        Rating {
+            value: 2;
+            read-only: true;
+        }
+    }
+
+    GroupBox {
+        title: "Custom Maximum";
+        variant: GroupBoxVariant.outline;
+        Rating {
+            value: 7;
+            max: 10;
         }
     }
 

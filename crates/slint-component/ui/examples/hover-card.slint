@@ -23,4 +23,27 @@ export component HoverCardExample inherits VerticalLayout {
         }
     }
 
+    GroupBox {
+        title: "Custom Timing";
+        variant: GroupBoxVariant.outline;
+        HoverCard {
+            title: "Immediate";
+            description: "Opens as soon as the pointer rests.";
+            delay: 0ms;
+            Button {
+                text: "No delay";
+                variant: ButtonVariant.link;
+            }
+        }
+        HoverCard {
+            title: "Deliberate";
+            description: "Waits before opening, so a passing pointer does not flash it.";
+            delay: 600ms;
+            Button {
+                text: "600 ms";
+                variant: ButtonVariant.link;
+            }
+        }
+    }
+
 }

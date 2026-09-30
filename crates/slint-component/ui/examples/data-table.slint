@@ -46,4 +46,27 @@ export component DataTableExample inherits VerticalLayout {
             ];
         }
     }
+
+    GroupBox {
+        title: "Column Resizing and Moving";
+        variant: GroupBoxVariant.outline;
+        DataTable {
+            height: 180px;
+            columns: [
+                { key: "invoice", title: "Invoice", width: 120px, align: TextHorizontalAlignment.left, sortable: true, resizable: true },
+                { key: "status", title: "Status", width: 120px, align: TextHorizontalAlignment.left, sortable: true, resizable: true },
+                { key: "amount", title: "Amount", width: 0, align: TextHorizontalAlignment.right, sortable: false, resizable: false },
+            ];
+            rows: [
+                {
+                    id: "1",
+                    cells: [
+                        { text: "INV001", status: Status.default },
+                        { text: "Paid", status: Status.success },
+                        { text: "$250", status: Status.default }
+                    ],
+                },
+            ];
+        }
+    }
 }

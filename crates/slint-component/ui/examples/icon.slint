@@ -1,6 +1,7 @@
-import { Theme } from "../theme.slint";
+import { Theme, ButtonVariant } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Icon } from "../icon.slint";
+import { Button } from "../button.slint";
 
 export component IconExample inherits VerticalLayout {
     horizontal-stretch: 1;
@@ -46,6 +47,53 @@ export component IconExample inherits VerticalLayout {
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
+        }
+    }
+
+    GroupBox {
+        title: "Icon with Custom Size";
+        variant: GroupBoxVariant.outline;
+        Icon {
+            name: "search";
+            size: 16px;
+        }
+        Icon {
+            name: "search";
+            size: 24px;
+        }
+        Icon {
+            name: "search";
+            size: 32px;
+        }
+    }
+
+    GroupBox {
+        title: "Status Icons";
+        variant: GroupBoxVariant.outline;
+        Icon {
+            name: "circle-check";
+            color: Theme.success;
+        }
+        Icon {
+            name: "triangle-alert";
+            color: Theme.warning;
+        }
+        Icon {
+            name: "circle-x";
+            color: Theme.danger;
+        }
+    }
+
+    GroupBox {
+        title: "Icon in Button";
+        variant: GroupBoxVariant.outline;
+        Button {
+            text: "Search";
+            icon: "search";
+        }
+        Button {
+            icon: "settings";
+            variant: ButtonVariant.ghost;
         }
     }
 

@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { OtpInput } from "../otp-input.slint";
 
@@ -18,6 +18,61 @@ export component OtpInputExample inherits VerticalLayout {
         Text {
             text: root.code == "" ? "Enter the 6-digit code." : "Code: \{root.code}";
             color: Theme.muted-foreground;
+        }
+    }
+
+    GroupBox {
+        title: "With Default Value";
+        variant: GroupBoxVariant.outline;
+        OtpInput {
+            value: "123456";
+        }
+    }
+
+    GroupBox {
+        title: "Masked OTP Input";
+        variant: GroupBoxVariant.outline;
+        OtpInput {
+            value: "123456";
+            masked: true;
+        }
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        OtpInput {
+            value: "1234";
+            length: 4;
+            size: ControlSize.small;
+        }
+        OtpInput {
+            value: "123456";
+        }
+        OtpInput {
+            value: "123456";
+            size: ControlSize.large;
+        }
+    }
+
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        OtpInput {
+            value: "123456";
+            enabled: false;
+        }
+    }
+
+    GroupBox {
+        title: "Different Length Codes";
+        variant: GroupBoxVariant.outline;
+        OtpInput {
+            length: 4;
+            value: "1234";
+        }
+        OtpInput {
+            length: 6;
         }
     }
 

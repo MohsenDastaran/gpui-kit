@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Label } from "../label.slint";
 import { Input } from "../input.slint";
@@ -18,6 +18,23 @@ export component LabelExample inherits VerticalLayout {
         }
         Input {
             placeholder: "you@example.com";
+        }
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        Label {
+            text: "Small";
+            size: ControlSize.small;
+        }
+        Label {
+            text: "Medium";
+        }
+        Label {
+            text: "Large";
+            size: ControlSize.large;
+            required: true;
         }
     }
 

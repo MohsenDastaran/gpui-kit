@@ -177,4 +177,13 @@ export component InputExample inherits VerticalLayout {
             }
         }
     }
+
+    GroupBox {
+        title: "Custom Appearance";
+        variant: GroupBoxVariant.outline;
+        Input {
+            text: "Borderless field";
+            appearance: false;
+        }
+    }
 }

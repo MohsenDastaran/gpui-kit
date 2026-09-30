@@ -23,4 +23,33 @@ export component SkeletonExample inherits VerticalLayout {
         }
     }
 
+    GroupBox {
+        title: "Circle Skeleton";
+        variant: GroupBoxVariant.outline;
+        Skeleton {
+            width: 48px;
+            height: 48px;
+            radius: 24px;
+        }
+    }
+
+    GroupBox {
+        title: "Different Shapes";
+        variant: GroupBoxVariant.outline;
+        Skeleton {
+            height: 12px;
+            radius: 2px;
+        }
+        Skeleton {
+            width: 160px;
+            height: 40px;
+            radius: 8px;
+        }
+        Skeleton {
+            width: 48px;
+            height: 48px;
+            radius: 24px;
+        }
+    }
+
 }

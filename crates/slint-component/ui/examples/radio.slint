@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Radio, RadioGroup } from "../radio.slint";
 
@@ -26,6 +26,25 @@ export component RadioExample inherits VerticalLayout {
         Radio {
             label: "Disabled";
             enabled: false;
+        }
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        RadioGroup {
+            size: ControlSize.small;
+            options: ["Small", "Compact"];
+            selected: 0;
+        }
+        RadioGroup {
+            options: ["Medium", "Default"];
+            selected: 0;
+        }
+        RadioGroup {
+            size: ControlSize.large;
+            options: ["Large", "Roomy"];
+            selected: 1;
         }
     }
 

@@ -1,6 +1,7 @@
 import { Theme, ButtonVariant } from "../theme.slint";
 import { Button } from "../button.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
+import { GroupBox as Panel } from "../group-box.slint";
 
 export component GroupBoxExample inherits VerticalLayout {
     horizontal-stretch: 1;
@@ -60,6 +61,58 @@ export component GroupBoxExample inherits VerticalLayout {
         Text {
             text: "Content with a border and no background.";
             color: Theme.foreground;
+        }
+    }
+
+    GroupBox {
+        title: "GroupBox Variants";
+        variant: GroupBoxVariant.outline;
+        Panel {
+            Text {
+                text: "Content without a visual container";
+                color: Theme.foreground;
+            }
+        }
+        Panel {
+            title: "Settings";
+            variant: GroupBoxVariant.fill;
+            Text {
+                text: "Content with a background.";
+                color: Theme.foreground;
+            }
+        }
+        Panel {
+            title: "Preferences";
+            variant: GroupBoxVariant.outline;
+            Text {
+                text: "Content with a border.";
+                color: Theme.foreground;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "With Title";
+        variant: GroupBoxVariant.outline;
+        Panel {
+            title: "Account Settings";
+            variant: GroupBoxVariant.fill;
+            Text {
+                text: "Make profile private";
+                color: Theme.foreground;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Without Title";
+        variant: GroupBoxVariant.outline;
+        Panel {
+            variant: GroupBoxVariant.outline;
+            Text {
+                text: "A bordered group with no heading.";
+                color: Theme.foreground;
+            }
         }
     }
 }

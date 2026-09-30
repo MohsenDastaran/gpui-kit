@@ -1,4 +1,4 @@
-import { Theme } from "../theme.slint";
+import { Theme, ControlSize } from "../theme.slint";
 import { GroupBox, GroupBoxVariant } from "section.slint";
 import { Toggle, ToggleGroup } from "../toggle.slint";
 
@@ -49,6 +49,39 @@ export component ToggleExample inherits VerticalLayout {
                 { text: "Week", icon: "" },
                 { text: "Month", icon: "" }
             ];
+        }
+    }
+
+    GroupBox {
+        title: "Different Sizes";
+        variant: GroupBoxVariant.outline;
+        Toggle {
+            text: "Small";
+            size: ControlSize.small;
+            selected: true;
+        }
+        Toggle {
+            text: "Medium";
+            selected: true;
+        }
+        Toggle {
+            text: "Large";
+            size: ControlSize.large;
+            selected: true;
+        }
+    }
+
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        Toggle {
+            text: "Disabled";
+            enabled: false;
+        }
+        Toggle {
+            text: "Disabled on";
+            enabled: false;
+            selected: true;
         }
     }
 
