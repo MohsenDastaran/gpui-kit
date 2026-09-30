@@ -1300,8 +1300,9 @@ html.dark .astro-code span {
   height: calc(100vh - var(--nav-height));
   overflow-y: auto;
   flex-shrink: 0;
-  padding: 1.5rem 1rem 1.5rem 0.5rem;
+  padding: 1.15rem 0.7rem 2.25rem 0.55rem;
   border-right: 1px solid var(--border);
+  font-optical-sizing: auto;
   scrollbar-gutter: stable;
 }
 
@@ -1346,33 +1347,44 @@ html.dark .astro-code span {
   background-color: var(--scrollbar-thumb-hover);
 }
 
-/* Sidebar group heading */
+.sidebar-group + .sidebar-group {
+  margin-top: 1.35rem;
+}
+
+/* Section labels share the UI sans with the links. A short, medium-weight
+   kicker reads as structure; the old monospace stamp at a tenth of an em
+   tracked the letters apart and made the column feel stamped rather than set. */
 .sidebar-group__title {
+  margin: 0 0 0.3rem;
+  padding: 0.2rem 0.55rem 0.28rem;
   color: var(--muted-foreground);
-  font: 620 0.68rem/1 var(--font-mono);
-  letter-spacing: 0.1em;
+  font: 560 0.6875rem/1.25 var(--font-sans);
+  letter-spacing: 0.045em;
   text-transform: uppercase;
-  padding: 0.4rem 0;
-  margin-bottom: 0.2rem;
 }
 
 .sidebar-group__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   list-style: none;
+  margin: 0;
   padding: 0;
-  margin: 0 0 1.25rem;
 }
 
 .sidebar-item {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  margin-inline: -0.5rem;
-  padding: 0.3rem 0.55rem;
-  border-radius: var(--radius-control);
-  color: var(--foreground);
+  gap: 0.7rem;
+  min-height: 1.85rem;
+  padding: 0.28rem 0.55rem;
+  border-radius: 0.4375rem;
+  color: color-mix(in srgb, var(--sidebar-foreground) 86%, transparent);
   font-size: 0.8125rem;
-  line-height: 1.45;
+  font-weight: 500;
+  letter-spacing: -0.011em;
+  line-height: 1.3;
   text-decoration: none;
   transition:
     color 140ms ease,
@@ -1388,11 +1400,14 @@ html.dark .astro-code span {
 
 .sidebar-item__count {
   flex: none;
+  min-width: 1rem;
   color: var(--muted-foreground);
   font-size: 0.6875rem;
-  font-variant-numeric: tabular-nums;
-  font-weight: 550;
-  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-align: end;
+  opacity: 0.8;
 }
 
 html[data-framework='slint'] .sidebar-item__count[data-framework-count='gpui'],
@@ -1400,30 +1415,50 @@ html:not([data-framework='slint']) .sidebar-item__count[data-framework-count='sl
   display: none;
 }
 
-.sidebar-item:hover {
-  background: var(--secondary);
+html[lang^="zh"] .sidebar-item,
+html[lang^="ja"] .sidebar-item,
+html[lang^="zh"] .sidebar-subgroup-title,
+html[lang^="ja"] .sidebar-subgroup-title {
+  letter-spacing: normal;
 }
+
+.sidebar-item:hover {
+  background: color-mix(in srgb, var(--sidebar-foreground) 5%, transparent);
+  color: var(--sidebar-foreground);
+}
+
+/* Weight stays put so the label does not reflow when it becomes current.
+   The fill and the full foreground are the selection. */
 .sidebar-item.active {
   background: var(--sidebar-accent);
   color: var(--sidebar-accent-foreground);
-  font-weight: 620;
 }
 .sidebar-item.active .sidebar-item__count {
   color: var(--sidebar-accent-foreground);
-  opacity: 0.62;
+  opacity: 0.55;
 }
 
 .sidebar-subgroup-title {
-  padding: 0.28rem 0.5rem;
+  margin-top: 0.7rem;
+  padding: 0.4rem 0.55rem 0.15rem;
   color: var(--muted-foreground);
-  font-size: 0.8125rem;
-  font-weight: 500;
+  font-size: 0.75rem;
+  font-weight: 560;
+  letter-spacing: -0.006em;
+  line-height: 1.3;
+}
+
+.sidebar-group__items > li:first-child > .sidebar-subgroup-title {
+  margin-top: 0.1rem;
 }
 
 .sidebar-subgroup__items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
   list-style: none;
-  padding-left: 0.75rem;
   margin: 0;
+  padding: 0 0 0 0.4rem;
 }
 
 /* ====================================================================
@@ -1783,15 +1818,20 @@ html:not([data-framework='slint']) .sidebar-item__count[data-framework-count='sl
 /* Tracking that reads as restrained emphasis on Latin caps pulls short CJK
    labels apart — `文档`, `本页内容` — because Chinese has no case for the
    uppercase to act on, leaving only the extra space. The Vue components already
-   narrow their own kickers this way; these four had been left behind. */
+   narrow their own kickers this way. */
 html[lang^="zh"]
-  :is(
-    .sidebar-group__title,
-    .toc__label,
-    .doc-pager__label,
-    .component-example__label
-  ) {
+  :is(.toc__label, .doc-pager__label, .component-example__label),
+html[lang^="ja"]
+  :is(.toc__label, .doc-pager__label, .component-example__label) {
   letter-spacing: 0.05em;
+}
+
+/* Uppercase tracking is for Latin kickers. CJK has no case, so the same
+   gap only pries the characters apart. */
+html[lang^="zh"] .sidebar-group__title,
+html[lang^="ja"] .sidebar-group__title {
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 /* ====================================================================
