@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { slintRoot } from './remark-slint-source.js';
 
@@ -168,4 +168,37 @@ export function slintApiFor(slug, root = process.cwd()) {
   const path = join(slintRoot(root), `${slug}.slint`);
   if (!existsSync(path)) return [];
   return parseSlintApi(readFileSync(path, 'utf8'));
+}
+
+export function slintAnchor(name, member = '') {
+  const base = `slint-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  if (!member) return base;
+  return `${base}-${member.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+}
+
+let catalogCache;
+let catalogRoot;
+
+// Every public export that has a component page, so a related-component link
+// can land on that export instead of the GPUI docs.
+export function slintCatalog(root = process.cwd()) {
+  if (catalogCache && catalogRoot === root) return catalogCache;
+  const ui = slintRoot(root);
+  const pages = new Set(
+    readdirSync(join(root, 'component'))
+      .filter((name) => name.endsWith('.md'))
+      .map((name) => name.slice(0, -3)),
+  );
+  const items = [];
+  for (const file of readdirSync(ui)) {
+    if (!file.endsWith('.slint')) continue;
+    const slug = file.slice(0, -'.slint'.length);
+    if (!pages.has(slug)) continue;
+    for (const item of parseSlintApi(readFileSync(join(ui, file), 'utf8'))) {
+      items.push({ ...item, slug });
+    }
+  }
+  catalogCache = items;
+  catalogRoot = root;
+  return items;
 }
