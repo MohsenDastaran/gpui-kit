@@ -463,8 +463,9 @@ html.dark .astro-code span {
   gap: 0.75rem;
 }
 
-.doc-content .is-example-source {
-  box-shadow: inset 3px 0 0 var(--foreground);
+.doc-content :is(h3, h4, h5, h6).is-example-source {
+  color: var(--data-2);
+  font-weight: 750;
 }
 
 .component-example__live {
@@ -1866,7 +1867,9 @@ html[data-framework="slint"]
   .framework-bar
   > .framework-switch:not([data-selected])
   .framework-switch__thumb,
-.framework-bar > .framework-switch[data-selected="slint"] .framework-switch__thumb {
+.framework-bar
+  > .framework-switch[data-selected="slint"]
+  .framework-switch__thumb {
   transform: translateX(100%);
 }
 
