@@ -117,7 +117,7 @@ html.dark .alignment-dark {
 
   /* Layout */
   --nav-height: 56px;
-  --sidebar-width: 220px;
+  --sidebar-width: 248px;
   --toc-width: 200px;
   --layout-max-width: 1280px;
 }
@@ -1363,25 +1363,54 @@ html.dark .astro-code span {
 }
 
 .sidebar-item {
-  display: block;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
   margin-inline: -0.5rem;
-  padding: 0.28rem 0.5rem;
+  padding: 0.3rem 0.55rem;
   border-radius: var(--radius-control);
   color: var(--foreground);
   font-size: 0.8125rem;
-  line-height: 1.5;
+  line-height: 1.45;
   text-decoration: none;
   transition:
     color 140ms ease,
     background 140ms ease;
 }
 
+.sidebar-item__label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sidebar-item__count {
+  flex: none;
+  color: var(--muted-foreground);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 550;
+  letter-spacing: 0.01em;
+}
+
+html[data-framework='slint'] .sidebar-item__count[data-framework-count='gpui'],
+html:not([data-framework='slint']) .sidebar-item__count[data-framework-count='slint'] {
+  display: none;
+}
+
 .sidebar-item:hover {
   background: var(--secondary);
 }
 .sidebar-item.active {
-  color: var(--foreground);
-  font-weight: 650;
+  background: var(--sidebar-accent);
+  color: var(--sidebar-accent-foreground);
+  font-weight: 620;
+}
+.sidebar-item.active .sidebar-item__count {
+  color: var(--sidebar-accent-foreground);
+  opacity: 0.62;
 }
 
 .sidebar-subgroup-title {

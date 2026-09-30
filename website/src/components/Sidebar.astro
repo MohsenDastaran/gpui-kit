@@ -10,7 +10,7 @@ export interface Props {
 const { items, currentPath, lang = 'en' } = Astro.props;
 
 function isActive(link: string): boolean {
-  return currentPath === link || currentPath.startsWith(link + '/');
+  return currentPath === link;
 }
 
 function renderItems(items: SidebarItem[], depth = 0): any[] {
@@ -38,7 +38,17 @@ function renderItems(items: SidebarItem[], depth = 0): any[] {
                           href={sub.link}
                           class={`sidebar-item${sub.link && isActive(sub.link) ? ' active' : ''}`}
                         >
-                          {sub.text}
+                          <span class="sidebar-item__label">{sub.text}</span>
+                          {sub.examples?.gpui ? (
+                            <span class="sidebar-item__count" data-framework-count="gpui">
+                              {sub.examples.gpui}<span class="sr-only"> examples</span>
+                            </span>
+                          ) : null}
+                          {sub.examples?.slint ? (
+                            <span class="sidebar-item__count" data-framework-count="slint">
+                              {sub.examples.slint}<span class="sr-only"> examples</span>
+                            </span>
+                          ) : null}
                         </a>
                       </li>
                     ))}
@@ -50,7 +60,17 @@ function renderItems(items: SidebarItem[], depth = 0): any[] {
                     href={item.link}
                     class={`sidebar-item${item.link && isActive(item.link) ? ' active' : ''}`}
                   >
-                    {item.text}
+                    <span class="sidebar-item__label">{item.text}</span>
+                    {item.examples?.gpui ? (
+                      <span class="sidebar-item__count" data-framework-count="gpui">
+                        {item.examples.gpui}<span class="sr-only"> examples</span>
+                      </span>
+                    ) : null}
+                    {item.examples?.slint ? (
+                      <span class="sidebar-item__count" data-framework-count="slint">
+                        {item.examples.slint}<span class="sr-only"> examples</span>
+                      </span>
+                    ) : null}
                   </a>
                 </li>
               )

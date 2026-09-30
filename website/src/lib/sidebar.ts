@@ -1,11 +1,14 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs';
 import { extname, join, relative } from 'node:path';
+import { galleryCounts, type GalleryCounts } from './example-counts';
 
 export interface SidebarItem {
   text: string;
   link?: string;
   items?: SidebarItem[];
   collapsed?: boolean;
+  /** Examples in the gallery window, per framework. Omitted when that window has none. */
+  examples?: GalleryCounts;
 }
 
 export interface SidebarGeneratorConfig {
@@ -17,9 +20,15 @@ export interface SidebarGeneratorConfig {
   rootGroupText: string;
   /** If set, prepend this as the first item pointing to baseUrl */
   rootLinkText?: string;
+  /** Count the examples each component's gallery window paints. */
+  countExamples?: boolean;
 }
 
-function parseFrontmatter(content: string): { title?: string; order?: number } {
+function parseFrontmatter(content: string): {
+  title?: string;
+  order?: number;
+  example?: string | false;
+} {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return {};
   const raw = match[1];
@@ -27,9 +36,11 @@ function parseFrontmatter(content: string): { title?: string; order?: number } {
   // `\d+` alone never matched the values actually in use — they are negative
   // and often fractional (`-2.1`).
   const orderStr = raw.match(/^order:\s*(-?\d+(?:\.\d+)?)/m)?.[1];
+  const exampleRaw = raw.match(/^example:\s*(.+)$/m)?.[1]?.trim().replace(/^["']|["']$/g, '');
   return {
     title,
     order: orderStr ? parseFloat(orderStr) : undefined,
+    example: exampleRaw === 'false' ? false : exampleRaw,
   };
 }
 
@@ -73,10 +84,11 @@ interface FileEntry {
   isDir: boolean;
   order: number;
   title: string;
+  examples?: GalleryCounts;
   items?: FileEntry[];
 }
 
-function scanDir(dir: string, baseDir: string): FileEntry[] {
+function scanDir(dir: string, baseDir: string, countExamples: boolean): FileEntry[] {
   let entries: FileEntry[];
   try {
     entries = readdirSync(dir).map((name) => {
@@ -84,19 +96,24 @@ function scanDir(dir: string, baseDir: string): FileEntry[] {
       const relPath = relative(baseDir, fullPath);
       const isDir = statSync(fullPath).isDirectory();
       if (isDir) {
-        const children = scanDir(fullPath, baseDir);
+        const children = scanDir(fullPath, baseDir, countExamples);
         return { name, path: relPath, isDir: true, order: 999, title: titleCase(name), items: children };
       }
       if (extname(name) !== '.md') return null;
       if (name === 'index.md') return null;
       let content = '';
       try { content = readFileSync(fullPath, 'utf-8'); } catch {}
+      const frontmatter = parseFrontmatter(content);
+      const examples = countExamples
+        ? galleryCounts(name.replace(/\.md$/, ''), frontmatter.example)
+        : undefined;
       return {
         name,
         path: relPath,
         isDir: false,
         order: getFileOrder(content),
         title: getFileTitle(relPath, content),
+        examples,
       };
     }).filter(Boolean) as FileEntry[];
   } catch {
@@ -105,11 +122,16 @@ function scanDir(dir: string, baseDir: string): FileEntry[] {
   return entries;
 }
 
-function entriesToSidebarItems(
-  entries: FileEntry[],
-  baseUrl: string,
-  isComponentsDir = false
-): SidebarItem[] {
+function itemFromFile(entry: FileEntry, baseUrl: string): SidebarItem {
+  return {
+    text: entry.title,
+    link: `${baseUrl}/${entry.path.replace(/\.md$/, '')}`,
+    collapsed: false,
+    examples: entry.examples,
+  };
+}
+
+function entriesToSidebarItems(entries: FileEntry[], baseUrl: string): SidebarItem[] {
   const dirs = entries.filter((e) => e.isDir);
   const files = entries.filter((e) => !e.isDir);
 
@@ -124,11 +146,7 @@ function entriesToSidebarItems(
   files.sort(sortByOrder);
   otherDirs.sort(sortByOrder);
 
-  const fileItems: SidebarItem[] = files.map((f) => ({
-    text: f.title,
-    link: `${baseUrl}/${f.path.replace(/\.md$/, '')}`,
-    collapsed: false,
-  }));
+  const fileItems: SidebarItem[] = files.map((entry) => itemFromFile(entry, baseUrl));
 
   const otherDirItems: SidebarItem[] = otherDirs.map((d) => ({
     text: d.title,
@@ -142,11 +160,7 @@ function entriesToSidebarItems(
     const catalogItems = (catalogDir.items ?? [])
       .filter((e) => !e.isDir)
       .sort((a, b) => a.title.localeCompare(b.title, 'en', { sensitivity: 'base' }))
-      .map((f) => ({
-        text: f.title,
-        link: `${baseUrl}/${f.path.replace(/\.md$/, '')}`,
-        collapsed: false,
-      }));
+      .map((entry) => itemFromFile(entry, baseUrl));
 
     const label = catalogDir.name.toLowerCase() === 'primitives' ? 'Primitives' : 'Components';
     result.push({
@@ -160,7 +174,7 @@ function entriesToSidebarItems(
 }
 
 export function generateSidebar(config: SidebarGeneratorConfig): SidebarItem[] {
-  const entries = scanDir(config.contentDir, config.contentDir);
+  const entries = scanDir(config.contentDir, config.contentDir, config.countExamples === true);
   const items = entriesToSidebarItems(entries, config.baseUrl);
 
   const rootGroup: SidebarItem = {
@@ -213,4 +227,5 @@ export const enComponentSidebar = generateSidebar({
   baseUrl: `${BASE}/component`,
   rootGroupText: 'GPUI Component',
   rootLinkText: 'Components',
+  countExamples: true,
 });
