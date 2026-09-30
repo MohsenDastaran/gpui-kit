@@ -385,7 +385,19 @@ function apiReference(name: string) {
 
 function installCommand() {
   const line = document.querySelector(".install-command__line code");
-  return (line?.textContent ?? "").replace(/\s+/g, " ").trim();
+  if (!line) return "";
+  const parts = [...line.children]
+    .map((part) => (part.textContent ?? "").trim())
+    .filter(Boolean);
+  return parts.join(" ");
+}
+
+function installedFile(name: string) {
+  const slug = pageSlug.value ?? component.value;
+  if (!slug) return "";
+  return name === "slint"
+    ? `ui/components/${slug}.slint`
+    : `src/components/${slug.replaceAll("-", "_")}.rs`;
 }
 
 function buildPrompt(samples: ExampleSample[], name: string) {
@@ -407,8 +419,15 @@ function buildPrompt(samples: ExampleSample[], name: string) {
     `Page: ${window.location.href.split("#")[0]}`,
   ];
   const command = installCommand();
+  const file = installedFile(name);
   if (command) {
     lines.push("", "## Install", command);
+    if (file) {
+      lines.push(
+        "",
+        `Run this only if it has not already been run. Check whether \`${file}\` exists. If that file is there, skip the command.`,
+      );
+    }
   }
   lines.push("", "## Files");
   if (name === "slint") {
