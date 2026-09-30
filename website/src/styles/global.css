@@ -463,23 +463,6 @@ html.dark .astro-code span {
   gap: 0.75rem;
 }
 
-.component-example__source {
-  padding: 0;
-  border: 0;
-  background: none;
-  color: inherit;
-  font: inherit;
-  letter-spacing: inherit;
-  text-transform: inherit;
-  cursor: pointer;
-}
-
-.component-example__source:hover {
-  color: var(--foreground);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-}
-
 .doc-content .is-example-source {
   box-shadow: inset 3px 0 0 var(--foreground);
 }

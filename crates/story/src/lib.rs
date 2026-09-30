@@ -2,7 +2,7 @@ use gpui_fps::fps_monitor;
 use gpui_kit::component::{
     ActiveTheme, IconName, Root, Sizable as _, Size as ComponentSize, StyledExt as _,
     TITLE_BAR_HEIGHT, TitleBar, WindowExt,
-    button::Button,
+    button::{Button, ButtonVariants as _},
     command::{Command, CommandEntry, CommandState},
     dock::{
         BasePanel, Panel, PanelControl, PanelEvent, PanelInfo, PanelState, TitleStyle,
@@ -27,7 +27,7 @@ mod embedded_themes;
 mod example_source;
 mod gallery;
 
-pub use example_source::example_under_point;
+pub use example_source::install_source_button;
 mod stories;
 mod themes;
 mod title_bar;
@@ -377,57 +377,55 @@ impl Styled for StorySection {
 impl RenderOnce for StorySection {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let index = example_source::note_section();
-        let title = self.title.clone();
-        div()
-            .w_full()
-            .relative()
-            .child(
-                GroupBox::new()
-                    .id(self.title.clone())
-                    .outline()
-                    .mb_6()
-                    .title(
-                        h_flex()
-                            .justify_between()
-                            .items_start()
-                            .w_full()
-                            .gap_4()
-                            .child(
-                                v_flex()
-                                    .min_w_0()
-                                    .flex_1()
-                                    .gap_1()
-                                    .child(div().font_medium().child(self.title))
-                                    .when_some(self.description, |this, description| {
-                                        this.child(
-                                            div()
-                                                .text_xs()
-                                                .text_color(cx.theme().muted_foreground)
-                                                .child(description),
-                                        )
-                                    }),
-                            )
-                            .children(self.sub_title),
+        let source_title = self.title.clone();
+        GroupBox::new()
+            .id(self.title.clone())
+            .outline()
+            .mb_6()
+            .title(
+                h_flex()
+                    .justify_between()
+                    .items_start()
+                    .w_full()
+                    .gap_4()
+                    .child(
+                        v_flex()
+                            .min_w_0()
+                            .flex_1()
+                            .gap_1()
+                            .child(div().font_medium().child(self.title))
+                            .when_some(self.description, |this, description| {
+                                this.child(
+                                    div()
+                                        .text_xs()
+                                        .text_color(cx.theme().muted_foreground)
+                                        .child(description),
+                                )
+                            }),
                     )
-                    .content_style(
-                        StyleRefinement::default()
-                            .rounded(cx.theme().radius_lg)
-                            .overflow_x_hidden()
-                            .items_center()
-                            .justify_center(),
-                    )
-                    .child(self.base.children(self.children)),
+                    .children(self.sub_title)
+                    .when(example_source::enabled(), |row| {
+                        row.child(
+                            Button::new(SharedString::from(format!("example-source-{index}")))
+                                .icon(gpui_kit::assets::IconName::CodeXml)
+                                .ghost()
+                                .xsmall()
+                                .tooltip("View source")
+                                .accessibility_label("View source")
+                                .on_click(move |_, _, _| {
+                                    example_source::show(index, &source_title);
+                                }),
+                        )
+                    }),
             )
-            .child(
-                canvas(
-                    move |bounds, _, _| {
-                        example_source::place(index, title.clone(), bounds);
-                    },
-                    |_, _, _, _| {},
-                )
-                .absolute()
-                .size_full(),
+            .content_style(
+                StyleRefinement::default()
+                    .rounded(cx.theme().radius_lg)
+                    .overflow_x_hidden()
+                    .items_center()
+                    .justify_center(),
             )
+            .child(self.base.children(self.children))
     }
 }
 

@@ -1,39 +1,42 @@
+import { Theme } from "../theme.slint";
 import { GroupBox as Box, GroupBoxVariant } from "../group-box.slint";
-import { ExampleBridge } from "bridge.slint";
+import { SourceButton } from "bridge.slint";
 
 export { GroupBoxVariant }
 
-// The section's own rectangle, not a child overlay. Buttons inside keep the
-// click; the host only reads where this section was drawn.
-export component GroupBox inherits Box {
-    property <int> id: -1;
-    property <length> track-x: self.absolute-position.x;
-    property <length> track-y: self.absolute-position.y;
-    property <length> track-w: self.width;
-    property <length> track-h: self.height;
+// The same section the examples already use, with a code button beside the
+// title. The button is the only control that asks the page to show this sample.
+export component GroupBox inherits VerticalLayout {
+    in property <string> title;
+    in property <GroupBoxVariant> variant: GroupBoxVariant.normal;
 
-    init => {
-        root.id = ExampleBridge.next-id;
-        ExampleBridge.next-id += 1;
-        root.publish();
-    }
+    horizontal-stretch: 1;
+    spacing: variant == GroupBoxVariant.normal ? 16px : 12px;
 
-    function publish() {
-        if root.title == "" || root.id < 0 {
-            return;
+    if root.title != "": HorizontalLayout {
+        spacing: 8px;
+        alignment: center;
+
+        Text {
+            text: root.title;
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-sm;
+            font-weight: 500;
+            wrap: word-wrap;
+            vertical-stretch: 0;
         }
-        ExampleBridge.report(
-            root.id,
-            root.title,
-            root.track-x / 1px,
-            root.track-y / 1px,
-            root.track-w / 1px,
-            root.track-h / 1px,
-        );
+
+        Rectangle { horizontal-stretch: 1; }
+
+        SourceButton {
+            title: root.title;
+            vertical-stretch: 0;
+        }
     }
 
-    changed track-x => { root.publish(); }
-    changed track-y => { root.publish(); }
-    changed track-w => { root.publish(); }
-    changed track-h => { root.publish(); }
+    Box {
+        title: "";
+        variant: root.variant;
+        @children
+    }
 }

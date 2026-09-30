@@ -1,4 +1,5 @@
 use crate::*;
+use gpui_kit::canvas;
 use gpui_kit::component::{
     Icon, IconName, ThemeStyled as _,
     button::{Button, ButtonVariants as _},
@@ -294,6 +295,14 @@ impl Render for Gallery {
                 .id("embedded-story")
                 .size_full()
                 .when_some(active_story, |this, story| this.child(story.clone()))
+                .relative()
+                .child(
+                    canvas(
+                        |_, _, _| crate::example_source::close_frame(),
+                        |_, _, _, _| {},
+                    )
+                    .absolute(),
+                )
                 .into_any_element();
         }
 

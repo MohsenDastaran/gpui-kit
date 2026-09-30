@@ -1,44 +1,49 @@
-// The website embeds the gallery in a frame. A click on a card cannot reach the
-// page on its own, so each card reports its window rectangle. The host maps the
-// pointer to the largest card under it and tells the page which example that was.
-// This file is gallery-only. Installed components do not include it.
+// Gallery-only. A code button on each example tells the embedding page which
+// sample to show. Installed components do not include this file.
+
+import { Theme } from "../theme.slint";
+import { Icon } from "../icon.slint";
 
 export global ExampleBridge {
     in-out property <int> next-id: 0;
-    callback report(int, string, float, float, float, float);
+    callback show(int, string);
 }
 
-export component ExampleProbe inherits Rectangle {
+export component SourceButton inherits Rectangle {
     in property <string> title;
-    property <int> id: -1;
+    property <int> index: -1;
 
-    property <length> track-x: self.absolute-position.x;
-    property <length> track-y: self.absolute-position.y;
-    property <length> track-w: self.width;
-    property <length> track-h: self.height;
+    width: 24px;
+    height: 24px;
+    border-radius: Theme.radius-sm;
+    background: touch.has-hover ? Theme.accent : transparent;
+    accessible-role: button;
+    accessible-label: "View source";
+    accessible-action-default => { root.open(); }
 
     init => {
-        root.id = ExampleBridge.next-id;
+        root.index = ExampleBridge.next-id;
         ExampleBridge.next-id += 1;
-        root.publish();
     }
 
-    function publish() {
-        if root.title == "" || root.id < 0 {
+    function open() {
+        if root.title == "" || root.index < 0 {
             return;
         }
-        ExampleBridge.report(
-            root.id,
-            root.title,
-            root.track-x / 1px,
-            root.track-y / 1px,
-            root.track-w / 1px,
-            root.track-h / 1px,
-        );
+        ExampleBridge.show(root.index, root.title);
     }
 
-    changed track-x => { root.publish(); }
-    changed track-y => { root.publish(); }
-    changed track-w => { root.publish(); }
-    changed track-h => { root.publish(); }
+    touch := TouchArea {
+        width: 100%;
+        height: 100%;
+        clicked => { root.open(); }
+
+        Icon {
+            x: (parent.width - self.width) / 2;
+            y: (parent.height - self.height) / 2;
+            name: "code-xml";
+            size: 14px;
+            color: Theme.muted-foreground;
+        }
+    }
 }

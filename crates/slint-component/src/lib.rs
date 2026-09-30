@@ -175,139 +175,16 @@ mod web {
         listener.forget();
     }
 
-    struct Card {
-        id: i32,
-        index: usize,
-        title: String,
-        x: f32,
-        y: f32,
-        width: f32,
-        height: f32,
-    }
-
-    /// Subscribes to card rectangles and posts the card under a click to the
-    /// embedding page. A drag, such as scrolling the gallery, is not a click.
+    /// Posts the example whose code button was pressed.
     pub(crate) fn bridge_examples(gallery: &crate::Gallery) {
-        use std::cell::{Cell, RefCell};
-        use std::rc::Rc;
-        use wasm_bindgen::JsCast as _;
-
-        let cards = Rc::new(RefCell::new(Vec::<Card>::new()));
-        let reported = Rc::clone(&cards);
-        gallery.global::<crate::ExampleBridge>().on_report(
-            move |id, title, x, y, width, height| {
-                remember(&reported, id, title.as_str(), x, y, width, height);
-            },
-        );
-
-        let Some(window) = web_sys::window() else {
-            return;
-        };
-        let press = Rc::new(Cell::new(None::<(i32, f32, f32)>));
-        let down_press = Rc::clone(&press);
-        let down = Closure::<dyn FnMut(web_sys::PointerEvent)>::new(
-            move |event: web_sys::PointerEvent| {
-                if event.button() != 0 {
+        gallery
+            .global::<crate::ExampleBridge>()
+            .on_show(move |index, title| {
+                if index < 0 {
                     return;
                 }
-                let Some((x, y)) = canvas_point(&event) else {
-                    return;
-                };
-                down_press.set(Some((event.pointer_id(), x, y)));
-            },
-        );
-        let up = Closure::<dyn FnMut(web_sys::PointerEvent)>::new(
-            move |event: web_sys::PointerEvent| {
-                let Some((id, x0, y0)) = press.take() else {
-                    return;
-                };
-                if event.pointer_id() != id {
-                    return;
-                }
-                let Some((x, y)) = canvas_point(&event) else {
-                    return;
-                };
-                let dx = x - x0;
-                let dy = y - y0;
-                if dx * dx + dy * dy > 64.0 {
-                    return;
-                }
-                let Some((index, title)) = card_at(&cards.borrow(), x, y) else {
-                    return;
-                };
-                post_example(index, &title);
-            },
-        );
-        let _ = window.add_event_listener_with_callback_and_bool(
-            "pointerdown",
-            down.as_ref().unchecked_ref(),
-            true,
-        );
-        let _ = window.add_event_listener_with_callback_and_bool(
-            "pointerup",
-            up.as_ref().unchecked_ref(),
-            true,
-        );
-        down.forget();
-        up.forget();
-    }
-
-    fn remember(
-        cards: &std::cell::RefCell<Vec<Card>>,
-        id: i32,
-        title: &str,
-        x: f32,
-        y: f32,
-        width: f32,
-        height: f32,
-    ) {
-        if id < 0 || title.is_empty() || width < 1.0 || height < 1.0 {
-            return;
-        }
-        let mut cards = cards.borrow_mut();
-        if let Some(card) = cards.iter_mut().find(|card| card.id == id) {
-            card.title = title.to_owned();
-            card.x = x;
-            card.y = y;
-            card.width = width;
-            card.height = height;
-            return;
-        }
-        let index = cards.len();
-        cards.push(Card {
-            id,
-            index,
-            title: title.to_owned(),
-            x,
-            y,
-            width,
-            height,
-        });
-    }
-
-    fn card_at(cards: &[Card], x: f32, y: f32) -> Option<(usize, String)> {
-        cards
-            .iter()
-            .filter(|card| {
-                x >= card.x && y >= card.y && x < card.x + card.width && y < card.y + card.height
-            })
-            .max_by(|left, right| {
-                (left.width * left.height).total_cmp(&(right.width * right.height))
-            })
-            .map(|card| (card.index, card.title.clone()))
-    }
-
-    fn canvas_point(event: &web_sys::PointerEvent) -> Option<(f32, f32)> {
-        let canvas = web_sys::window()?
-            .document()?
-            .query_selector("canvas")
-            .ok()
-            .flatten()?;
-        let rect = canvas.get_bounding_client_rect();
-        Some((
-            event.client_x() as f32 - rect.x() as f32,
-            event.client_y() as f32 - rect.y() as f32,
-        ))
+                let _ = post_example(index as usize, title.as_str());
+            });
     }
 
     fn post_example(index: usize, title: &str) -> Option<()> {

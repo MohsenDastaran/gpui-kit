@@ -189,9 +189,6 @@ const zoomLabel = computed(() =>
 const reloadLabel = computed(() =>
   props.lang === "zh-CN" ? "重新加载示例" : "Reload example",
 );
-const sourceLabel = computed(() =>
-  props.lang === "zh-CN" ? "查看用法" : "Source",
-);
 
 const exampleRoot = shallowRef<HTMLElement | null>(null);
 let marked: HTMLElement[] = [];
@@ -274,16 +271,6 @@ function showExample(title: string, index: number | null) {
   if (!match) return;
   markSource(match.heading, match.code);
   scrollToSource(match.heading);
-}
-
-function showSource() {
-  const usage = document.querySelector<HTMLElement>(".doc-content #usage");
-  const fallback = document.querySelector<HTMLElement>(
-    ".doc-content .framework-code, .doc-content pre",
-  );
-  const destination = usage ?? fallback;
-  if (!destination) return;
-  scrollToSource(destination);
 }
 
 function onExampleMessage(event: MessageEvent) {
@@ -382,13 +369,6 @@ onBeforeUnmount(() => {
       <div class="component-example__label">
         <span>Example</span>
         <span class="component-example__meta">
-          <button
-            type="button"
-            class="component-example__source"
-            @click="showSource"
-          >
-            {{ sourceLabel }}
-          </button>
           <span class="component-example__live">{{ active.live }}</span>
         </span>
       </div>

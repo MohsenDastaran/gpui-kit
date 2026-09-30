@@ -23,14 +23,8 @@ slint = "1.17"
 console_error_panic_hook = "0.1"
 wasm-bindgen = "=0.2.121"
 web-sys = { version = "0.3", features = [
-    "Document",
-    "DomRect",
-    "Element",
-    "EventTarget",
     "Location",
     "MediaQueryList",
-    "MouseEvent",
-    "PointerEvent",
     "Storage",
     "StorageEvent",
     "Window",
