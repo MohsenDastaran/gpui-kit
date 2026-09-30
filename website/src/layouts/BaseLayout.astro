@@ -1,5 +1,6 @@
 ---
 import { SITE_URL } from '../lib/site';
+import { themeInfo } from '../lib/theme-catalog';
 
 export interface Props {
   title?: string;
@@ -56,6 +57,7 @@ const jsonLd = JSON.stringify(structuredData ?? defaultStructuredData).replace(/
 
     <!-- Favicon -->
     <link rel="icon" href={`${base}logo.svg`} />
+    <link rel="stylesheet" href={`${base}theme-tokens.css`} />
 
     <!-- OG / Twitter -->
     <meta property="og:type" content="website" />
@@ -78,13 +80,20 @@ const jsonLd = JSON.stringify(structuredData ?? defaultStructuredData).replace(/
     <script type="application/ld+json" set:html={jsonLd} />
 
     <!-- Theme: apply before paint to avoid FOUC -->
-    <script is:inline>
+    <script is:inline define:vars={{ themeInfo, base }}>
       (function () {
         const stored = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        if (stored === 'dark' || (!stored && prefersDark)) {
-          document.documentElement.classList.add('dark');
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)');
+        const selected = themeInfo[stored];
+        if (selected) {
+          document.documentElement.dataset.theme = stored;
+          document.documentElement.dataset.themeName = selected.name;
+          document.documentElement.dataset.themeSource = `${base}theme-data/${selected.source}.json`;
         }
+        document.documentElement.classList.toggle('dark', selected?.mode === 'dark' || stored === 'dark' || (!stored && systemTheme.matches));
+        systemTheme.addEventListener('change', (event) => {
+          if (!localStorage.getItem('theme')) document.documentElement.classList.toggle('dark', event.matches);
+        });
       })();
     </script>
 
