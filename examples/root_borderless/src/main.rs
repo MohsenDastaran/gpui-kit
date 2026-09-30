@@ -1,4 +1,4 @@
-use gpui_kit::component::{ActiveTheme as _, Root, StyledExt as _, h_flex, v_flex};
+use gpui_kit::component::{ActiveTheme as _, StyledExt as _, h_flex, v_flex};
 use gpui_kit::*;
 
 struct RootBorderlessExample;
@@ -15,14 +15,14 @@ impl Render for RootBorderlessExample {
                 div()
                     .text_2xl()
                     .font_semibold()
-                    .child("Root::bordered(false)"),
+                    .child("Client-side decorations"),
             )
             .child(
                 div()
                     .max_w(px(560.))
                     .text_color(cx.theme().muted_foreground)
                     .child(
-                        "This window requests client-side decorations, while Root disables GPUI Component's window border wrapper.",
+                        "This window requests client-side decorations. gpui_kit::open_window wraps the content in Root, which hosts overlays and applies the standard window border.",
                     ),
             )
             .child(
@@ -35,7 +35,7 @@ impl Render for RootBorderlessExample {
                             .border_color(cx.theme().border)
                             .px_3()
                             .py_2()
-                            .child("Root.bordered = false"),
+                            .child("gpui_kit::open_window"),
                     )
                     .child(
                         div()
@@ -61,13 +61,9 @@ fn main() {
             ..Default::default()
         };
 
-        cx.spawn(async move |cx| {
-            cx.open_window(window_options, |window, cx| {
-                let view = cx.new(|_| RootBorderlessExample);
-                cx.new(|cx| Root::new(view, window, cx).bordered(false))
-            })
-            .expect("Failed to open window");
+        gpui_kit::open_window(window_options, cx, |_, cx| {
+            cx.new(|_| RootBorderlessExample)
         })
-        .detach();
+        .expect("Failed to open window");
     });
 }

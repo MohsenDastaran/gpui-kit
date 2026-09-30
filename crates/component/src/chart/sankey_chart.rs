@@ -9,10 +9,11 @@ use gpui::{
 };
 use gpui_component_macros::IntoPlot;
 
+use super::{ChartAppear, caller_id, reveal_mask};
 use crate::{
     ActiveTheme,
     plot::{
-        Plot,
+        PathCaches, Plot, PlotAppear, ShapeKey,
         label::{PlotLabel, TEXT_GAP, TEXT_SIZE, Text, measure_text_width, truncate_text_to_width},
         origin_point,
         shape::{
@@ -128,7 +129,11 @@ pub struct SankeyChart<T: 'static> {
     link_opacity: f32,
     min_link_width: f32,
     label_gap: f32,
-    id: Option<ElementId>,
+    tooltip_name: Option<Rc<dyn Fn(&T) -> SharedString + 'static>>,
+    tooltip_value: Option<Rc<dyn Fn(&T, f64) -> SharedString + 'static>>,
+    id: ElementId,
+    interactive: bool,
+    appear: ChartAppear,
     /// The placement for this frame, resolved in `prepaint` (measuring labels
     /// needs the window) and read by `tooltip_state` and `paint`.
     frame: Option<Rc<SankeyFrame>>,
@@ -138,6 +143,7 @@ pub struct SankeyChart<T: 'static> {
 impl<T> SankeyChart<T> {
     /// Create a chart from nodes and links; links reference nodes by their
     /// index in `nodes` (map string ids to indices before constructing).
+    #[track_caller]
     pub fn new<I, L>(nodes: I, links: L) -> Self
     where
         I: IntoIterator<Item = T>,
@@ -159,20 +165,56 @@ impl<T> SankeyChart<T> {
             link_opacity: DEFAULT_LINK_OPACITY,
             min_link_width: DEFAULT_MIN_LINK_WIDTH,
             label_gap: DEFAULT_LABEL_GAP,
-            id: None,
+            tooltip_name: None,
+            tooltip_value: None,
+            id: caller_id(),
+            interactive: true,
+            appear: ChartAppear::default(),
             frame: None,
             hover: None,
         }
     }
 
-    /// Enable an interactive hover tooltip for this chart: the links of the
-    /// hovered node stand out from the rest and the tooltip shows its label and
-    /// throughput.
+    /// Name this chart's [`ElementId`], replacing the default taken from the
+    /// construction site.
     ///
-    /// The `id` must be unique among sibling elements. Without it, the chart
-    /// stays a non-interactive plot.
+    /// Pass one where a single construction site renders several of these
+    /// charts as siblings: they share the default id, and with it one hover
+    /// state and one path cache. The id must be unique among those siblings.
     pub fn id(mut self, id: impl Into<ElementId>) -> Self {
-        self.id = Some(id.into());
+        self.id = id.into();
+        self
+    }
+
+    /// Turn this chart's interactive layer on or off. On by default.
+    ///
+    /// The layer is the hitbox under the cursor and what it drives: the hovered
+    /// node's links stand out from the rest, and a tooltip shows its label and
+    /// throughput. Turn it off for a chart that only decorates, or one an element
+    /// above it wants the cursor for: without a hitbox it neither answers the
+    /// mouse nor takes the hover from what sits over it.
+    pub fn interactive(mut self, interactive: bool) -> Self {
+        self.interactive = interactive;
+        self
+    }
+
+    /// Draw the data in the first time this chart is painted. On by default.
+    ///
+    /// The theme sets how long it takes, and the system's reduced-motion
+    /// setting skips it. Turn it off for a chart that is painted again and
+    /// again as it scrolls in and out of view, such as one in each row of a
+    /// long list, where it would draw in every time.
+    pub fn appear(mut self, appear: bool) -> Self {
+        self.appear.set_enabled(appear);
+        self
+    }
+
+    /// Draw the data in again whenever `key` changes, such as the symbol or
+    /// period a chart shows.
+    ///
+    /// Without one the data draws in once, and later data paints in place.
+    pub fn appear_key(mut self, key: impl Hash) -> Self {
+        self.appear.set_key(key);
         self
     }
 
@@ -252,6 +294,29 @@ impl<T> SankeyChart<T> {
     /// (max of incoming and outgoing flow, in unscaled units).
     pub fn labels(mut self, labels: impl Fn(&T, f64) -> Vec<SankeyLabel> + 'static) -> Self {
         self.labels = Some(Rc::new(labels));
+        self
+    }
+
+    /// Name the node under the cursor in the hover tooltip's row, beside its
+    /// throughput. Unset, the row carries no name at all.
+    ///
+    /// A sankey shows one number per node, so the node's own name is what the
+    /// row wants; without it the row reads as a swatch and a number with a gap
+    /// between them. The alternative was to title the tooltip from
+    /// `node_label`, but that also draws the name beside the node — and a chart
+    /// drawing its text through `labels` sets neither.
+    pub fn tooltip_name(mut self, name: impl Fn(&T) -> SharedString + 'static) -> Self {
+        self.tooltip_name = Some(Rc::new(name));
+        self
+    }
+
+    /// Set the text of the hover tooltip's row, the node's throughput.
+    ///
+    /// `value_label` supplies it when this is unset, and the raw number when
+    /// neither is set — which is what a chart drawing its text through `labels`
+    /// gets, however carefully it formats the value it draws.
+    pub fn tooltip_value(mut self, value: impl Fn(&T, f64) -> SharedString + 'static) -> Self {
+        self.tooltip_value = Some(Rc::new(value));
         self
     }
 
@@ -479,25 +544,18 @@ impl<T> Plot for SankeyChart<T> {
 
         let node_labels = self.node_labels(cx);
 
-        // An identified chart keeps its placement across frames; without an id,
-        // sibling charts would share one cache and thrash it.
-        self.frame = if self.id.is_some() {
-            let key = self.frame_key(bounds, &node_labels);
-            let cache =
-                window.use_keyed_state("sankey-frame", cx, |_, _| SankeyFrameCache::default());
-            let cached = cache.read(cx);
-            if cached.key == Some(key) {
-                cached.frame.clone()
-            } else {
-                let frame = self.place(bounds, node_labels, window).map(Rc::new);
-                cache.update(cx, |cache, _| {
-                    cache.key = Some(key);
-                    cache.frame = frame.clone();
-                });
-                frame
-            }
+        let key = self.frame_key(bounds, &node_labels);
+        let cache = window.use_keyed_state("sankey-frame", cx, |_, _| SankeyFrameCache::default());
+        let cached = cache.read(cx);
+        self.frame = if cached.key == Some(key) {
+            cached.frame.clone()
         } else {
-            self.place(bounds, node_labels, window).map(Rc::new)
+            let frame = self.place(bounds, node_labels, window).map(Rc::new);
+            cache.update(cx, |cache, _| {
+                cache.key = Some(key);
+                cache.frame = frame.clone();
+            });
+            frame
         };
 
         vec![]
@@ -537,42 +595,65 @@ impl<T> Plot for SankeyChart<T> {
 
         // Links first, under the nodes. The links of the hovered node keep their
         // opacity while the rest fade behind them.
-        for link in &graph.links {
-            if link.value <= 0. {
-                continue;
-            }
-            let source = &graph.nodes[link.source];
-            let target = &graph.nodes[link.target];
-            let Some(path) =
-                sankey_link_path(source, target, link, self.min_link_width, bounds.origin)
-            else {
-                continue;
-            };
-            let opacity = match self.hover {
-                Some(hover) if !Self::is_attached(link, hover.node) => {
-                    self.link_opacity * (1. - HOVER_DIM * hover.focus)
+        //
+        // Hovering changes only a ribbon's opacity, so the chart keeps each
+        // tessellated ribbon, slotted by the link's index in the graph so a
+        // skipped zero-value link doesn't shift the others.
+        //
+        // Links and nodes draw in from the left under a mask as the chart
+        // appears, which leaves the cached ribbons whole; the labels fade in.
+        let min_width = self.min_link_width;
+        let caches = PathCaches::for_paint("links", window, cx);
+        let appear = self.appear.get().progress();
+        window.with_content_mask(reveal_mask(bounds, 0., appear), |window| {
+            for (ix, link) in graph.links.iter().enumerate() {
+                if link.value <= 0. {
+                    continue;
                 }
-                _ => self.link_opacity,
-            };
-            window.paint_path(
-                path,
-                linear_gradient(
-                    90.,
-                    linear_color_stop(colors[link.source].opacity(opacity), 0.),
-                    linear_color_stop(colors[link.target].opacity(opacity), 1.),
-                ),
-            );
-        }
+                let source = &graph.nodes[link.source];
+                let target = &graph.nodes[link.target];
+                let path = caches.update(cx, |caches, _| {
+                    let key = ShapeKey::new(())
+                        .f32(source.x1)
+                        .f32(target.x0)
+                        .f32(link.y0)
+                        .f32(link.y1)
+                        .f32(link.source_width.max(min_width))
+                        .f32(link.target_width.max(min_width))
+                        .finish();
+                    caches.slot(ix).get(key, bounds.origin, || {
+                        sankey_link_path(source, target, link, min_width, Point::default())
+                    })
+                });
+                let Some(path) = path else {
+                    continue;
+                };
+                let opacity = match self.hover {
+                    Some(hover) if !Self::is_attached(link, hover.node) => {
+                        self.link_opacity * (1. - HOVER_DIM * hover.focus)
+                    }
+                    _ => self.link_opacity,
+                };
+                window.paint_path(
+                    path,
+                    linear_gradient(
+                        90.,
+                        linear_color_stop(colors[link.source].opacity(opacity), 0.),
+                        linear_color_stop(colors[link.target].opacity(opacity), 1.),
+                    ),
+                );
+            }
 
-        let corner_radii = Corners::all(self.node_corner_radius.unwrap_or_default());
-        for node in &graph.nodes {
-            let node_bounds = Bounds::from_corners(
-                origin_point(px(node.x0), px(node.y0), bounds.origin),
-                // Keep tiny nodes visible with a minimum 1px height.
-                origin_point(px(node.x1), px(node.y1.max(node.y0 + 1.)), bounds.origin),
-            );
-            window.paint_quad(fill(node_bounds, colors[node.index]).corner_radii(corner_radii));
-        }
+            let corner_radii = Corners::all(self.node_corner_radius.unwrap_or_default());
+            for node in &graph.nodes {
+                let node_bounds = Bounds::from_corners(
+                    origin_point(px(node.x0), px(node.y0), bounds.origin),
+                    // Keep tiny nodes visible with a minimum 1px height.
+                    origin_point(px(node.x1), px(node.y1.max(node.y0 + 1.)), bounds.origin),
+                );
+                window.paint_quad(fill(node_bounds, colors[node.index]).corner_radii(corner_radii));
+            }
+        });
 
         let mut texts = Vec::new();
         for node in &graph.nodes {
@@ -627,7 +708,7 @@ impl<T> Plot for SankeyChart<T> {
                     Text::new(
                         text,
                         point(px(x), px(y)),
-                        line.color.unwrap_or(cx.theme().foreground),
+                        line.color.unwrap_or(cx.theme().foreground).opacity(appear),
                     )
                     .font_size(font_size)
                     .align(align),
@@ -639,7 +720,19 @@ impl<T> Plot for SankeyChart<T> {
     }
 
     fn id(&self) -> Option<ElementId> {
-        self.id.clone()
+        Some(self.id.clone())
+    }
+
+    fn interactive(&self) -> bool {
+        self.interactive
+    }
+
+    fn appear(&mut self, appear: PlotAppear, _window: &mut Window, _cx: &mut App) {
+        self.appear.update(appear);
+    }
+
+    fn appear_generation(&self) -> Option<u64> {
+        self.appear.generation()
     }
 
     fn tooltip_state(
@@ -659,7 +752,7 @@ impl<T> Plot for SankeyChart<T> {
     fn hover(&mut self, hover: Option<&PlotHover>, _window: &mut Window, _cx: &mut App) {
         self.hover = hover.map(|hover| SankeyHover {
             node: hover.state().index,
-            focus: hover.focus(),
+            focus: hover.progress(),
         });
     }
 
@@ -686,9 +779,9 @@ impl<T> Plot for SankeyChart<T> {
                 palette[state.index % palette.len()]
             }
         };
-        let value_text = match &self.value_label {
-            Some(value_label) => value_label(datum, value),
-            None => format!("{}", value).into(),
+        let value_text = match self.tooltip_value.as_ref().or(self.value_label.as_ref()) {
+            Some(value_text) => value_text(datum, value),
+            None => format!("{value}").into(),
         };
 
         Some(
@@ -698,7 +791,14 @@ impl<T> Plot for SankeyChart<T> {
                 .when_some(self.node_label.as_ref(), |this, label| {
                     this.title(label(datum))
                 })
-                .row(color, SharedString::default(), value_text)
+                .row(
+                    color,
+                    match self.tooltip_name.as_ref() {
+                        Some(tooltip_name) => tooltip_name(datum),
+                        None => SharedString::default(),
+                    },
+                    value_text,
+                )
                 .into_any_element(),
         )
     }
@@ -811,5 +911,18 @@ mod tests {
             SankeyLink::new(1, 2, 20.),
             SankeyLink::new(1, 3, 10.),
         ]
+    }
+
+    /// A chart drawing its text through `labels` sets neither `node_label` nor
+    /// `value_label`, so its tooltip row had no name and an unformatted number.
+    #[test]
+    fn test_tooltip_text_is_settable_without_drawing_labels() {
+        let chart = SankeyChart::new(vec!["Revenue"], Vec::<SankeyLink>::new())
+            .tooltip_name(|_| "Revenue".into())
+            .tooltip_value(|_, value| format!("{value:.0}M").into());
+        assert!(chart.tooltip_name.is_some());
+        assert!(chart.tooltip_value.is_some());
+        assert!(chart.node_label.is_none());
+        assert!(chart.value_label.is_none());
     }
 }

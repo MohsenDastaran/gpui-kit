@@ -136,6 +136,7 @@ use gpui_base::{
 };
 
 mod components;
+mod text_view;
 
 use crate::{
     capability::is_openable_url,
@@ -827,6 +828,7 @@ fn materialize_node(
             snapshot,
             arena,
             node,
+            element_id(id, behavior.key.clone()),
             component,
             inherited,
             Box::new(RegisteredMaterializeParts {
@@ -868,6 +870,7 @@ fn materialize_registered_component(
     snapshot: Option<&RenderSnapshot>,
     arena: &SpecArena,
     node: &SpecNode,
+    identity: gpui::ElementId,
     component: crate::spec::RegisteredComponentSpec,
     inherited: gpui::Hsla,
     parts: Box<RegisteredMaterializeParts>,
@@ -941,6 +944,7 @@ fn materialize_registered_component(
     let mut request =
         crate::MaterializeRequest::new(crate::component_registry::MaterializeRequestInit {
             component_name: component.name(),
+            element_id: identity,
             payload: component.payload(),
             operations: node.ops(),
             runtime,
@@ -1056,10 +1060,10 @@ fn materialize_component(
                 cx,
             )
         }
-        Component::TextView { id, text, format } => {
-            let mut view = match format {
-                crate::spec::TextViewFormat::Html => TextView::html(id, text),
-                crate::spec::TextViewFormat::Markdown => TextView::markdown(id, text),
+        Component::TextView(spec) => {
+            let mut view = match spec.format {
+                crate::spec::TextViewFormat::Html => TextView::html(spec.id, spec.text),
+                crate::spec::TextViewFormat::Markdown => TextView::markdown(spec.id, spec.text),
             }
             .style(TextViewStyle::from_theme(&Theme::global(cx)));
             if let Some(selectable) = behavior.selectable {
@@ -1092,7 +1096,7 @@ fn materialize_component(
                 });
             }
             Styled::style(&mut view).refine(&refinement);
-            view.into_any_element()
+            text_view::with_policy(view, spec.policy).into_any_element()
         }
         Component::Text(value) => {
             // A text run, not a `div` holding one. GPUI implements

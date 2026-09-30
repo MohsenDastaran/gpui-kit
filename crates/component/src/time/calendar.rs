@@ -81,8 +81,6 @@ impl RenderOnce for Calendar {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
         let size = self.size;
         let month_count = self.number_of_months.max(1) as f32;
-        let month_gaps = (month_count - 1.).max(0.);
-        let month_gap = px(24.);
         BaseCalendar::new(self.id, &self.state)
             .number_of_months(self.number_of_months)
             .first_day_of_week(self.first_day_of_week)
@@ -120,9 +118,13 @@ impl RenderOnce for Calendar {
                 .flex()
                 .items_center()
                 .justify_center()
-                .when(state.kind() != CalendarItemKind::Weekday, |this| {
-                    this.text_sm()
-                })
+                .when(
+                    state.kind() != CalendarItemKind::Weekday,
+                    |this| match size {
+                        Size::Small => this.text_xs(),
+                        _ => this.text_sm(),
+                    },
+                )
                 .when(state.kind() == CalendarItemKind::Weekday, |this| {
                     this.text_xs()
                         .font_normal()
@@ -199,9 +201,9 @@ impl RenderOnce for Calendar {
             .p_3()
             .gap_0p5()
             .map(|this| match size {
-                Size::Small => this.w(px(220.) * month_count + month_gap * month_gaps),
-                Size::Large => this.w(px(304.) * month_count + month_gap * month_gaps),
-                _ => this.w(px(248.) * month_count + month_gap * month_gaps),
+                Size::Small => this.w(px(220.) * month_count),
+                Size::Large => this.w(px(304.) * month_count),
+                _ => this.w(px(248.) * month_count),
             })
             .refine_style(&self.style)
     }

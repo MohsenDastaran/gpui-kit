@@ -2,7 +2,7 @@ use crate::*;
 use gpui_kit::canvas;
 use gpui_kit::component::{
     Icon, IconName, ThemeStyled as _,
-    button::{Button, ButtonVariants as _},
+    button::Button,
     command::{CommandEntry, CommandItem},
     h_flex,
     input::{Input, InputEvent, InputState},
@@ -137,7 +137,9 @@ impl Gallery {
                 StoryContainer::panel::<TagStory>(window, cx),
                 StoryContainer::panel::<TextareaStory>(window, cx),
                 StoryContainer::panel::<ThemeColorsStory>(window, cx),
+                StoryContainer::panel::<TimeFieldStory>(window, cx),
                 StoryContainer::panel::<ToggleStory>(window, cx),
+                StoryContainer::panel::<ToolbarStory>(window, cx),
                 StoryContainer::panel::<TooltipStory>(window, cx),
                 StoryContainer::panel::<TreeStory>(window, cx),
                 StoryContainer::panel::<VirtualListStory>(window, cx),

@@ -310,9 +310,12 @@ impl CalendarState {
     /// months and is the preferred rendering API.
     pub fn month_days(&self) -> Vec<Vec<Vec<NaiveDate>>> {
         (0..self.number_of_months)
-            .map(|offset| {
-                let (year, month) = self.offset_year_month(offset);
-                days_in_month(year, month, Weekday::Sun)
+            .map(|n| {
+                days_in_month(
+                    self.current_year,
+                    self.current_month as u32 + n as u32,
+                    Weekday::Sun,
+                )
             })
             .collect()
     }
@@ -634,7 +637,6 @@ impl RenderOnce for Calendar {
         self.state
             .update(cx, |s, cx| s.set_number_of_months(count, window, cx));
         let view = self.state.read(cx).view();
-        let month_gap = px(24.);
         let mut header = h_flex().items_center().justify_between().child({
             let st = CalendarItemState::new(CalendarItemKind::Previous).disabled(
                 view.is_month() || (view.is_year() && !self.state.read(cx).has_prev_year_page()),
@@ -727,7 +729,6 @@ impl RenderOnce for Calendar {
         });
 
         let mut body = match picker_grid_layout(view) {
-            None if count > 1 => h_flex().gap(month_gap),
             None => h_flex().justify_around(),
             Some((columns, horizontal_gap)) => {
                 div().grid().grid_cols(columns).gap_x(px(horizontal_gap))

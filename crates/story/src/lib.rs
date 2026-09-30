@@ -155,20 +155,22 @@ pub fn create_new_window_with_size<F, E>(
             ..TitleBar::window_options()
         };
 
-        let window = cx
-            .open_window(options, |window, cx| {
-                let view = crate_view_fn(window, cx);
-                let story_root = cx.new(|cx| StoryRoot::new(title.clone(), view, window, cx));
+        let (window, _) = cx
+            .update(|cx| {
+                gpui_kit::open_window(options, cx, |window, cx| {
+                    let view = crate_view_fn(window, cx);
+                    let story_root = cx.new(|cx| StoryRoot::new(title.clone(), view, window, cx));
 
-                // Set focus to the StoryRoot to enable it's actions.
-                let focus_handle = story_root.focus_handle(cx);
-                window.defer(cx, move |window, cx| {
-                    if window.focused(cx).is_none() {
-                        focus_handle.focus(window, cx);
-                    }
-                });
+                    // Set focus to the StoryRoot to enable it's actions.
+                    let focus_handle = story_root.focus_handle(cx);
+                    window.defer(cx, move |window, cx| {
+                        if window.focused(cx).is_none() {
+                            focus_handle.focus(window, cx);
+                        }
+                    });
 
-                cx.new(|cx| Root::new(story_root, window, cx))
+                    story_root
+                })
             })
             .expect("failed to open window");
 
@@ -385,7 +387,7 @@ impl RenderOnce for StorySection {
             .title(
                 h_flex()
                     .justify_between()
-                    .items_center()
+                    .items_start()
                     .w_full()
                     .gap_4()
                     .child(
@@ -771,7 +773,6 @@ impl StoryState {
             "BubbleStory" => story!(BubbleStory),
             "ButtonStory" => story!(ButtonStory),
             "CalendarStory" => story!(CalendarStory),
-            "CardStory" => story!(CardStory),
             "SelectStory" => story!(SelectStory),
             "IconStory" => story!(IconStory),
             "ImageStory" => story!(ImageStory),
@@ -1235,9 +1236,6 @@ impl Focusable for StoryRoot {
 
 impl Render for StoryRoot {
     fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        let sheet_layer = Root::render_sheet_layer(window, cx);
-        let dialog_layer = Root::render_dialog_layer(window, cx);
-        let notification_layer = Root::render_notification_layer(window, cx);
         let show_fps = AppState::global(cx).show_fps_monitor;
 
         div()
@@ -1258,14 +1256,9 @@ impl Render for StoryRoot {
                             .flex_1()
                             .overflow_hidden()
                             .child(self.view.clone()),
-                    )
-                    .children(sheet_layer)
-                    .children(dialog_layer)
-                    .children(notification_layer),
+                    ),
             )
             .relative()
-            // FPS must be the last sibling so notification/toast layers cannot
-            // paint over the HUD.
             .when(show_fps, |this| {
                 this.child(
                     div()

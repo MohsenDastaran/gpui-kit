@@ -125,6 +125,7 @@ fn language_menu(_: &App) -> MenuItem {
         name: "Language".into(),
         items: vec![
             MenuItem::action("English", SelectLocale("en".into())).checked(locale == "en"),
+            MenuItem::action("简体中文", SelectLocale("zh-CN".into())).checked(locale == "zh-CN"),
             MenuItem::action("Français", SelectLocale("fr".into())).checked(locale == "fr"),
         ],
         disabled: false,
@@ -185,7 +186,8 @@ mod tests {
 
             let language = submenu(&app_menu.items, "Language");
             assert!(!language.items[0].is_checked());
-            assert!(language.items[1].is_checked());
+            assert!(!language.items[1].is_checked());
+            assert!(language.items[2].is_checked());
         });
 
         rust_i18n::set_locale("en");

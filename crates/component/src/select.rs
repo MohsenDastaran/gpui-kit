@@ -1,11 +1,6 @@
-//! GPUI-target copy source for Select.
-//!
-//! Styled presentation over [`gpui_base::Select`]. The registry CLI copies this
-//! file; it does not copy `gpui-base`.
-
 use gpui::{
     AnyElement, App, ClickEvent, Context, DismissEvent, Edges, ElementId, Entity, EventEmitter,
-    FocusHandle, Focusable, InteractiveElement, IntoElement, Length, ParentElement, Render,
+    FocusHandle, Focusable, Hsla, InteractiveElement, IntoElement, Length, ParentElement, Render,
     RenderOnce, SharedString, StatefulInteractiveElement, StyleRefinement, Styled, Window,
     deferred, div, prelude::FluentBuilder, px, rems,
 };
@@ -23,6 +18,7 @@ use crate::{
     searchable_list::{
         SearchableListChange, SearchableListDelegate, SearchableListItem, SearchableListState,
     },
+    sizing::DROPDOWN_LIST_PADDING,
     v_flex,
 };
 use gpui_base::{GlobalState, Select as BaseSelect};
@@ -40,7 +36,36 @@ pub use crate::searchable_list::SearchableListItemElement as SelectListItem;
 /// Re-exported for backward compatibility.
 pub use crate::searchable_list::SearchableVec;
 
-pub use crate::button::Caret;
+#[derive(IntoElement)]
+pub struct Caret {
+    size: Size,
+    color: Option<Hsla>,
+}
+
+impl Caret {
+    /// Create a select caret sized for its trigger.
+    pub fn new(size: Size) -> Self {
+        Self { size, color: None }
+    }
+
+    /// Set the caret color.
+    pub fn text_color(mut self, color: Hsla) -> Self {
+        self.color = Some(color);
+        self
+    }
+}
+
+impl RenderOnce for Caret {
+    fn render(self, _: &mut Window, _: &mut App) -> impl IntoElement {
+        Icon::new(IconName::ChevronDown)
+            .with_size(match self.size {
+                Size::XSmall => Size::XSmall,
+                Size::Small => Size::Small,
+                _ => Size::Medium,
+            })
+            .when_some(self.color, |this, color| this.text_color(color))
+    }
+}
 
 /// Events emitted by [`SelectState`].
 pub enum SelectEvent<D: SearchableListDelegate + 'static>
@@ -91,6 +116,8 @@ impl Default for SelectOptions {
 // MARK: SelectState
 
 /// State of the [`Select`] component.
+///
+/// Emits [`DismissEvent`] when an open menu closes, including after a selection is confirmed.
 pub struct SelectState<D: SearchableListDelegate + 'static>
 where
     <D::Item as SearchableListItem>::Value: PartialEq + Clone,
@@ -405,9 +432,13 @@ where
     }
 
     fn set_open(&mut self, open: bool, cx: &mut Context<Self>) {
+        let dismissed = self.state.open && !open;
         self.state.open = open;
         self.state.deferred_context = open.then(|| GlobalState::register_deferred_popover(cx));
 
+        if dismissed {
+            cx.emit(DismissEvent);
+        }
         cx.notify();
     }
 
@@ -582,7 +613,7 @@ where
                             v_flex()
                                 .occlude()
                                 .map(|this| match self.state.menu_width {
-                                    Length::Auto => this.w(bounds.size.width + px(2.)),
+                                    Length::Auto => this.w(bounds.size.width),
                                     Length::Definite(w) => this.w(w),
                                 })
                                 .popover_style(cx)
@@ -596,7 +627,7 @@ where
                                         )
                                         .with_size(self.state.size)
                                         .max_h(self.state.menu_max_h)
-                                        .paddings(Edges::all(px(4.))),
+                                        .paddings(Edges::all(DROPDOWN_LIST_PADDING)),
                                 )
                                 .on_mouse_down_out(cx.listener(|this, _, window, cx| {
                                     this.escape(&Cancel, window, cx);

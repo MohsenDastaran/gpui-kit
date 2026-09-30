@@ -1,25 +1,29 @@
 // You can draw any chart you want by using the `Plot`.
 
-use gpui_kit::base::motion::spring;
 use gpui_kit::component::{
     ActiveTheme,
     plot::{
-        AXIS_GAP, AxisText, Grid, IntoPlot, Plot, PlotAxis,
+        AxisText, Grid, IntoPlot, Plot, PlotAxis, axis_gutter,
+        label::TEXT_SIZE,
         scale::{Scale, ScaleBand, ScaleLinear, ScaleOrdinal},
         shape::{Bar, Stack, StackSeries},
-        tooltip::{CrossLine, PlotHover, Tooltip, TooltipState},
+        tooltip::{CrossLine, Tooltip, TooltipState},
     },
 };
 use gpui_kit::*;
 
 use super::DailyDevice;
 
+/// The height kept under the plot for the x-axis labels, drawn at the default
+/// label size.
+fn axis_gap() -> f32 {
+    axis_gutter(px(TEXT_SIZE))
+}
+
 #[derive(IntoPlot)]
 pub struct StackedBarChart {
     data: Vec<DailyDevice>,
     series: Vec<StackSeries<DailyDevice>>,
-    /// Where the highlight band has slid to, sampled in `hover`.
-    band_center: Option<Pixels>,
 }
 
 impl StackedBarChart {
@@ -37,26 +41,20 @@ impl StackedBarChart {
             })
             .series();
 
-        Self {
-            data,
-            series,
-            band_center: None,
-        }
+        Self { data, series }
     }
 }
 
 impl Plot for StackedBarChart {
     fn paint(&mut self, bounds: Bounds<Pixels>, window: &mut Window, cx: &mut App) {
         let width = bounds.size.width.as_f32();
-        let height = bounds.size.height.as_f32() - AXIS_GAP;
+        let height = bounds.size.height.as_f32() - axis_gap();
 
         // 2. Calculate X/Y scales
-        let x = ScaleBand::new(
-            self.data.iter().map(|v| v.date.clone()).collect(),
-            vec![0., width],
-        )
-        .padding_inner(0.4)
-        .padding_outer(0.2);
+        let x = ScaleBand::new(self.data.iter().map(|v| v.date.clone()), [0., width])
+            .max_band_width(30.)
+            .padding_inner(0.4)
+            .padding_outer(0.2);
         let band_width = x.band_width();
 
         let max = self
@@ -65,7 +63,7 @@ impl Plot for StackedBarChart {
             .flat_map(|s| s.points.iter().map(|p| p.y1))
             .fold(0., f32::max) as f64;
 
-        let y = ScaleLinear::new(vec![0., max], vec![height, 10.]);
+        let y = ScaleLinear::new(vec![0., max], [height, 10.]);
 
         // 3. Draw X axis labels
         let x_label = self.data.iter().filter_map(|d| {
@@ -96,7 +94,7 @@ impl Plot for StackedBarChart {
 
         // 5. Draw grid lines
         Grid::new()
-            .y((0..=3).map(|i| height * i as f32 / 4.0).collect())
+            .y((0..=3).map(|i| height * i as f32 / 4.0))
             .stroke(cx.theme().border)
             .dash_array(&[px(4.), px(2.)])
             .paint(&bounds, window);
@@ -134,19 +132,20 @@ impl Plot for StackedBarChart {
     ) -> Option<TooltipState> {
         // Band scale matches `paint`.
         let x = ScaleBand::new(
-            self.data.iter().map(|v| v.date.clone()).collect(),
-            vec![0., bounds.size.width.as_f32()],
+            self.data.iter().map(|v| v.date.clone()),
+            [0., bounds.size.width.as_f32()],
         )
+        .max_band_width(30.)
         .padding_inner(0.4)
         .padding_outer(0.2);
         let band_width = x.band_width();
 
         // Ignore the x-axis label gutter so hovering the labels doesn't show a tooltip.
-        if position.y.as_f32() > bounds.size.height.as_f32() - AXIS_GAP {
+        if position.y.as_f32() > bounds.size.height.as_f32() - axis_gap() {
             return None;
         }
 
-        let index = x.least_index(position.x.as_f32());
+        let index = x.nearest_index(position.x.as_f32());
         let d = self.data.get(index)?;
         let center_x = x.tick(&d.date.clone())? + band_width / 2.;
 
@@ -155,24 +154,6 @@ impl Plot for StackedBarChart {
             point(px(center_x), position.y),
             vec![],
         ))
-    }
-
-    fn hover(&mut self, hover: Option<&PlotHover>, window: &mut Window, cx: &mut App) {
-        // The band slides to the hovered column; on the first hovered frame it
-        // adopts the column instead of travelling from where the last hover ended.
-        self.band_center = hover.map(|hover| {
-            spring(
-                ("stacked-bar-chart", "band"),
-                hover.state().cross_line.x,
-                cx.theme()
-                    .motion_tokens()
-                    .spring_control
-                    .with_epsilon(0.1)
-                    .with_travel(!hover.is_entering()),
-                window,
-                cx,
-            )
-        });
     }
 
     fn tooltip(
@@ -199,25 +180,27 @@ impl Plot for StackedBarChart {
         // Highlight the hovered column with a translucent band the width of the bars,
         // confined to the plot height so it doesn't cover the x-axis labels.
         let band_width = ScaleBand::new(
-            self.data.iter().map(|v| v.date.clone()).collect(),
-            vec![0., bounds.size.width.as_f32()],
+            self.data.iter().map(|v| v.date.clone()),
+            [0., bounds.size.width.as_f32()],
         )
+        .max_band_width(30.)
         .padding_inner(0.4)
         .padding_outer(0.2)
         .band_width();
 
-        let center = self.band_center.unwrap_or(state.cross_line.x);
-        // The overlay fades in and out with the hover on its own.
+        // The overlay fades in and out with the hover, and the band glides
+        // between columns, on its own.
         let mut tooltip = Tooltip::new(cursor, bounds.size)
             .gap(px(8.))
             .cross_line(
-                CrossLine::new(point(center, state.cross_line.y))
-                    .height(bounds.size.height.as_f32() - AXIS_GAP)
+                CrossLine::new(state.cross_line)
+                    .height(bounds.size.height.as_f32() - axis_gap())
                     .band(px(band_width)),
             )
             .title(d.date.clone());
 
         // One row per stacked series (its segment value at this band).
+        let mut total = 0.;
         for series in self.series.iter() {
             let color = ordinal.map(&series.key).unwrap_or(cx.theme().chart_4);
             let value = series
@@ -225,9 +208,14 @@ impl Plot for StackedBarChart {
                 .get(state.index)
                 .map(|p| p.y1 - p.y0)
                 .unwrap_or(0.);
+            total += value;
             tooltip = tooltip.row(color, series.key.clone(), format!("{}", value));
         }
 
-        Some(tooltip.into_any_element())
+        Some(
+            tooltip
+                .plain_row("total", format!("{}", total))
+                .into_any_element(),
+        )
     }
 }

@@ -1,11 +1,6 @@
-//! GPUI-target copy source for Switch.
-//!
-//! Styled presentation over [`gpui_base::Switch`]. The registry CLI copies this
-//! file; it does not copy `gpui-base`.
-
 use crate::{
-    ActiveTheme, Disableable, FocusableExt, Side, Sizable, Size, StyledExt, ThemeStyled as _,
-    text::Text, tooltip::ComponentTooltip,
+    ActiveTheme, Disableable, FocusableExt, Side, Sizable, Size, StyleSized as _, StyledExt,
+    ThemeStyled as _, text::Text, tooltip::ComponentTooltip,
 };
 use gpui::{
     App, Background, ElementId, Hsla, InteractiveElement, IntoElement, ParentElement as _,
@@ -189,10 +184,12 @@ impl RenderOnce for Switch {
 
         let (bg_width, bg_height) = match self.size {
             Size::XSmall | Size::Small => (px(28.), px(16.)),
+            Size::Large => (px(44.), px(24.)),
             _ => (px(36.), px(20.)),
         };
         let bar_width = match self.size {
             Size::XSmall | Size::Small => px(12.),
+            Size::Large => px(20.),
             _ => px(16.),
         };
         let inset = px(2.);
@@ -251,6 +248,7 @@ impl RenderOnce for Switch {
                         })
                         .w(bg_width)
                         .h(bg_height)
+                        .flex_shrink_0()
                         .rounded(radius)
                         .flex()
                         .items_center()
@@ -290,11 +288,12 @@ impl RenderOnce for Switch {
                             .when(cfg!(test), |this| {
                                 this.debug_selector(|| "switch-label".into())
                             })
+                            .min_w_0()
                             .line_height(bg_height)
                             .child(label)
                             .map(|this| match self.size {
-                                Size::XSmall | Size::Small => this.text_sm(),
-                                _ => this.text_base(),
+                                Size::Size(_) => this.input_text_size(Size::Medium),
+                                size => this.input_text_size(size),
                             }),
                     )
                 }),
@@ -505,6 +504,57 @@ mod tests {
         });
 
         assert!(cx.debug_bounds("focus-ring").is_none());
+    }
+
+    #[gpui::test]
+    fn long_labels_preserve_track_size_in_narrow_containers(cx: &mut TestAppContext) {
+        struct NarrowSwitch {
+            size: Size,
+            checked: bool,
+            disabled: bool,
+        }
+
+        impl Render for NarrowSwitch {
+            fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+                div()
+                    .w(px(160.))
+                    .debug_selector(|| "narrow-switch".into())
+                    .child(
+                        Switch::new("switch")
+                            .with_size(self.size)
+                            .checked(self.checked)
+                            .disabled(self.disabled)
+                            .label("Automatically transcribe downloaded episodes"),
+                    )
+            }
+        }
+
+        cx.update(crate::init);
+        for (size, width, height) in [
+            (Size::Small, 28., 16.),
+            (Size::Medium, 36., 20.),
+            (Size::Large, 44., 24.),
+        ] {
+            for checked in [false, true] {
+                for disabled in [false, true] {
+                    let (_, cx) = cx.add_window_view(move |_, _| NarrowSwitch {
+                        size,
+                        checked,
+                        disabled,
+                    });
+                    cx.update(|window, cx| window.draw(cx).clear(cx));
+
+                    let container = cx.debug_bounds("narrow-switch").unwrap();
+                    let track = cx.debug_bounds("switch-bar").unwrap();
+                    let label = cx.debug_bounds("switch-label").unwrap();
+                    assert_eq!(track.size.width, px(width), "the track must not shrink");
+                    assert_eq!(track.size.height, px(height));
+                    assert!(label.origin.x >= track.right());
+                    assert!(label.right() <= container.right());
+                    assert!(label.size.height > track.size.height, "the label must wrap");
+                }
+            }
+        }
     }
 
     #[gpui::test]

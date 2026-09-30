@@ -4,6 +4,7 @@ use gpui_kit::assets::IconName;
 use gpui_kit::base::ElementExt as _;
 use gpui_kit::component::{
     ActiveTheme, Icon, StyledExt,
+    button::Button,
     chart::{
         AreaChart, BarChart, CandlestickChart, LineChart, PieChart, RadarChart, SankeyChart,
         SankeyLabel,
@@ -16,15 +17,15 @@ use gpui_kit::component::{
     v_flex,
 };
 use gpui_kit::{
-    AnyElement, App, AppContext, Background, Context, Corners, Entity, FocusHandle, Focusable,
-    FontWeight, Hsla, IntoElement, ListAlignment, ListState, ParentElement, Pixels, Render, Rgba,
-    SharedString, Styled, Window, div, linear_color_stop, linear_gradient, list,
-    prelude::FluentBuilder, px,
+    AnyElement, App, AppContext, Background, Context, Corners, ElementId, Entity, FocusHandle,
+    Focusable, FontWeight, Hsla, InteractiveElement as _, IntoElement, ListAlignment, ListState,
+    ParentElement, Pixels, Render, Rgba, SharedString, Styled, Window, div, linear_color_stop,
+    linear_gradient, list, prelude::FluentBuilder, px,
 };
 use serde::Deserialize;
 
 use super::StackedBarChart;
-use crate::Story;
+use crate::{Story, story_toolbar_group};
 
 /// The height of one chart card, and the list's overdraw: the virtual list
 /// keeps one row of cards live on either side of the viewport.
@@ -62,7 +63,6 @@ pub struct MonthlyMetric {
     pub subscriptions: f64,
     pub active_users: f64,
     pub sessions: f64,
-    pub storage_tb: f64,
     pub deploys: f64,
     pub downloads: f64,
 }
@@ -118,6 +118,13 @@ pub struct ProductScore {
     pub dimension: SharedString,
     pub alpha: f64,
     pub beta: f64,
+}
+
+/// One minute of a trading day's price, for the in-progress area card.
+#[derive(Clone, Deserialize)]
+pub struct IntradayPrice {
+    pub time: SharedString,
+    pub price: f64,
 }
 
 #[derive(Clone, Deserialize)]
@@ -186,6 +193,7 @@ struct ChartData {
     pages: Vec<PageViews>,
     product_scores: Vec<ProductScore>,
     stock_prices: Vec<StockPrice>,
+    intraday_prices: Vec<IntradayPrice>,
     tsla_statements: Vec<(SharedString, Vec<TslaNode>, Vec<SankeyLink>)>,
 }
 
@@ -347,7 +355,10 @@ impl Card {
                     .justify_between()
                     .when(centered, |this| this.justify_center())
                     .child(
+                        // The heading holds its width; the legend beside it is
+                        // what gives way and wraps.
                         v_flex()
+                            .flex_shrink_0()
                             .when(centered, |this| this.text_center())
                             .child(div().font_semibold().child(self.title))
                             .child(
@@ -385,15 +396,20 @@ impl Card {
 }
 
 /// A row of swatch-and-label pairs.
+///
+/// It shares the heading row with the title, so it has to yield width rather
+/// than hold its own: shrinking lets `flex_wrap` fold a long series list onto a
+/// second line instead of running out past the card.
 fn legend(entries: Vec<(Hsla, SharedString)>, cx: &App) -> gpui_kit::Div {
     h_flex()
-        .flex_shrink_0()
         .flex_wrap()
+        .justify_end()
         .gap_3()
         .text_xs()
         .text_color(cx.theme().muted_foreground)
         .children(entries.into_iter().map(|(color, label)| {
             h_flex()
+                .flex_shrink_0()
                 .gap_1p5()
                 .items_center()
                 .child(div().size_2().rounded_sm().bg(color))
@@ -434,8 +450,8 @@ enum ChartCard {
     LineDots,
     Area,
     AreaLinear,
-    AreaStepAfter,
     AreaGradient,
+    AreaInProgress,
     Candlestick,
     CandlestickNarrow,
     CandlestickWide,
@@ -656,6 +672,7 @@ impl ChartCard {
                             .outer_radius(76.)
                             .color(move |d| shade(mid, color_index(&d.region)))
                             .label(|d| d.region.clone())
+                            .tooltip_name(|d| d.region.clone())
                             .name("Revenue")
                             .id("pie-chart-label"),
                     )
@@ -679,6 +696,7 @@ impl ChartCard {
                             .fill(accent.opacity(0.3))
                             .name("Alpha")
                             .max_value(100.)
+                            .tooltip_value(|_, _, value| format!("{value:.0} / 100").into())
                             .id("radar-chart"),
                     )
                     .headline(format!("Scores {average:.0} on average"))
@@ -790,6 +808,11 @@ impl ChartCard {
                         .name("Revenue")
                         .fill(move |_, _, _, _| accent)
                         .corner_radii(rounded_tip())
+                        .value_axis(true)
+                        .value_tick_count(3)
+                        .value_tick_format(money)
+                        .grid_dashed(false)
+                        .band_tick_count(6)
                         .id("bar-chart"),
                 )
                 .trend(
@@ -810,6 +833,8 @@ impl ChartCard {
                             .label(|d| money(d.revenue))
                             .fill(move |d, _, _, _| shade(mid, color_index(&d.region)))
                             .corner_radii(rounded_tip())
+                            .padding_inner(0.6)
+                            .padding_outer(0.1)
                             .id("bar-chart-mixed"),
                     )
                     .headline(format!(
@@ -940,7 +965,15 @@ impl ChartCard {
                                     if d.revenue >= 0. { positive } else { negative }
                                 },
                             )
+                            .label_color(move |d| if d.revenue >= 0. { positive } else { negative })
                             .value_axis(true)
+                            .tooltip_title(|d| format!("{} 2025", d.month).into())
+                            .tooltip_value(|_, value| money(value).into())
+                            .tooltip_value_color(
+                                move |_, value| {
+                                    if value >= 0. { positive } else { negative }
+                                },
+                            )
                             .id("bar-chart-negative"),
                     )
                     .headline(format!("{} net for the year", money(net)))
@@ -954,6 +987,7 @@ impl ChartCard {
                         .name("Downloads")
                         .label(|d| compact(d.downloads))
                         .fill(move |_, _, _, alignment| bar_shading(accent, alignment))
+                        .band_tick_count(4)
                         .id("bar-chart-gradient-bottom"),
                 )
                 .trend(
@@ -1074,6 +1108,10 @@ impl ChartCard {
                         .y(|d| d.mrr)
                         .stroke(accent)
                         .name("MRR")
+                        .y_axis(true)
+                        .y_tick_format(money)
+                        .x_tick_count(4)
+                        .tooltip_value(|_, value| money(value).into())
                         .id("line-chart"),
                 )
                 .trend(
@@ -1164,23 +1202,6 @@ impl ChartCard {
                     "this month",
                 )
                 .note("Straight segments between months"),
-            Self::AreaStepAfter => Card::new("Storage Used", "Terabytes, 2025")
-                .chart(
-                    AreaChart::new(data.metrics.clone())
-                        .x(|d| d.month.clone())
-                        .y(|d| d.storage_tb)
-                        .stroke(mid)
-                        .fill(mid.opacity(0.3))
-                        .step_after()
-                        .name("TB")
-                        .id("area-chart-step-after"),
-                )
-                .headline(format!(
-                    "{:.1} TB provisioned, from {:.1} TB in January",
-                    data.metrics[data.metrics.len() - 1].storage_tb,
-                    data.metrics[0].storage_tb
-                ))
-                .note("Capacity is added in steps"),
             Self::AreaGradient => Card::new("Revenue vs Last Year", "2025")
                 .legend(accent, "2025")
                 .legend(cx.theme().chart_1, "2024")
@@ -1195,6 +1216,32 @@ impl ChartCard {
                         .stroke(accent)
                         .fill(area_gradient(accent))
                         .name("2025")
+                        .tooltip_content(|d, _, cx| {
+                            let change = change_percent(d.revenue, d.last_year);
+                            let change_color = if change >= 0. {
+                                cx.theme().chart_bullish
+                            } else {
+                                cx.theme().chart_bearish
+                            };
+                            let row = |label: &'static str, value: String| {
+                                h_flex()
+                                    .justify_between()
+                                    .gap_4()
+                                    .child(
+                                        div().text_color(cx.theme().muted_foreground).child(label),
+                                    )
+                                    .child(value)
+                            };
+                            v_flex()
+                                .gap_1()
+                                .child(div().font_semibold().child(d.month.clone()))
+                                .child(row("2025", money(d.revenue)))
+                                .child(row("2024", money(d.last_year)))
+                                .child(
+                                    row("Change", format!("{change:+.1}%"))
+                                        .text_color(change_color),
+                                )
+                        })
                         .id("area-chart-gradient"),
                 )
                 .trend(
@@ -1205,6 +1252,36 @@ impl ChartCard {
                     "year over year",
                 )
                 .note("Gradient fills fade to the baseline"),
+            Self::AreaInProgress => {
+                let total = data.intraday_prices.len();
+                let minutes: Vec<_> = data
+                    .intraday_prices
+                    .iter()
+                    .take(total * 4 / 5)
+                    .cloned()
+                    .collect();
+                let (low, high) = minutes.iter().fold((f64::MAX, f64::MIN), |(low, high), d| {
+                    (low.min(d.price), high.max(d.price))
+                });
+                let open = minutes.first().map_or(0., |d| d.price);
+                let last = minutes.last().map_or(0., |d| d.price);
+                Card::new("Intraday Price", "Today, in progress")
+                    .chart(
+                        AreaChart::new(minutes)
+                            .x(|d| d.time.clone())
+                            .y(|d| d.price)
+                            .stroke(accent)
+                            .fill(area_gradient(accent))
+                            .linear()
+                            .y_domain(low - (high - low) / 4., high)
+                            .point_count(total)
+                            .x_tick_count(4)
+                            .name("Price")
+                            .id("area-chart-in-progress"),
+                    )
+                    .trend(change_percent(last, open), "since the open")
+                    .note("A pinned y axis, and room for the minutes still to come")
+            }
             // Forty sessions do not fit forty labels, so every card thins them.
             Self::Candlestick => self.candlestick(data, "Daily", 0.8, 5, "candlestick-chart"),
             Self::CandlestickNarrow => {
@@ -1240,21 +1317,28 @@ impl ChartCard {
                     let up = cx.theme().success;
                     let down = cx.theme().danger;
                     let muted = cx.theme().muted_foreground;
-                    chart.labels(move |d: &TslaNode, _| {
-                        let mut lines = vec![SankeyLabel::new(format!(
-                            "${:.2}B",
-                            d.value / 1_000_000_000.
-                        ))];
-                        if let Some(growth) = d.growth {
-                            let arrow = if growth >= 0. { "▲" } else { "▼" };
-                            lines.push(
-                                SankeyLabel::new(format!("{} {:+.2}%", arrow, growth))
-                                    .color(if growth >= 0. { up } else { down }),
-                            );
-                        }
-                        lines.push(SankeyLabel::new(d.name.clone()).color(muted));
-                        lines
-                    })
+                    // `labels` draws the node text but never reaches the tooltip,
+                    // so the tooltip needs its own name and value.
+                    chart
+                        .tooltip_name(|d: &TslaNode| d.name.clone())
+                        .tooltip_value(|d: &TslaNode, _| {
+                            format!("${:.2}B", d.value / 1_000_000_000.).into()
+                        })
+                        .labels(move |d: &TslaNode, _| {
+                            let mut lines = vec![SankeyLabel::new(format!(
+                                "${:.2}B",
+                                d.value / 1_000_000_000.
+                            ))];
+                            if let Some(growth) = d.growth {
+                                let arrow = if growth >= 0. { "▲" } else { "▼" };
+                                lines.push(
+                                    SankeyLabel::new(format!("{} {:+.2}%", arrow, growth))
+                                        .color(if growth >= 0. { up } else { down }),
+                                );
+                            }
+                            lines.push(SankeyLabel::new(d.name.clone()).color(muted));
+                            lines
+                        })
                 } else {
                     chart
                         .node_label(|d| d.name.clone())
@@ -1322,6 +1406,7 @@ impl ChartCard {
                 .close(|d| d.close)
                 .body_width_ratio(body_width_ratio)
                 .tick_margin(tick_margin)
+                .tooltip_value(|_, _, value| format!("${value:.2}").into())
                 .id(id),
         )
         .trend(change_percent(last.close, first.open), "over 40 sessions")
@@ -1391,6 +1476,9 @@ pub struct ChartStory {
     /// the last prepaint.
     columns: usize,
     list_state: ListState,
+    /// Bumped by the replay button. The gallery is keyed on it, so every chart
+    /// gets fresh element state and draws in again.
+    appear_generation: u64,
 }
 
 fn fixture<T: for<'de> Deserialize<'de>>(json: &str) -> T {
@@ -1481,11 +1569,13 @@ impl ChartStory {
                 pages: fixture(include_str!("../../fixtures/pages.json")),
                 product_scores: fixture(include_str!("../../fixtures/product-scores.json")),
                 stock_prices,
+                intraday_prices: fixture(include_str!("../../fixtures/intraday-prices.json")),
                 tsla_statements,
             }),
             sections,
             columns,
             list_state,
+            appear_generation: 0,
         }
     }
 
@@ -1534,7 +1624,7 @@ fn sections(sankey_count: usize) -> Vec<ChartSection> {
             BarGradientDiagonal,
         ]),
         ChartSection::after_rule([Line, LineLinear, LineStepAfter, LineDots]),
-        ChartSection::after_rule([Area, AreaLinear, AreaStepAfter, AreaGradient]),
+        ChartSection::after_rule([Area, AreaLinear, AreaGradient, AreaInProgress]),
         ChartSection::after_rule([
             Candlestick,
             CandlestickNarrow,
@@ -1584,39 +1674,69 @@ impl Render for ChartStory {
 
         let data = self.data.clone();
         let story = cx.entity();
-        div()
+        v_flex()
             .size_full()
             .bg(cx.theme().background)
             .on_prepaint(move |bounds, _, cx| {
                 story.update(cx, |this, cx| this.measure(bounds.size.width, cx));
             })
+            // The toolbar stays put while the gallery scrolls under it, so the
+            // gap below it belongs to the toolbar, not to the list's padding.
             .child(
-                list(self.list_state.clone(), move |index, _, cx| {
-                    let Some(row) = rows.get(index) else {
-                        return div().into_any_element();
-                    };
-
-                    div()
-                        .w_full()
-                        .px(CONTENT_INSET)
-                        // Spacing between rows only, like a CSS gap.
-                        .when(index + 1 < rows.len(), |this| this.pb(CARD_GAP))
-                        .child(match row {
-                            ChartRow::Rule => Separator::horizontal().into_any_element(),
-                            ChartRow::Cards(cards) => h_flex()
-                                .w_full()
-                                .gap(CARD_GAP)
-                                .children(cards.iter().map(|card| card.render(&data, cx)))
-                                .into_any_element(),
-                        })
-                        .into_any_element()
-                })
-                .size_full()
-                // The list's own style honours vertical padding only, so the
-                // horizontal inset rides on each row above.
-                .py(CONTENT_INSET),
+                div()
+                    .px(CONTENT_INSET)
+                    .pt(CONTENT_INSET)
+                    .pb(CARD_GAP)
+                    .child(
+                        story_toolbar_group().child(
+                            Button::new("chart-replay")
+                                .icon(IconName::RotateCw)
+                                .label("Replay")
+                                .on_click(cx.listener(|this, _, _, cx| {
+                                    this.appear_generation += 1;
+                                    cx.notify();
+                                })),
+                        ),
+                    ),
             )
-            .vertical_scrollbar(&self.list_state)
+            .child(
+                div()
+                    .id(ElementId::NamedInteger(
+                        "chart-gallery".into(),
+                        self.appear_generation,
+                    ))
+                    .flex_1()
+                    .min_h_0()
+                    .w_full()
+                    .child(
+                        list(self.list_state.clone(), move |index, _, cx| {
+                            let Some(row) = rows.get(index) else {
+                                return div().into_any_element();
+                            };
+
+                            div()
+                                .w_full()
+                                .px(CONTENT_INSET)
+                                // Spacing between rows only, like a CSS gap.
+                                .when(index + 1 < rows.len(), |this| this.pb(CARD_GAP))
+                                .child(match row {
+                                    ChartRow::Rule => Separator::horizontal().into_any_element(),
+                                    ChartRow::Cards(cards) => h_flex()
+                                        .w_full()
+                                        .gap(CARD_GAP)
+                                        .children(cards.iter().map(|card| card.render(&data, cx)))
+                                        .into_any_element(),
+                                })
+                                .into_any_element()
+                        })
+                        .size_full()
+                        // The list's own style honours vertical padding only, so the
+                        // horizontal inset rides on each row above; the toolbar
+                        // above holds the top gap.
+                        .pb(CONTENT_INSET),
+                    )
+                    .vertical_scrollbar(&self.list_state),
+            )
     }
 }
 
