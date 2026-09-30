@@ -730,28 +730,6 @@ onBeforeUnmount(() => {
       <div class="component-example__label">
         <span class="component-example__heading">
           <span>Example</span>
-          <button
-            type="button"
-            class="example-prompt"
-            :aria-label="
-              copiedPrompt === 'live-example' ? promptCopiedLabel : promptLabel
-            "
-            :title="
-              copiedPrompt === 'live-example' ? promptCopiedLabel : promptLabel
-            "
-            :data-copied="copiedPrompt === 'live-example' || null"
-            @click="copyPrompt('live-example')"
-          >
-            <Check
-              v-if="copiedPrompt === 'live-example'"
-              :size="13"
-              aria-hidden="true"
-            />
-            <Sparkles v-else :size="13" aria-hidden="true" />
-            {{
-              copiedPrompt === "live-example" ? promptCopiedLabel : promptLabel
-            }}
-          </button>
         </span>
         <span class="component-example__meta">
           <span class="component-example__live">{{ active.live }}</span>
