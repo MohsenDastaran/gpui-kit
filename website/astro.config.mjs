@@ -11,6 +11,7 @@ import { remarkDocLinks } from './src/lib/remark-doc-links.js';
 import { remarkSnippets } from './src/lib/remark-snippets.js';
 import { rehypeHeadingAnchors } from './src/lib/rehype-heading-anchors.js';
 import { rehypeFrameworkCode } from './src/lib/rehype-framework-code.js';
+import { rehypeFrameworkApi } from './src/lib/rehype-framework-api.js';
 import { remarkSlintSource } from './src/lib/remark-slint-source.js';
 import { wasmExamplesDevServer } from './src/lib/wasm-middleware.js';
 import { shikiConfig, defaultHighlightLang } from './src/lib/markdown.js';
@@ -59,7 +60,7 @@ export default defineConfig({
     // opt-in now, and the math plugins only run on it.
     processor: unified({
       remarkPlugins: [remarkMath, remarkSnippets, remarkSlintSource, remarkCallouts, [remarkDocLinks, { base: BASE }]],
-      rehypePlugins: [rehypeMathjax, rehypeFrameworkCode, rehypeHeadingIds, rehypeHeadingAnchors],
+      rehypePlugins: [rehypeMathjax, rehypeFrameworkCode, rehypeHeadingIds, rehypeFrameworkApi, rehypeHeadingAnchors],
     }),
     shikiConfig,
     defaultHighlightLang,

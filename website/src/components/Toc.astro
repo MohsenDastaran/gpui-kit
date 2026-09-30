@@ -32,6 +32,51 @@ const label = lang === 'zh-CN' ? '本页内容' : 'On this page';
 )}
 
 <script>
+  // The API Reference is one heading in the source and two references in the
+  // page. Slint's headings are added here, and either set hides while the
+  // other framework is selected.
+  const list = document.querySelector('.toc ul');
+  document.querySelectorAll('.framework-api').forEach((api) => {
+    let heading = api.previousElementSibling;
+    while (heading && !/^H[2-4]$/.test(heading.tagName)) heading = heading.previousElementSibling;
+    let after = heading?.id
+      ? list?.querySelector(`a[href="#${CSS.escape(heading.id)}"]`)?.closest('li')
+      : undefined;
+    api.querySelectorAll<HTMLElement>('[data-framework-panel="slint"] :is(h2, h3, h4)').forEach((node) => {
+      if (!list || !node.id || list.querySelector(`a[href="#${CSS.escape(node.id)}"]`)) return;
+      const label = node.cloneNode(true) as HTMLElement;
+      label.querySelector('.heading-anchor')?.remove();
+      const item = document.createElement('li');
+      item.className = 'toc__item toc__item--sub';
+      const link = document.createElement('a');
+      link.href = `#${node.id}`;
+      link.dataset.frameworkToc = 'slint';
+      link.textContent = label.textContent?.trim() ?? '';
+      item.append(link);
+      after?.after(item);
+      after = item;
+    });
+  });
+
+  const syncFrameworkToc = () => {
+    const framework = document.documentElement.dataset.framework === 'slint' ? 'slint' : 'gpui';
+    document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]').forEach((link) => {
+      const item = link.closest('li');
+      if (!item) return;
+      if (link.dataset.frameworkToc === 'slint') {
+        item.hidden = framework !== 'slint';
+        if (item.hidden) link.classList.remove('is-current');
+        return;
+      }
+      const id = decodeURIComponent(link.hash.slice(1));
+      const panel = document.getElementById(id)?.closest<HTMLElement>('[data-framework-panel]');
+      item.hidden = panel ? panel.dataset.frameworkPanel !== framework : false;
+      if (item.hidden) link.classList.remove('is-current');
+    });
+  };
+  syncFrameworkToc();
+  document.addEventListener('framework-change', syncFrameworkToc);
+
   // Highlights the section the reader is in. `rootMargin` pulls the observation
   // band up to just under the bar so a heading counts as current once it
   // reaches the top of the reading area, not when it enters the viewport.
@@ -48,6 +93,7 @@ const label = lang === 'zh-CN' ? '本页内容' : 'On this page';
     let current: HTMLAnchorElement | null = null;
     const setCurrent = (id: string | undefined) => {
       const next = id ? links.get(id) ?? null : null;
+      if (next?.closest('li')?.hidden) return;
       if (next === current) return;
       current?.classList.remove('is-current');
       next?.classList.add('is-current');

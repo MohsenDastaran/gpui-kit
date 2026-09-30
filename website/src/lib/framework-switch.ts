@@ -83,6 +83,7 @@ const progress = (() => {
 function show(framework: Framework) {
   root.dataset.framework = framework;
   announce(framework);
+  document.dispatchEvent(new Event('framework-change'));
 }
 
 function select(framework: Framework, persist = true) {

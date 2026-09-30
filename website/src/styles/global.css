@@ -1993,6 +1993,17 @@ html[data-framework="slint"]
   display: block;
 }
 
+.framework-api__panel[data-framework-panel="slint"],
+html[data-framework="slint"]
+  .framework-api__panel[data-framework-panel="gpui"] {
+  display: none;
+}
+
+html[data-framework="slint"]
+  .framework-api__panel[data-framework-panel="slint"] {
+  display: block;
+}
+
 /* Switching reloads the page's code in place: the blocks give way to a
    skeleton while the progress bar runs, then the chosen framework settles in. */
 .framework-loading .framework-code,
