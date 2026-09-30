@@ -1,6 +1,9 @@
 use std::borrow::Cow;
 use std::cell::RefCell;
 
+#[cfg(target_family = "wasm")]
+mod example_bridge;
+
 use gpui_component_story::{Gallery, StoryRoot};
 use gpui_kit::assets::Assets;
 use gpui_kit::component::{
@@ -77,6 +80,10 @@ fn web_application() -> Application {
 #[wasm_bindgen]
 pub fn run(story: Option<String>, dark: Option<bool>) -> Result<(), JsValue> {
     console_error_panic_hook::set_once();
+    #[cfg(target_family = "wasm")]
+    if story.is_some() {
+        example_bridge::install();
+    }
 
     // Initialize logging to browser console
     console_log::init_with_level(log::Level::Info).expect("Failed to initialize logger");

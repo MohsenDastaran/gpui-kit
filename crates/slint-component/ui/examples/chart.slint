@@ -1,4 +1,5 @@
 import { Theme } from "../theme.slint";
+import { ExampleProbe } from "bridge.slint";
 import {
     LineChart, AreaChart, BarChart, PieChart, RadarChart, CandlestickChart, SankeyChart,
     ChartLegend, LineInterpolation, BarAlign,
@@ -15,6 +16,14 @@ component ChartCard inherits Rectangle {
     border-width: 1px;
     border-color: Theme.border;
     border-radius: Theme.radius-lg;
+
+    ExampleProbe {
+        x: 0px;
+        y: 0px;
+        width: 100%;
+        height: 100%;
+        title: root.title;
+    }
 
     VerticalLayout {
         padding: 16px;

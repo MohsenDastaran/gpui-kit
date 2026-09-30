@@ -22,7 +22,19 @@ slint = "1.17"
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1"
 wasm-bindgen = "=0.2.121"
-web-sys = { version = "0.3", features = ["MediaQueryList", "Storage", "StorageEvent", "Window", "Location"] }
+web-sys = { version = "0.3", features = [
+    "Document",
+    "DomRect",
+    "Element",
+    "EventTarget",
+    "Location",
+    "MediaQueryList",
+    "MouseEvent",
+    "PointerEvent",
+    "Storage",
+    "StorageEvent",
+    "Window",
+] }
 
 [build-dependencies]
 slint-build = "1.17"

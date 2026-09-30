@@ -24,7 +24,10 @@ use std::{cell::Cell, rc::Rc};
 
 mod app_menus;
 mod embedded_themes;
+mod example_source;
 mod gallery;
+
+pub use example_source::example_under_point;
 mod stories;
 mod themes;
 mod title_bar;
@@ -373,41 +376,58 @@ impl Styled for StorySection {
 
 impl RenderOnce for StorySection {
     fn render(self, _: &mut Window, cx: &mut App) -> impl IntoElement {
-        GroupBox::new()
-            .id(self.title.clone())
-            .outline()
-            .mb_6()
-            .title(
-                h_flex()
-                    .justify_between()
-                    .items_start()
-                    .w_full()
-                    .gap_4()
-                    .child(
-                        v_flex()
-                            .min_w_0()
-                            .flex_1()
-                            .gap_1()
-                            .child(div().font_medium().child(self.title))
-                            .when_some(self.description, |this, description| {
-                                this.child(
-                                    div()
-                                        .text_xs()
-                                        .text_color(cx.theme().muted_foreground)
-                                        .child(description),
-                                )
-                            }),
+        let index = example_source::note_section();
+        let title = self.title.clone();
+        div()
+            .w_full()
+            .relative()
+            .child(
+                GroupBox::new()
+                    .id(self.title.clone())
+                    .outline()
+                    .mb_6()
+                    .title(
+                        h_flex()
+                            .justify_between()
+                            .items_start()
+                            .w_full()
+                            .gap_4()
+                            .child(
+                                v_flex()
+                                    .min_w_0()
+                                    .flex_1()
+                                    .gap_1()
+                                    .child(div().font_medium().child(self.title))
+                                    .when_some(self.description, |this, description| {
+                                        this.child(
+                                            div()
+                                                .text_xs()
+                                                .text_color(cx.theme().muted_foreground)
+                                                .child(description),
+                                        )
+                                    }),
+                            )
+                            .children(self.sub_title),
                     )
-                    .children(self.sub_title),
+                    .content_style(
+                        StyleRefinement::default()
+                            .rounded(cx.theme().radius_lg)
+                            .overflow_x_hidden()
+                            .items_center()
+                            .justify_center(),
+                    )
+                    .child(self.base.children(self.children)),
             )
-            .content_style(
-                StyleRefinement::default()
-                    .rounded(cx.theme().radius_lg)
-                    .overflow_x_hidden()
-                    .items_center()
-                    .justify_center(),
+            .child(
+                canvas(
+                    move |bounds, _, _| {
+                        example_source::place(index, title.clone(), bounds);
+                    },
+                    |_, _, _, _| {},
+                )
+                .absolute()
+                .size_full(),
             )
-            .child(self.base.children(self.children))
     }
 }
 

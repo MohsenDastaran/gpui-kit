@@ -1,0 +1,39 @@
+import { GroupBox as Box, GroupBoxVariant } from "../group-box.slint";
+import { ExampleBridge } from "bridge.slint";
+
+export { GroupBoxVariant }
+
+// The section's own rectangle, not a child overlay. Buttons inside keep the
+// click; the host only reads where this section was drawn.
+export component GroupBox inherits Box {
+    property <int> id: -1;
+    property <length> track-x: self.absolute-position.x;
+    property <length> track-y: self.absolute-position.y;
+    property <length> track-w: self.width;
+    property <length> track-h: self.height;
+
+    init => {
+        root.id = ExampleBridge.next-id;
+        ExampleBridge.next-id += 1;
+        root.publish();
+    }
+
+    function publish() {
+        if root.title == "" || root.id < 0 {
+            return;
+        }
+        ExampleBridge.report(
+            root.id,
+            root.title,
+            root.track-x / 1px,
+            root.track-y / 1px,
+            root.track-w / 1px,
+            root.track-h / 1px,
+        );
+    }
+
+    changed track-x => { root.publish(); }
+    changed track-y => { root.publish(); }
+    changed track-w => { root.publish(); }
+    changed track-h => { root.publish(); }
+}

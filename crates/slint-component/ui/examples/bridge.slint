@@ -1,0 +1,44 @@
+// The website embeds the gallery in a frame. A click on a card cannot reach the
+// page on its own, so each card reports its window rectangle. The host maps the
+// pointer to the largest card under it and tells the page which example that was.
+// This file is gallery-only. Installed components do not include it.
+
+export global ExampleBridge {
+    in-out property <int> next-id: 0;
+    callback report(int, string, float, float, float, float);
+}
+
+export component ExampleProbe inherits Rectangle {
+    in property <string> title;
+    property <int> id: -1;
+
+    property <length> track-x: self.absolute-position.x;
+    property <length> track-y: self.absolute-position.y;
+    property <length> track-w: self.width;
+    property <length> track-h: self.height;
+
+    init => {
+        root.id = ExampleBridge.next-id;
+        ExampleBridge.next-id += 1;
+        root.publish();
+    }
+
+    function publish() {
+        if root.title == "" || root.id < 0 {
+            return;
+        }
+        ExampleBridge.report(
+            root.id,
+            root.title,
+            root.track-x / 1px,
+            root.track-y / 1px,
+            root.track-w / 1px,
+            root.track-h / 1px,
+        );
+    }
+
+    changed track-x => { root.publish(); }
+    changed track-y => { root.publish(); }
+    changed track-w => { root.publish(); }
+    changed track-h => { root.publish(); }
+}

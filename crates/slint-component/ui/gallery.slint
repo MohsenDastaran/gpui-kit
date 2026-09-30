@@ -83,8 +83,9 @@ import { ToggleExample } from "examples/toggle.slint";
 import { TooltipExample } from "examples/tooltip.slint";
 import { TreeExample } from "examples/tree.slint";
 import { VirtualListExample } from "examples/virtual-list.slint";
+import { ExampleBridge } from "examples/bridge.slint";
 
-export { Theme }
+export { Theme, ExampleBridge }
 
 export component Gallery inherits Window {
     in property <string> component: "button";
@@ -100,6 +101,9 @@ export component Gallery inherits Window {
     // that maximum is written onto the canvas as max-width, so the iframe
     // cannot grow the surface. The cap has to stay above any frame size.
     max-width: 10000px;
+
+    // Keeps the example bridge in this document so the host can subscribe to it.
+    init => { ExampleBridge.report(-1, "", 0, 0, 0, 0); }
 
     VerticalLayout {
         Scrollable {

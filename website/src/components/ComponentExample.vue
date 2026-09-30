@@ -189,6 +189,127 @@ const zoomLabel = computed(() =>
 const reloadLabel = computed(() =>
   props.lang === "zh-CN" ? "重新加载示例" : "Reload example",
 );
+const sourceLabel = computed(() =>
+  props.lang === "zh-CN" ? "查看用法" : "Source",
+);
+
+const exampleRoot = shallowRef<HTMLElement | null>(null);
+let marked: HTMLElement[] = [];
+
+function words(value: string): string[] {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean);
+}
+
+function usageBlocks(): { heading: HTMLElement; code: HTMLElement }[] {
+  const root = document.querySelector(".doc-content");
+  const usage = root?.querySelector<HTMLElement>("#usage");
+  if (!root || !usage) return [];
+  const blocks: { heading: HTMLElement; code: HTMLElement }[] = [];
+  let heading: HTMLElement | null = null;
+  let seen = false;
+  for (const node of root.querySelectorAll<HTMLElement>(
+    "h2, h3, h4, h5, h6, .framework-code, pre",
+  )) {
+    if (node === usage) {
+      seen = true;
+      heading = null;
+      continue;
+    }
+    if (!seen) continue;
+    if (node.tagName === "H2") break;
+    if (/^H[3-6]$/.test(node.tagName)) {
+      heading = node;
+      continue;
+    }
+    if (node.tagName === "PRE" && node.closest(".framework-code")) continue;
+    blocks.push({ heading: heading ?? usage, code: node });
+  }
+  return blocks;
+}
+
+function markSource(heading: HTMLElement, code: HTMLElement) {
+  for (const node of marked) node.classList.remove("is-example-source");
+  marked = [heading, code];
+  heading.classList.add("is-example-source");
+  if (code !== heading) code.classList.add("is-example-source");
+}
+
+function scrollToSource(destination: HTMLElement) {
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  destination.scrollIntoView({
+    behavior: reduce ? "auto" : "smooth",
+    block: "start",
+  });
+  if (destination.id) {
+    history.replaceState(null, "", `#${destination.id}`);
+  }
+}
+
+function showExample(title: string, index: number | null) {
+  const blocks = usageBlocks();
+  const wanted = words(title);
+  let match: (typeof blocks)[number] | undefined;
+  if (wanted.length > 0) {
+    const ranked = blocks
+      .map((block) => {
+        const heading = words(block.heading.textContent ?? "");
+        const exact = heading.join(" ") === wanted.join(" ");
+        const covered =
+          !exact && wanted.every((word) => heading.includes(word));
+        const score = exact ? 2 : covered ? 1 : 0;
+        return { block, score, size: heading.length };
+      })
+      .filter((item) => item.score > 0)
+      .sort((a, b) => b.score - a.score || a.size - b.size);
+    match = ranked[0]?.block;
+  }
+  if (!match && index !== null && index >= 0 && index < blocks.length) {
+    match = blocks[index];
+  }
+  if (!match) return;
+  markSource(match.heading, match.code);
+  scrollToSource(match.heading);
+}
+
+function showSource() {
+  const usage = document.querySelector<HTMLElement>(".doc-content #usage");
+  const fallback = document.querySelector<HTMLElement>(
+    ".doc-content .framework-code, .doc-content pre",
+  );
+  const destination = usage ?? fallback;
+  if (!destination) return;
+  scrollToSource(destination);
+}
+
+function onExampleMessage(event: MessageEvent) {
+  if (event.origin !== window.location.origin) return;
+  const frames = exampleRoot.value?.querySelectorAll("iframe");
+  if (!frames) return;
+  const fromExample = [...frames].some(
+    (frame) => frame.contentWindow === event.source,
+  );
+  if (!fromExample) return;
+  let payload: { source?: string; title?: unknown; index?: unknown } | null =
+    null;
+  if (typeof event.data === "string") {
+    try {
+      payload = JSON.parse(event.data);
+    } catch {
+      return;
+    }
+  } else if (event.data && typeof event.data === "object") {
+    payload = event.data;
+  }
+  if (!payload || payload.source !== "gpui-kit") return;
+  const title = typeof payload.title === "string" ? payload.title : "";
+  const index = typeof payload.index === "number" ? payload.index : null;
+  showExample(title, index);
+}
 const reloadNonce = reactive<Record<string, number>>({});
 
 function reloadExample() {
@@ -231,6 +352,7 @@ const createTargetAfterDescription = async () => {
 let observer: MutationObserver | undefined;
 
 onMounted(() => {
+  window.addEventListener("message", onExampleMessage);
   selected.value = readFramework();
   observer = new MutationObserver(() => {
     selected.value = readFramework();
@@ -242,6 +364,7 @@ onMounted(() => {
   createTargetAfterDescription();
 });
 onBeforeUnmount(() => {
+  window.removeEventListener("message", onExampleMessage);
   observer?.disconnect();
   target.value?.remove();
   setZoomed(false);
@@ -251,13 +374,23 @@ onBeforeUnmount(() => {
 <template>
   <Teleport v-if="target && src && frontmatter.example !== false" :to="target">
     <section
+      ref="exampleRoot"
       class="component-example"
       :class="`component-example--${kind}`"
       data-pagefind-ignore
     >
       <div class="component-example__label">
         <span>Example</span>
-        <span class="component-example__live">{{ active.live }}</span>
+        <span class="component-example__meta">
+          <button
+            type="button"
+            class="component-example__source"
+            @click="showSource"
+          >
+            {{ sourceLabel }}
+          </button>
+          <span class="component-example__live">{{ active.live }}</span>
+        </span>
       </div>
       <div class="mac-window" :class="{ 'mac-window--zoomed': zoomed }">
         <div class="mac-window__bar">
