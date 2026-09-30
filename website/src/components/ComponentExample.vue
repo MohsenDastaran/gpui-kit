@@ -294,30 +294,55 @@ function pathsIn(code: string, name: string) {
   return [...paths];
 }
 
-function tableText(table: Element) {
-  return [...table.querySelectorAll("tr")]
-    .map((row) =>
-      [...row.querySelectorAll("th, td")]
-        .map((cell) => (cell.textContent ?? "").replace(/\s+/g, " ").trim())
-        .join(" | "),
-    )
-    .join("\n");
+const BLOCK_TEXT = new Set([
+  "DIV",
+  "SECTION",
+  "UL",
+  "OL",
+  "BLOCKQUOTE",
+  "H2",
+  "H3",
+  "H4",
+  "H5",
+  "H6",
+]);
+
+function isSkippedApi(node: Element) {
+  const tag = node.tagName;
+  return (
+    tag === "PRE" ||
+    tag === "SCRIPT" ||
+    tag === "STYLE" ||
+    tag === "TABLE" ||
+    tag === "TEMPLATE" ||
+    tag === "ASTRO-ISLAND" ||
+    tag === "ASTRO-SLOT" ||
+    node.classList.contains("astro-code") ||
+    node.classList.contains("code-block") ||
+    node.classList.contains("framework-code") ||
+    node.classList.contains("heading-anchor") ||
+    node.classList.contains("component-example") ||
+    node.classList.contains("component-example-mount")
+  );
 }
 
-function blockText(node: Element) {
-  if (node.tagName === "TABLE") return tableText(node);
-  const chunks: string[] = [];
-  if (node.children.length === 0) {
-    return (node.textContent ?? "").replace(/[ \t]+\n/g, "\n").trim();
+// Written reference only: paragraphs, lists, and headings. Property tables and
+// the page's Astro hydration script are not part of that text.
+function blockText(node: Element): string {
+  if (isSkippedApi(node)) return "";
+  if (BLOCK_TEXT.has(node.tagName)) {
+    return [...node.children]
+      .map((child) => blockText(child))
+      .filter(Boolean)
+      .join("\n\n");
   }
-  for (const child of node.children) {
-    const text =
-      child.tagName === "TABLE"
-        ? tableText(child)
-        : (child.textContent ?? "").replace(/[ \t]+\n/g, "\n").trim();
-    if (text) chunks.push(text);
-  }
-  return chunks.join("\n\n");
+  const clone = node.cloneNode(true) as HTMLElement;
+  clone
+    .querySelectorAll(
+      "pre, script, style, table, template, astro-island, astro-slot, .astro-code, .code-block, .framework-code, .heading-anchor",
+    )
+    .forEach((el) => el.remove());
+  return (clone.textContent ?? "").replace(/\s+/g, " ").trim();
 }
 
 function apiReference(name: string) {
@@ -333,6 +358,14 @@ function apiReference(name: string) {
       let node = heading.nextElementSibling;
       while (node) {
         if (/^H[1-6]$/.test(node.tagName) && Number(node.tagName[1]) <= rank) {
+          break;
+        }
+        if (
+          node.tagName === "ASTRO-ISLAND" ||
+          node.tagName === "SCRIPT" ||
+          node.tagName === "STYLE" ||
+          node.classList.contains("component-example-mount")
+        ) {
           break;
         }
         if (node.classList.contains("framework-api")) {
@@ -430,13 +463,11 @@ function buildPrompt(samples: ExampleSample[], name: string) {
     lines.push(
       "- Import installed components by file name from `ui/components`.",
       "- Keep icon SVGs in `icons/` next to `icon.slint`.",
-      "- Use the Slint API Reference, not the GPUI Rust types.",
     );
   } else {
     lines.push(
       "- Call `gpui_kit::init(cx)` before creating any component.",
       "- The first view of every window is `Root`.",
-      "- Stay on GPUI. Do not rewrite this sample as Slint.",
     );
   }
   return (
