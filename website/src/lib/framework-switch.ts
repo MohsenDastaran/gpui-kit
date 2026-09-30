@@ -31,6 +31,13 @@ function syncSwitches(framework: Framework) {
       option.tabIndex = selected ? 0 : -1;
     });
   });
+
+  document.querySelectorAll<HTMLElement>('[data-framework-select]').forEach((group) => {
+    group.dataset.selected = framework;
+    group.querySelectorAll<HTMLButtonElement>('[data-framework-option]').forEach((option) => {
+      option.setAttribute('aria-selected', String(option.dataset.frameworkOption === framework));
+    });
+  });
 }
 
 function announce(framework: Framework) {
@@ -141,7 +148,9 @@ document.addEventListener('keydown', (event) => {
   const option = optionFrom(event);
   if (!option) return;
   const options = [
-    ...(option.closest('.framework-switch')?.querySelectorAll<HTMLButtonElement>('[data-framework-option]') ?? []),
+    ...(option
+      .closest('.framework-switch, [data-framework-select]')
+      ?.querySelectorAll<HTMLButtonElement>('[data-framework-option]') ?? []),
   ];
   const index = options.indexOf(option);
   const next = {

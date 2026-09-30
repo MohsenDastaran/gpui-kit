@@ -1,5 +1,6 @@
 ---
 import DocSearch from './DocSearch.astro';
+import FrameworkSelect from './FrameworkSelect.astro';
 import ThemePalette from './ThemePalette.astro';
 
 export interface Props {
@@ -95,6 +96,8 @@ const resourcesLabel = isZh ? '资源' : 'Resources';
         <span class="github-star-btn__label">{starLabel}</span>
       </a>
 
+      <FrameworkSelect lang={lang} />
+
       <ThemePalette lang={lang} />
 
       <!-- Mobile menu toggle -->
@@ -118,6 +121,8 @@ const resourcesLabel = isZh ? '资源' : 'Resources';
 </nav>
 
 <script>
+  import '../lib/framework-switch';
+
   // Visibility is owned by CSS (`:hover`, `:focus-within`), so `aria-expanded`
   // is derived from the element rather than tracked separately — two sources of
   // truth drift apart. Escape adds the one state CSS cannot express: dismissed

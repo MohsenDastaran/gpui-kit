@@ -68,7 +68,7 @@ function mountFrameworkLogos() {
   document
     .querySelectorAll<HTMLButtonElement>("[data-framework-option]")
     .forEach((button) => {
-      if (button.querySelector(".framework-switch__logo")) return;
+      if (button.querySelector("svg") || button.closest("[data-framework-select]")) return;
       const name = button.dataset.frameworkOption;
       const logo = name
         ? toggleLogos[name as keyof typeof toggleLogos]
