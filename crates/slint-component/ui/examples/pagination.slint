@@ -8,8 +8,13 @@ export component PaginationExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Pages"; variant: GroupBoxVariant.outline;
-        Pagination { pages: 12; page: 1; }
+    GroupBox {
+        title: "Pages";
+        variant: GroupBoxVariant.outline;
+        Pagination {
+            pages: 12;
+            page: 1;
+        }
     }
 
 }

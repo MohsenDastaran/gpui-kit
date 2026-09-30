@@ -11,10 +11,19 @@ export component InputGroupExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Search"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Search";
+        variant: GroupBoxVariant.outline;
         InputGroup {
-            Input { placeholder: "Search the docs…"; appearance: false; prefix-icon: "search"; }
-            Button { text: "Search"; variant: ButtonVariant.primary; }
+            Input {
+                placeholder: "Search the docs…";
+                appearance: false;
+                prefix-icon: "search";
+            }
+            Button {
+                text: "Search";
+                variant: ButtonVariant.primary;
+            }
         }
     }
 

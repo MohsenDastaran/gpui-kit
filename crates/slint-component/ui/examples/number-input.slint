@@ -8,9 +8,20 @@ export component NumberInputExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Quantity"; variant: GroupBoxVariant.outline;
-        NumberInput { value: 3; minimum: 0; maximum: 99; step: 1; }
-        NumberInput { value: 19.99; prefix: "$"; step: 0.5; }
+    GroupBox {
+        title: "Quantity";
+        variant: GroupBoxVariant.outline;
+        NumberInput {
+            value: 3;
+            minimum: 0;
+            maximum: 99;
+            step: 1;
+        }
+        NumberInput {
+            value: 19.99;
+            prefix: "$";
+            step: 0.5;
+        }
     }
 
 }

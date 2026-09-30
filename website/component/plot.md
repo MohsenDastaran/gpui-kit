@@ -19,6 +19,58 @@ use gpui_kit::component::plot::{
 };
 ```
 
+## Usage
+### Custom Bar Chart Implementation
+
+Here's how to implement a custom stacked bar chart using low-level plot primitives:
+
+```rust
+struct StackedBarChart {
+    data: Vec<DailyDevice>,
+    series: Vec<StackSeries<DailyDevice>>,
+}
+
+impl StackedBarChart {
+    pub fn new(data: Vec<DailyDevice>) -> Self {
+        let series = Stack::new()
+            .data(data.clone())
+            .keys(vec!["desktop", "mobile"])
+            .value(|d, key| match key {
+                "desktop" => Some(d.desktop),
+                "mobile" => Some(d.mobile),
+                _ => None,
+            })
+            .series();
+
+        Self { data, series }
+    }
+}
+
+impl Plot for StackedBarChart {
+    fn paint(&mut self, bounds: Bounds<Pixels>, window: &mut Window, cx: &mut App) {
+        // 1. Setup Scales
+        let x = ScaleBand::new(
+            self.data.iter().map(|v| v.date.clone()),
+            [0., width],
+        );
+        
+        let y = ScaleLinear::new(vec![0., max_value], [height, 0.]);
+
+        // 2. Draw Axis
+        // ... (axis rendering logic)
+
+        // 3. Draw Stacked Bars
+        let bar = Bar::new()
+            .stack_data(&self.series)
+            .band_width(x.band_width())
+            .x(move |d| x.tick(&d.data.date))
+            .fill(move |_| cx.theme().chart_1);
+
+        bar.paint(&bounds, window, cx);
+    }
+}
+```
+
 ## Scales
 
 Scales map a dimension of abstract data to a visual representation.
@@ -196,57 +248,4 @@ PlotAxis::new()
     .x_label(labels) // Iterator of AxisText
     .stroke(cx.theme().border)
     .paint(&bounds, window, cx);
-```
-
-## Examples
-
-### Custom Bar Chart Implementation
-
-Here's how to implement a custom stacked bar chart using low-level plot primitives:
-
-```rust
-struct StackedBarChart {
-    data: Vec<DailyDevice>,
-    series: Vec<StackSeries<DailyDevice>>,
-}
-
-impl StackedBarChart {
-    pub fn new(data: Vec<DailyDevice>) -> Self {
-        let series = Stack::new()
-            .data(data.clone())
-            .keys(vec!["desktop", "mobile"])
-            .value(|d, key| match key {
-                "desktop" => Some(d.desktop),
-                "mobile" => Some(d.mobile),
-                _ => None,
-            })
-            .series();
-
-        Self { data, series }
-    }
-}
-
-impl Plot for StackedBarChart {
-    fn paint(&mut self, bounds: Bounds<Pixels>, window: &mut Window, cx: &mut App) {
-        // 1. Setup Scales
-        let x = ScaleBand::new(
-            self.data.iter().map(|v| v.date.clone()),
-            [0., width],
-        );
-        
-        let y = ScaleLinear::new(vec![0., max_value], [height, 0.]);
-
-        // 2. Draw Axis
-        // ... (axis rendering logic)
-
-        // 3. Draw Stacked Bars
-        let bar = Bar::new()
-            .stack_data(&self.series)
-            .band_width(x.band_width())
-            .x(move |d| x.tick(&d.data.date))
-            .fill(move |_| cx.theme().chart_1);
-
-        bar.paint(&bounds, window, cx);
-    }
-}
 ```

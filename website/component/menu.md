@@ -18,7 +18,6 @@ use gpui_kit::{actions, Action};
 ```
 
 ## Usage
-
 ### ContextMenu
 
 Context menus appear when right-clicking on an element:
@@ -322,14 +321,6 @@ menu.action_context(focus_handle)
     .menu("Paste", Box::new(Paste))
 ```
 
-## API Reference
-
-- [PopupMenu]
-- [context_menu]
-- [PopupMenuItem]
-
-## Examples
-
 ### File Manager Context Menu
 
 ```rust
@@ -474,3 +465,9 @@ Button::new("settings")
 [PopupMenuItem]: https://docs.rs/gpui-component/latest/gpui_component/menu/struct.PopupMenuItem.html
 [context_menu]: https://docs.rs/gpui-component/latest/gpui_component/menu/trait.ContextMenuExt.html#method.context_menu
 [Action]: https://docs.rs/gpui/latest/gpui/trait.Action.html
+
+## API Reference
+
+- [PopupMenu]
+- [context_menu]
+- [PopupMenuItem]

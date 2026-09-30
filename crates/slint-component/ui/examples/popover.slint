@@ -9,9 +9,13 @@ export component PopoverExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Click"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Click";
+        variant: GroupBoxVariant.outline;
         Popover {
-            Button { text: "Open popover"; }
+            Button {
+                text: "Open popover";
+            }
         }
     }
 

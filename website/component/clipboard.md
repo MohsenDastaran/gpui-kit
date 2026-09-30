@@ -14,6 +14,12 @@ use gpui_kit::component::clipboard::Clipboard;
 ```
 
 ## Usage
+### Copy
+
+```rust
+Clipboard::new("simple")
+    .value("Hello, World!")
+```
 
 ### Basic Clipboard
 
@@ -78,19 +84,6 @@ Input::new(&url_state)
                 window.push_notification(format!("URL copied: {}", value), cx)
             })
     )
-```
-
-## API Reference
-
-- [Clipboard]
-
-## Examples
-
-### Simple Text Copy
-
-```rust
-Clipboard::new("simple")
-    .value("Hello, World!")
 ```
 
 ### With User Feedback
@@ -168,3 +161,7 @@ The Clipboard component currently supports copying text strings to the clipboard
 - Cross-platform clipboard integration
 
 [Clipboard]: https://docs.rs/gpui-component/latest/gpui_component/clipboard/struct.Clipboard.html
+
+## API Reference
+
+- [Clipboard]

@@ -82,7 +82,6 @@ This is the supported subset of Monaco-style language configuration, not a
 loader for Monaco JSON or Tree-sitter `.scm` files. Selection-surrounding and
 custom `onEnterRules` are not part of this interface yet.
 
-
 ## Basic usage
 
 ```rust

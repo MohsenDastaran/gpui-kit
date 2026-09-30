@@ -14,8 +14,7 @@ use gpui_kit::component::tag::Tag;
 ```
 
 ## Usage
-
-### Basic Tags
+### Tags
 
 ```rust
 // Primary tag (default filled style)
@@ -122,85 +121,6 @@ Tag::warning().outline().rounded(px(2.0)).child("Custom Outline")
 Tag::color(ColorName::Purple).outline().child("Purple Outline")
 ```
 
-## Tag Categories and Use Cases
-
-### Status Tags
-
-```rust
-// Task or item status
-Tag::success().child("Completed")
-Tag::warning().child("In Progress")
-Tag::danger().child("Failed")
-Tag::info().child("Pending Review")
-```
-
-### Category Labels
-
-```rust
-// Content categorization
-Tag::secondary().child("Technology")
-Tag::color(ColorName::Blue).child("Design")
-Tag::color(ColorName::Green).child("Development")
-Tag::color(ColorName::Purple).child("Marketing")
-```
-
-### Priority Indicators
-
-```rust
-// Priority levels
-Tag::danger().child("High Priority")
-Tag::warning().child("Medium Priority")
-Tag::secondary().child("Low Priority")
-```
-
-### Feature Tags
-
-```rust
-// Feature flags or attributes
-Tag::primary().small().child("New")
-Tag::success().small().child("Popular")
-Tag::info().small().child("Beta")
-Tag::warning().small().child("Limited")
-```
-
-## API Reference
-
-### Tag Creation Methods
-
-| Method                      | Description                                |
-| --------------------------- | ------------------------------------------ |
-| `primary()`                 | Create a primary tag (blue theme)          |
-| `secondary()`               | Create a secondary tag (gray theme)        |
-| `danger()`                  | Create a danger tag (red theme)            |
-| `success()`                 | Create a success tag (green theme)         |
-| `warning()`                 | Create a warning tag (yellow/orange theme) |
-| `info()`                    | Create an info tag (blue theme)            |
-| `color(ColorName)`          | Create a tag with predefined color         |
-| `custom(color, fg, border)` | Create a tag with custom HSLA colors       |
-
-### Style Methods
-
-| Method            | Description                                  |
-| ----------------- | -------------------------------------------- |
-| `outline()`       | Apply outline style (transparent background) |
-| `rounded(radius)` | Set custom border radius                     |
-| `rounded_full()`  | Apply full rounding (pill shape)             |
-
-### Size Methods (from Sizable trait)
-
-| Method            | Description                      |
-| ----------------- | -------------------------------- |
-| `small()`         | Small tag size (reduced padding) |
-| `with_size(size)` | Set custom size                  |
-
-### Content Methods (from ParentElement trait)
-
-| Method           | Description                  |
-| ---------------- | ---------------------------- |
-| `child(element)` | Add child content to the tag |
-
-## Examples
-
 ### Tag Collections
 
 ```rust
@@ -290,6 +210,47 @@ h_flex()
     .child(Tag::color(ColorName::Red).rounded_full().small().child("Go"))
 ```
 
+## Tag Categories and Use Cases
+
+### Status Tags
+
+```rust
+// Task or item status
+Tag::success().child("Completed")
+Tag::warning().child("In Progress")
+Tag::danger().child("Failed")
+Tag::info().child("Pending Review")
+```
+
+### Category Labels
+
+```rust
+// Content categorization
+Tag::secondary().child("Technology")
+Tag::color(ColorName::Blue).child("Design")
+Tag::color(ColorName::Green).child("Development")
+Tag::color(ColorName::Purple).child("Marketing")
+```
+
+### Priority Indicators
+
+```rust
+// Priority levels
+Tag::danger().child("High Priority")
+Tag::warning().child("Medium Priority")
+Tag::secondary().child("Low Priority")
+```
+
+### Feature Tags
+
+```rust
+// Feature flags or attributes
+Tag::primary().small().child("New")
+Tag::success().small().child("Popular")
+Tag::info().small().child("Beta")
+Tag::warning().small().child("Limited")
+```
+
 ## Behavior Notes
 
 - Tags automatically adjust their appearance based on the current theme
@@ -321,3 +282,39 @@ h_flex()
 - **Small Tags**: Use for compact layouts, metadata, or when space is limited
 - **Medium Tags**: Default size for most use cases, provides good readability and click targets
 - **Rounding**: Use `rounded_full()` for pill-style tags, custom `rounded()` for specific design requirements
+
+## API Reference
+
+### Tag Creation Methods
+
+| Method                      | Description                                |
+| --------------------------- | ------------------------------------------ |
+| `primary()`                 | Create a primary tag (blue theme)          |
+| `secondary()`               | Create a secondary tag (gray theme)        |
+| `danger()`                  | Create a danger tag (red theme)            |
+| `success()`                 | Create a success tag (green theme)         |
+| `warning()`                 | Create a warning tag (yellow/orange theme) |
+| `info()`                    | Create an info tag (blue theme)            |
+| `color(ColorName)`          | Create a tag with predefined color         |
+| `custom(color, fg, border)` | Create a tag with custom HSLA colors       |
+
+### Style Methods
+
+| Method            | Description                                  |
+| ----------------- | -------------------------------------------- |
+| `outline()`       | Apply outline style (transparent background) |
+| `rounded(radius)` | Set custom border radius                     |
+| `rounded_full()`  | Apply full rounding (pill shape)             |
+
+### Size Methods (from Sizable trait)
+
+| Method            | Description                      |
+| ----------------- | -------------------------------- |
+| `small()`         | Small tag size (reduced padding) |
+| `with_size(size)` | Set custom size                  |
+
+### Content Methods (from ParentElement trait)
+
+| Method           | Description                  |
+| ---------------- | ---------------------------- |
+| `child(element)` | Add child content to the tag |

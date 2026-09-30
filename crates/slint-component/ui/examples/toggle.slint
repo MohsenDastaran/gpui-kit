@@ -9,33 +9,47 @@ export component ToggleExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Toggle"; variant: GroupBoxVariant.outline;
-        GridLayout { spacing: 8px;
+    GroupBox {
+        title: "Toggle";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 8px;
             Toggle {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
-                 icon: "bold"; }
+                icon: "bold";
+            }
             Toggle {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
-                 icon: "italic"; selected: true; }
+                icon: "italic";
+                selected: true;
+            }
             Toggle {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 0;
-                 icon: "underline"; }
-        
+                icon: "underline";
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
-    GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
-        ToggleGroup { options: [{ text: "Day", icon: "sun" }, { text: "Week", icon: "" }, { text: "Month", icon: "" }]; }
+    GroupBox {
+        title: "Group";
+        variant: GroupBoxVariant.outline;
+        ToggleGroup {
+            options: [
+                { text: "Day", icon: "sun" },
+                { text: "Week", icon: "" },
+                { text: "Month", icon: "" }
+            ];
+        }
     }
 
 }

@@ -9,9 +9,16 @@ export component SliderExample inherits VerticalLayout {
     alignment: start;
 
     private property <float> volume: 42;
-    GroupBox { title: "Volume"; variant: GroupBoxVariant.outline;
-        Slider { value <=> root.volume; }
-        Text { text: "\{round(root.volume)}%"; color: Theme.muted-foreground; }
+    GroupBox {
+        title: "Volume";
+        variant: GroupBoxVariant.outline;
+        Slider {
+            value <=> root.volume;
+        }
+        Text {
+            text: "\{round(root.volume)}%";
+            color: Theme.muted-foreground;
+        }
     }
 
 }

@@ -18,8 +18,7 @@ use gpui_kit::component::hover_card::HoverCard;
 ```
 
 ## Usage
-
-### Basic HoverCard
+### Hover
 
 ```rust
 use gpui_kit::{ParentElement as _, Styled as _};
@@ -196,23 +195,6 @@ HoverCard::new("custom-styled")
     .child("Custom styled content")
 ```
 
-## API Reference
-
-### HoverCard Methods
-
-- `new(id: impl Into<ElementId>)` - Create a new HoverCard with a unique ID
-- `trigger<T: IntoElement>(trigger: T)` - Set the element that triggers the hover
-- `content<F>(content: F)` - Set a content builder function that receives `(&mut HoverCardState, &mut Window, &mut Context<HoverCardState>)`
-- `open_delay(duration: Duration)` - Set delay before showing (default: 600ms)
-- `close_delay(duration: Duration)` - Set delay before hiding (default: 300ms)
-- `anchor(anchor: impl Into<Anchor>)` - Set positioning (default: TopCenter)
-- `on_open_change<F>(callback: F)` - Callback when open state changes, receives `(&bool, &mut Window, &mut App)`
-- `appearance(appearance: bool)` - Enable/disable default styling (default: true)
-
-### HoverCardState Methods
-
-- `is_open() -> bool` - Check if the hover card is currently open
-
 ## Behavior Details
 
 ### Hover Timing
@@ -258,3 +240,20 @@ The HoverCard uses a sophisticated timing system to provide a smooth user experi
 [Popover]: ./popover.md
 [Anchor]: https://docs.rs/gpui-component/latest/gpui_component/enum.Anchor.html
 [Avatar]: ./avatar.md
+
+## API Reference
+
+### HoverCard Methods
+
+- `new(id: impl Into<ElementId>)` - Create a new HoverCard with a unique ID
+- `trigger<T: IntoElement>(trigger: T)` - Set the element that triggers the hover
+- `content<F>(content: F)` - Set a content builder function that receives `(&mut HoverCardState, &mut Window, &mut Context<HoverCardState>)`
+- `open_delay(duration: Duration)` - Set delay before showing (default: 600ms)
+- `close_delay(duration: Duration)` - Set delay before hiding (default: 300ms)
+- `anchor(anchor: impl Into<Anchor>)` - Set positioning (default: TopCenter)
+- `on_open_change<F>(callback: F)` - Callback when open state changes, receives `(&bool, &mut Window, &mut App)`
+- `appearance(appearance: bool)` - Enable/disable default styling (default: true)
+
+### HoverCardState Methods
+
+- `is_open() -> bool` - Check if the hover card is currently open

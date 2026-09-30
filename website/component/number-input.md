@@ -14,6 +14,30 @@ use gpui_kit::component::input::{InputState, NumberInput, NumberInputEvent, Step
 ```
 
 ## Usage
+### Quantity
+
+```rust
+struct QuantitySelector {
+    quantity_input: Entity<InputState>,
+}
+
+impl QuantitySelector {
+    fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
+        // Step by 1 and clamp to 1..=99, no event handling needed.
+        let quantity_input = cx.new(|cx|
+            InputState::new(window, cx)
+                .default_value("1")
+                .min(1.)
+                .max(99.)
+        );
+
+        Self { quantity_input }
+    }
+}
+
+// Usage
+NumberInput::new(&self.quantity_input).small()
+```
 
 ### Basic Number Input
 
@@ -238,71 +262,6 @@ NumberInput::increment(&number_input, window, cx);
 NumberInput::decrement(&number_input, window, cx);
 ```
 
-## API Reference
-
-### NumberInput
-
-| Method                         | Description                                |
-| ------------------------------ | ------------------------------------------ |
-| `new(state)`                   | Create number input with InputState entity |
-| `placeholder(str)`             | Set placeholder text                       |
-| `size(size)`                   | Set input size (small, medium, large)      |
-| `prefix(el)`                   | Add prefix element                         |
-| `suffix(el)`                   | Add suffix element                         |
-| `appearance(bool)`             | Enable/disable default styling             |
-| `disabled(bool)`               | Set disabled state                         |
-| `increment(state, window, cx)` | Increment value programmatically           |
-| `decrement(state, window, cx)` | Decrement value programmatically           |
-
-### NumberInputEvent
-
-| Event              | Description                        |
-| ------------------ | ---------------------------------- |
-| `Step(StepAction)` | Increment/decrement pressed. Only emitted when `step` is `None` (opt out via `set_step(None, ...)`). |
-
-### StepAction
-
-| Action      | Description               |
-| ----------- | ------------------------- |
-| `Increment` | Value should be increased |
-| `Decrement` | Value should be decreased |
-
-### InputState (Number-specific methods)
-
-| Method                              | Description                                             |
-| ----------------------------------- | ------------------------------------------------------- |
-| `step(impl Into<NumberStep>)`       | Set step value for built-in increment/decrement (default: 1) |
-| `step_by(fn(f64, StepAction, &mut Context) -> f64)` | Calculate step value based on the current value and direction |
-| `min(f64)`                          | Set minimum value, clamped on stepping and blur          |
-| `max(f64)`                          | Set maximum value, clamped on stepping and blur          |
-| `set_step(Option<NumberStep>, ...)` | Update step strategy after construction                  |
-| `set_min(Option<f64>, ...)`         | Update minimum value after construction                  |
-| `set_max(Option<f64>, ...)`         | Update maximum value after construction                  |
-| `pattern(regex)`                    | Set regex pattern for validation (e.g., digits only)    |
-| `mask_pattern(MaskPattern::Number)` | Set number formatting with separator and decimal places |
-| `value()`                           | Get current display value (formatted)                   |
-| `unmask_value()`                    | Get actual numeric value (unformatted)                  |
-
-### MaskPattern::Number
-
-| Field       | Type            | Description                            |
-| ----------- | --------------- | -------------------------------------- |
-| `separator` | `Option<char>`  | Thousands separator (e.g., ',' or ' ') |
-| `fraction`  | `Option<usize>` | Number of decimal places               |
-
-## Keyboard Navigation
-
-| Key         | Action                     |
-| ----------- | -------------------------- |
-| `↑`         | Increment value            |
-| `↓`         | Decrement value            |
-| `Tab`       | Navigate to next field     |
-| `Shift+Tab` | Navigate to previous field |
-| `Enter`     | Submit/confirm value       |
-| `Escape`    | Clear input (if enabled)   |
-
-## Examples
-
 ### Integer Counter
 
 ```rust
@@ -389,31 +348,6 @@ h_flex()
     .child(NumberInput::new(&self.price_input))
 ```
 
-### Quantity Selector with Limits
-
-```rust
-struct QuantitySelector {
-    quantity_input: Entity<InputState>,
-}
-
-impl QuantitySelector {
-    fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
-        // Step by 1 and clamp to 1..=99, no event handling needed.
-        let quantity_input = cx.new(|cx|
-            InputState::new(window, cx)
-                .default_value("1")
-                .min(1.)
-                .max(99.)
-        );
-
-        Self { quantity_input }
-    }
-}
-
-// Usage
-NumberInput::new(&self.quantity_input).small()
-```
-
 ### Floating Point Input
 
 ```rust
@@ -428,6 +362,17 @@ let float_input = cx.new(|cx|
 NumberInput::new(&float_input)
 ```
 
+## Keyboard Navigation
+
+| Key         | Action                     |
+| ----------- | -------------------------- |
+| `↑`         | Increment value            |
+| `↓`         | Decrement value            |
+| `Tab`       | Navigate to next field     |
+| `Shift+Tab` | Navigate to previous field |
+| `Enter`     | Submit/confirm value       |
+| `Escape`    | Clear input (if enabled)   |
+
 ## Best Practices
 
 1. **Validation**: Always validate numeric input on both client and server side
@@ -437,3 +382,55 @@ NumberInput::new(&float_input)
 5. **Formatting**: Use consistent number formatting across your application
 6. **Performance**: Debounce rapid increment/decrement actions if needed
 7. **Accessibility**: Always provide proper labels and descriptions
+
+## API Reference
+
+### NumberInput
+
+| Method                         | Description                                |
+| ------------------------------ | ------------------------------------------ |
+| `new(state)`                   | Create number input with InputState entity |
+| `placeholder(str)`             | Set placeholder text                       |
+| `size(size)`                   | Set input size (small, medium, large)      |
+| `prefix(el)`                   | Add prefix element                         |
+| `suffix(el)`                   | Add suffix element                         |
+| `appearance(bool)`             | Enable/disable default styling             |
+| `disabled(bool)`               | Set disabled state                         |
+| `increment(state, window, cx)` | Increment value programmatically           |
+| `decrement(state, window, cx)` | Decrement value programmatically           |
+
+### NumberInputEvent
+
+| Event              | Description                        |
+| ------------------ | ---------------------------------- |
+| `Step(StepAction)` | Increment/decrement pressed. Only emitted when `step` is `None` (opt out via `set_step(None, ...)`). |
+
+### StepAction
+
+| Action      | Description               |
+| ----------- | ------------------------- |
+| `Increment` | Value should be increased |
+| `Decrement` | Value should be decreased |
+
+### InputState (Number-specific methods)
+
+| Method                              | Description                                             |
+| ----------------------------------- | ------------------------------------------------------- |
+| `step(impl Into<NumberStep>)`       | Set step value for built-in increment/decrement (default: 1) |
+| `step_by(fn(f64, StepAction, &mut Context) -> f64)` | Calculate step value based on the current value and direction |
+| `min(f64)`                          | Set minimum value, clamped on stepping and blur          |
+| `max(f64)`                          | Set maximum value, clamped on stepping and blur          |
+| `set_step(Option<NumberStep>, ...)` | Update step strategy after construction                  |
+| `set_min(Option<f64>, ...)`         | Update minimum value after construction                  |
+| `set_max(Option<f64>, ...)`         | Update maximum value after construction                  |
+| `pattern(regex)`                    | Set regex pattern for validation (e.g., digits only)    |
+| `mask_pattern(MaskPattern::Number)` | Set number formatting with separator and decimal places |
+| `value()`                           | Get current display value (formatted)                   |
+| `unmask_value()`                    | Get actual numeric value (unformatted)                  |
+
+### MaskPattern::Number
+
+| Field       | Type            | Description                            |
+| ----------- | --------------- | -------------------------------------- |
+| `separator` | `Option<char>`  | Thousands separator (e.g., ',' or ' ') |
+| `fraction`  | `Option<usize>` | Number of decimal places               |

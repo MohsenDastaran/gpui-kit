@@ -14,6 +14,34 @@ use gpui_kit::component::skeleton::Skeleton;
 ```
 
 ## Usage
+### Loading
+
+```rust
+v_flex()
+    .gap_4()
+    .p_4()
+    .border_1()
+    .border_color(cx.theme().border)
+    .rounded(cx.theme().radius_lg)
+    .child(
+        h_flex()
+            .gap_3()
+            .items_center()
+            .child(Skeleton::new().size_12().rounded_full()) // Avatar
+            .child(
+                v_flex()
+                    .gap_2()
+                    .child(Skeleton::new().w(px(120.)).h_4().rounded_md()) // Name
+                    .child(Skeleton::new().w(px(100.)).h_3().rounded_md()) // Email
+            )
+    )
+    .child(
+        v_flex()
+            .gap_2()
+            .child(Skeleton::new().w_full().h_4().rounded_md()) // Bio line 1
+            .child(Skeleton::new().w(px(200.)).h_4().rounded_md()) // Bio line 2
+    )
+```
 
 ### Basic Skeleton
 
@@ -96,72 +124,6 @@ Skeleton::new()
     .rounded_md()
 ```
 
-## Animation
-
-The Skeleton component includes a built-in pulse animation that:
-
-- Runs continuously with a 2-second duration
-- Uses a bounce easing function with ease-in-out
-- Animates opacity from 100% to 50% and back
-- Automatically repeats to indicate loading state
-
-The animation cannot be disabled as it's essential for indicating loading state.
-
-## Sizes
-
-The Skeleton component doesn't have predefined size variants. Instead, use gpui's sizing utilities:
-
-```rust
-// Height utilities
-Skeleton::new().h_3()    // 12px height
-Skeleton::new().h_4()    // 16px height
-Skeleton::new().h_5()    // 20px height
-Skeleton::new().h_6()    // 24px height
-
-// Width utilities
-Skeleton::new().w(px(100.))   // 100px width
-Skeleton::new().w(px(200.))   // 200px width
-Skeleton::new().w_full()      // Full width
-Skeleton::new().w_1_2()       // 50% width
-
-// Square sizes
-Skeleton::new().size_4()      // 16x16px
-Skeleton::new().size_8()      // 32x32px
-Skeleton::new().size_12()     // 48x48px
-Skeleton::new().size_16()     // 64x64px
-```
-
-## Examples
-
-### Loading Profile Card
-
-```rust
-v_flex()
-    .gap_4()
-    .p_4()
-    .border_1()
-    .border_color(cx.theme().border)
-    .rounded(cx.theme().radius_lg)
-    .child(
-        h_flex()
-            .gap_3()
-            .items_center()
-            .child(Skeleton::new().size_12().rounded_full()) // Avatar
-            .child(
-                v_flex()
-                    .gap_2()
-                    .child(Skeleton::new().w(px(120.)).h_4().rounded_md()) // Name
-                    .child(Skeleton::new().w(px(100.)).h_3().rounded_md()) // Email
-            )
-    )
-    .child(
-        v_flex()
-            .gap_2()
-            .child(Skeleton::new().w_full().h_4().rounded_md()) // Bio line 1
-            .child(Skeleton::new().w(px(200.)).h_4().rounded_md()) // Bio line 2
-    )
-```
-
 ### Loading Article List
 
 ```rust
@@ -239,6 +201,41 @@ if loading {
 } else {
     div().child("Actual content here")
 }
+```
+
+## Animation
+
+The Skeleton component includes a built-in pulse animation that:
+
+- Runs continuously with a 2-second duration
+- Uses a bounce easing function with ease-in-out
+- Animates opacity from 100% to 50% and back
+- Automatically repeats to indicate loading state
+
+The animation cannot be disabled as it's essential for indicating loading state.
+
+## Sizes
+
+The Skeleton component doesn't have predefined size variants. Instead, use gpui's sizing utilities:
+
+```rust
+// Height utilities
+Skeleton::new().h_3()    // 12px height
+Skeleton::new().h_4()    // 16px height
+Skeleton::new().h_5()    // 20px height
+Skeleton::new().h_6()    // 24px height
+
+// Width utilities
+Skeleton::new().w(px(100.))   // 100px width
+Skeleton::new().w(px(200.))   // 200px width
+Skeleton::new().w_full()      // Full width
+Skeleton::new().w_1_2()       // 50% width
+
+// Square sizes
+Skeleton::new().size_4()      // 16x16px
+Skeleton::new().size_8()      // 32x32px
+Skeleton::new().size_12()     // 48x48px
+Skeleton::new().size_16()     // 64x64px
 ```
 
 ## Theming

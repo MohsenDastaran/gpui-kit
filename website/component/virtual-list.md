@@ -19,7 +19,6 @@ use gpui_kit::{px, size, ScrollStrategy, Size, Pixels};
 ```
 
 ## Usage
-
 ### Basic Vertical Virtual List
 
 ```rust
@@ -178,185 +177,6 @@ v_virtual_list(
     },
 )
 ```
-
-## Scroll Handling
-
-### Basic Scroll Control
-
-```rust
-pub struct ScrollableList {
-    scroll_handle: VirtualListScrollHandle,
-    scroll_state: ScrollbarState,
-}
-
-impl Render for ScrollableList {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        div()
-            .relative()
-            .size_full()
-            .child(
-                v_virtual_list(/* ... */)
-                    .track_scroll(&self.scroll_handle)
-                    .p_4()
-                    .border_1()
-                    .border_color(cx.theme().border)
-            )
-            .child(
-                // Add scrollbars
-                div()
-                    .absolute()
-                    .top_0()
-                    .left_0()
-                    .right_0()
-                    .bottom_0()
-                    .child(
-                        Scrollbar::both(&self.scroll_state, &self.scroll_handle)
-                            .axis(ScrollbarAxis::Vertical)
-                    )
-            )
-    }
-}
-```
-
-### Programmatic Scrolling
-
-```rust
-impl ScrollableList {
-    // Scroll to specific item
-    fn scroll_to_item(&self, index: usize) {
-        self.scroll_handle.scroll_to_item(index, ScrollStrategy::Top);
-    }
-
-    // Center item in view
-    fn center_item(&self, index: usize) {
-        self.scroll_handle.scroll_to_item(index, ScrollStrategy::Center);
-    }
-
-    // Scroll to bottom
-    fn scroll_to_bottom(&self) {
-        self.scroll_handle.scroll_to_bottom();
-    }
-
-    // Get current scroll position
-    fn get_scroll_offset(&self) -> Point<Pixels> {
-        self.scroll_handle.offset()
-    }
-
-    // Set scroll position manually
-    fn set_scroll_position(&self, offset: Point<Pixels>) {
-        self.scroll_handle.set_offset(offset);
-    }
-}
-```
-
-### Both Axis Scrolling
-
-For content that scrolls in both directions:
-
-```rust
-v_virtual_list(
-    cx.entity().clone(),
-    "both-axis",
-    item_sizes.clone(),
-    |view, visible_range, _, cx| {
-        visible_range
-            .map(|ix| {
-                // Wide content that requires horizontal scrolling
-                h_flex()
-                    .gap_2()
-                    .children((0..20).map(|col| {
-                        div()
-                            .min_w(px(100.))
-                            .h(px(30.))
-                            .bg(cx.theme().secondary)
-                            .child(format!("R{}C{}", ix, col))
-                    }))
-            })
-            .collect()
-    },
-)
-.track_scroll(&scroll_handle)
-.child(
-    Scrollbar::both(&scroll_state, &scroll_handle)
-        .axis(ScrollbarAxis::Both)
-)
-```
-
-## Performance Optimization
-
-### Efficient Item Rendering
-
-Only visible items are rendered, making VirtualList highly performant:
-
-```rust
-// The render function is only called for visible items
-v_virtual_list(
-    cx.entity().clone(),
-    "efficient-list",
-    item_sizes.clone(),
-    |view, visible_range, _, cx| {
-        // visible_range contains only the items currently visible
-        // This typically contains 10-20 items, not all 10,000
-        println!("Rendering {} items out of {}",
-                visible_range.len(),
-                view.total_items);
-
-        visible_range
-            .map(|ix| {
-                // Complex rendering logic here
-                // Only executed for visible items
-                expensive_item_renderer(ix, cx)
-            })
-            .collect()
-    },
-)
-```
-
-### Memory Management
-
-VirtualList automatically manages memory by:
-
-- Only rendering visible items
-- Reusing rendered elements when scrolling
-- Calculating precise visible ranges
-
-```rust
-// Large dataset - only visible items use memory
-let large_dataset = (0..1_000_000).map(|i| format!("Item {}", i)).collect();
-
-// Memory usage remains constant regardless of dataset size
-v_virtual_list(/* render only visible items */)
-```
-
-### Variable Heights with Caching
-
-For dynamic content with calculated heights:
-
-```rust
-struct DynamicItem {
-    content: String,
-    calculated_height: Option<Pixels>,
-}
-
-impl MyView {
-    fn calculate_item_size(&mut self, ix: usize) -> Size<Pixels> {
-        if let Some(height) = self.items[ix].calculated_height {
-            return size(px(300.), height);
-        }
-
-        // Calculate height based on content
-        let content_lines = self.items[ix].content.lines().count();
-        let height = px(20. + content_lines as f32 * 16.);
-
-        // Cache the calculated height
-        self.items[ix].calculated_height = Some(height);
-
-        size(px(300.), height)
-    }
-}
-```
-
-## Examples
 
 ### File Explorer with Virtual Scrolling
 
@@ -600,6 +420,183 @@ impl Render for DataGrid {
                 .track_scroll(&self.scroll_handle)
                 .flex_1()
             )
+    }
+}
+```
+
+## Scroll Handling
+
+### Basic Scroll Control
+
+```rust
+pub struct ScrollableList {
+    scroll_handle: VirtualListScrollHandle,
+    scroll_state: ScrollbarState,
+}
+
+impl Render for ScrollableList {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        div()
+            .relative()
+            .size_full()
+            .child(
+                v_virtual_list(/* ... */)
+                    .track_scroll(&self.scroll_handle)
+                    .p_4()
+                    .border_1()
+                    .border_color(cx.theme().border)
+            )
+            .child(
+                // Add scrollbars
+                div()
+                    .absolute()
+                    .top_0()
+                    .left_0()
+                    .right_0()
+                    .bottom_0()
+                    .child(
+                        Scrollbar::both(&self.scroll_state, &self.scroll_handle)
+                            .axis(ScrollbarAxis::Vertical)
+                    )
+            )
+    }
+}
+```
+
+### Programmatic Scrolling
+
+```rust
+impl ScrollableList {
+    // Scroll to specific item
+    fn scroll_to_item(&self, index: usize) {
+        self.scroll_handle.scroll_to_item(index, ScrollStrategy::Top);
+    }
+
+    // Center item in view
+    fn center_item(&self, index: usize) {
+        self.scroll_handle.scroll_to_item(index, ScrollStrategy::Center);
+    }
+
+    // Scroll to bottom
+    fn scroll_to_bottom(&self) {
+        self.scroll_handle.scroll_to_bottom();
+    }
+
+    // Get current scroll position
+    fn get_scroll_offset(&self) -> Point<Pixels> {
+        self.scroll_handle.offset()
+    }
+
+    // Set scroll position manually
+    fn set_scroll_position(&self, offset: Point<Pixels>) {
+        self.scroll_handle.set_offset(offset);
+    }
+}
+```
+
+### Both Axis Scrolling
+
+For content that scrolls in both directions:
+
+```rust
+v_virtual_list(
+    cx.entity().clone(),
+    "both-axis",
+    item_sizes.clone(),
+    |view, visible_range, _, cx| {
+        visible_range
+            .map(|ix| {
+                // Wide content that requires horizontal scrolling
+                h_flex()
+                    .gap_2()
+                    .children((0..20).map(|col| {
+                        div()
+                            .min_w(px(100.))
+                            .h(px(30.))
+                            .bg(cx.theme().secondary)
+                            .child(format!("R{}C{}", ix, col))
+                    }))
+            })
+            .collect()
+    },
+)
+.track_scroll(&scroll_handle)
+.child(
+    Scrollbar::both(&scroll_state, &scroll_handle)
+        .axis(ScrollbarAxis::Both)
+)
+```
+
+## Performance Optimization
+
+### Efficient Item Rendering
+
+Only visible items are rendered, making VirtualList highly performant:
+
+```rust
+// The render function is only called for visible items
+v_virtual_list(
+    cx.entity().clone(),
+    "efficient-list",
+    item_sizes.clone(),
+    |view, visible_range, _, cx| {
+        // visible_range contains only the items currently visible
+        // This typically contains 10-20 items, not all 10,000
+        println!("Rendering {} items out of {}",
+                visible_range.len(),
+                view.total_items);
+
+        visible_range
+            .map(|ix| {
+                // Complex rendering logic here
+                // Only executed for visible items
+                expensive_item_renderer(ix, cx)
+            })
+            .collect()
+    },
+)
+```
+
+### Memory Management
+
+VirtualList automatically manages memory by:
+
+- Only rendering visible items
+- Reusing rendered elements when scrolling
+- Calculating precise visible ranges
+
+```rust
+// Large dataset - only visible items use memory
+let large_dataset = (0..1_000_000).map(|i| format!("Item {}", i)).collect();
+
+// Memory usage remains constant regardless of dataset size
+v_virtual_list(/* render only visible items */)
+```
+
+### Variable Heights with Caching
+
+For dynamic content with calculated heights:
+
+```rust
+struct DynamicItem {
+    content: String,
+    calculated_height: Option<Pixels>,
+}
+
+impl MyView {
+    fn calculate_item_size(&mut self, ix: usize) -> Size<Pixels> {
+        if let Some(height) = self.items[ix].calculated_height {
+            return size(px(300.), height);
+        }
+
+        // Calculate height based on content
+        let content_lines = self.items[ix].content.lines().count();
+        let height = px(20. + content_lines as f32 * 16.);
+
+        // Cache the calculated height
+        self.items[ix].calculated_height = Some(height);
+
+        size(px(300.), height)
     }
 }
 ```

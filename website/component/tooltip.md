@@ -18,6 +18,13 @@ use gpui_kit::component::tooltip::Tooltip;
 ```
 
 ## Usage
+### Hover the button
+
+```rust
+Button::new("save-btn")
+    .label("Save")
+    .tooltip("Save the current document")
+```
 
 ### Basic Tooltip with Text
 
@@ -29,14 +36,6 @@ div()
     .tooltip(|window, cx| {
         Tooltip::new("This is a helpful tooltip").build(window, cx)
     })
-```
-
-### Button with Tooltip
-
-```rust
-Button::new("save-btn")
-    .label("Save")
-    .tooltip("Save the current document")
 ```
 
 ### Tooltip with Action/Keybinding
@@ -92,131 +91,6 @@ div()
             .build(window, cx)
     })
 ```
-
-## Advanced Usage
-
-### Components with Built-in Tooltip Support
-
-Many components have built-in tooltip methods:
-
-```rust
-// Button
-Button::new("btn")
-    .label("Click me")
-    .tooltip("This button performs an action")
-
-// Switch
-Switch::new("toggle")
-    .label("Enable notifications")
-    .tooltip("Toggle push notifications on/off")
-
-// Checkbox
-Checkbox::new("check")
-    .label("Remember me")
-    .tooltip("Keep me logged in for 30 days")
-
-// Radio
-Radio::new("option")
-    .label("Option 1")
-    .tooltip("Select this option to enable feature X")
-```
-
-### Complex Tooltip Content
-
-```rust
-div()
-    .child("Hover for details")
-    .id("complex-tooltip")
-    .tooltip(|window, cx| {
-        Tooltip::element(|_, cx| {
-            v_flex()
-                .gap_2()
-                .child(
-                    h_flex()
-                        .gap_1()
-                        .child(IconName::User)
-                        .child("User Information")
-                        .text_sm()
-                        .font_semibold()
-                )
-                .child(
-                    div()
-                        .child("Last login: 2 hours ago")
-                        .text_xs()
-                        .text_color(cx.theme().muted_foreground)
-                )
-                .child(
-                    div()
-                        .child("Status: Active")
-                        .text_xs()
-                        .text_color(cx.theme().success)
-                )
-        })
-        .build(window, cx)
-    })
-```
-
-### Tooltip in Form Elements
-
-```rust
-v_flex()
-    .gap_4()
-    .child(
-        Input::new("email")
-            .placeholder("Enter your email")
-            .tooltip("We'll never share your email address")
-    )
-    .child(
-        Input::new("password")
-            .input_type(InputType::Password)
-            .placeholder("Password")
-            .tooltip("Must be at least 8 characters with special characters")
-    )
-```
-
-## API Reference
-
-### Tooltip
-
-| Method                    | Description                                  |
-| ------------------------- | -------------------------------------------- |
-| `new(text)`               | Create a tooltip with text content           |
-| `element(builder)`        | Create a tooltip with custom element content |
-| `action(action, context)` | Set action to display keybinding information |
-| `key_binding(kbd)`        | Set manual keybinding information            |
-| `build(window, cx)`       | Build and return the tooltip as AnyView      |
-
-### Built-in Tooltip Methods
-
-Components with tooltip support typically provide these methods:
-
-| Method                                       | Description                             |
-| -------------------------------------------- | --------------------------------------- |
-| `tooltip(text)`                              | Add simple text tooltip                 |
-| `tooltip_with_action(text, action, context)` | Add tooltip with action keybinding      |
-| `tooltip(closure)`                           | Add custom tooltip with builder closure |
-
-### Tooltip Styling
-
-The tooltip automatically applies theme-appropriate styling:
-
-- Background: `theme.popover`
-- Text color: `theme.popover_foreground`
-- Border: `theme.border`
-- Shadow: Medium drop shadow
-- Border radius: 6px
-- Font: System UI font
-
-You can apply additional styling using the `Styled` trait:
-
-```rust
-Tooltip::new("Custom styled tooltip")
-    .bg(cx.theme().accent)
-    .text_color(cx.theme().accent_foreground)
-    .build(window, cx)
-```
-
-## Examples
 
 ### Toolbar with Tooltips
 
@@ -344,6 +218,87 @@ v_flex()
     )
 ```
 
+## Advanced Usage
+
+### Components with Built-in Tooltip Support
+
+Many components have built-in tooltip methods:
+
+```rust
+// Button
+Button::new("btn")
+    .label("Click me")
+    .tooltip("This button performs an action")
+
+// Switch
+Switch::new("toggle")
+    .label("Enable notifications")
+    .tooltip("Toggle push notifications on/off")
+
+// Checkbox
+Checkbox::new("check")
+    .label("Remember me")
+    .tooltip("Keep me logged in for 30 days")
+
+// Radio
+Radio::new("option")
+    .label("Option 1")
+    .tooltip("Select this option to enable feature X")
+```
+
+### Complex Tooltip Content
+
+```rust
+div()
+    .child("Hover for details")
+    .id("complex-tooltip")
+    .tooltip(|window, cx| {
+        Tooltip::element(|_, cx| {
+            v_flex()
+                .gap_2()
+                .child(
+                    h_flex()
+                        .gap_1()
+                        .child(IconName::User)
+                        .child("User Information")
+                        .text_sm()
+                        .font_semibold()
+                )
+                .child(
+                    div()
+                        .child("Last login: 2 hours ago")
+                        .text_xs()
+                        .text_color(cx.theme().muted_foreground)
+                )
+                .child(
+                    div()
+                        .child("Status: Active")
+                        .text_xs()
+                        .text_color(cx.theme().success)
+                )
+        })
+        .build(window, cx)
+    })
+```
+
+### Tooltip in Form Elements
+
+```rust
+v_flex()
+    .gap_4()
+    .child(
+        Input::new("email")
+            .placeholder("Enter your email")
+            .tooltip("We'll never share your email address")
+    )
+    .child(
+        Input::new("password")
+            .input_type(InputType::Password)
+            .placeholder("Password")
+            .tooltip("Must be at least 8 characters with special characters")
+    )
+```
+
 ## Best Practices
 
 ### Content Guidelines
@@ -390,4 +345,46 @@ Button::new("save")
 // Avoid: Critical information
 Button::new("delete")
     .tooltip("This will permanently delete all your files") // Too important for tooltip only
+```
+
+## API Reference
+
+### Tooltip
+
+| Method                    | Description                                  |
+| ------------------------- | -------------------------------------------- |
+| `new(text)`               | Create a tooltip with text content           |
+| `element(builder)`        | Create a tooltip with custom element content |
+| `action(action, context)` | Set action to display keybinding information |
+| `key_binding(kbd)`        | Set manual keybinding information            |
+| `build(window, cx)`       | Build and return the tooltip as AnyView      |
+
+### Built-in Tooltip Methods
+
+Components with tooltip support typically provide these methods:
+
+| Method                                       | Description                             |
+| -------------------------------------------- | --------------------------------------- |
+| `tooltip(text)`                              | Add simple text tooltip                 |
+| `tooltip_with_action(text, action, context)` | Add tooltip with action keybinding      |
+| `tooltip(closure)`                           | Add custom tooltip with builder closure |
+
+### Tooltip Styling
+
+The tooltip automatically applies theme-appropriate styling:
+
+- Background: `theme.popover`
+- Text color: `theme.popover_foreground`
+- Border: `theme.border`
+- Shadow: Medium drop shadow
+- Border radius: 6px
+- Font: System UI font
+
+You can apply additional styling using the `Styled` trait:
+
+```rust
+Tooltip::new("Custom styled tooltip")
+    .bg(cx.theme().accent)
+    .text_color(cx.theme().accent_foreground)
+    .build(window, cx)
 ```

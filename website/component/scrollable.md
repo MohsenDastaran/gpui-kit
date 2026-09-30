@@ -17,7 +17,6 @@ use gpui_kit::component::{
 ```
 
 ## Usage
-
 ### Basic Scrollable Container
 
 The simplest way to make any element scrollable is using the `overflow_scrollbar()` method from `ScrollableElement` trait.
@@ -88,6 +87,95 @@ div()
             .bg(cx.theme().background)
             .child("Large content area")
     )
+```
+
+### File Browser with Scrolling
+
+```rust
+pub struct FileBrowser {
+    files: Vec<String>,
+}
+
+impl Render for FileBrowser {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        div()
+            .border_1()
+            .border_color(cx.theme().border)
+            .size_full()
+            .child(
+                v_flex()
+                    .gap_1()
+                    .p_2()
+                    .overflow_y_scrollbar()
+                    .children(self.files.iter().map(|file| {
+                        div()
+                            .h(px(32.))
+                            .w_full()
+                            .px_2()
+                            .flex()
+                            .items_center()
+                            .hover(|style| style.bg(cx.theme().secondary_hover))
+                            .child(file.clone())
+                    }))
+            )
+    }
+}
+```
+
+### Chat Messages with Auto-scroll
+
+```rust
+pub struct ChatView {
+    messages: Vec<String>,
+    scroll_handle: ScrollHandle,
+    should_auto_scroll: bool,
+}
+
+impl ChatView {
+    fn add_message(&mut self, message: String) {
+        self.messages.push(message);
+
+        if self.should_auto_scroll {
+            // Scroll to bottom for new messages
+            let max_offset = self.scroll_handle.max_offset();
+            self.scroll_handle.set_offset(point(px(0.), max_offset.y));
+        }
+    }
+}
+```
+
+### Data Table with Virtual Scrolling
+
+```rust
+pub struct DataTable {
+    data: Vec<Vec<String>>,
+    scroll_handle: VirtualListScrollHandle,
+}
+
+impl Render for DataTable {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        VirtualList::new(
+            self.scroll_handle.clone(),
+            self.data.len(),
+            |_ix, _window, _cx| size(px(800.), px(32.)), // Fixed row height
+            |ix, bounds, _selected, _window, cx| {
+                h_flex()
+                    .size(bounds.size)
+                    .border_b_1()
+                    .border_color(cx.theme().border)
+                    .children(self.data[ix].iter().map(|cell| {
+                        div()
+                            .flex_1()
+                            .px_2()
+                            .flex()
+                            .items_center()
+                            .child(cell.clone())
+                    }))
+                    .into_any_element()
+            },
+        )
+    }
+}
 ```
 
 ## Custom Scrollbars
@@ -233,95 +321,4 @@ Sync scrollbar behavior with system preferences:
 ```rust
 // Automatically sync with system settings
 Theme::sync_scrollbar_appearance(cx);
-```
-
-## Examples
-
-### File Browser with Scrolling
-
-```rust
-pub struct FileBrowser {
-    files: Vec<String>,
-}
-
-impl Render for FileBrowser {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        div()
-            .border_1()
-            .border_color(cx.theme().border)
-            .size_full()
-            .child(
-                v_flex()
-                    .gap_1()
-                    .p_2()
-                    .overflow_y_scrollbar()
-                    .children(self.files.iter().map(|file| {
-                        div()
-                            .h(px(32.))
-                            .w_full()
-                            .px_2()
-                            .flex()
-                            .items_center()
-                            .hover(|style| style.bg(cx.theme().secondary_hover))
-                            .child(file.clone())
-                    }))
-            )
-    }
-}
-```
-
-### Chat Messages with Auto-scroll
-
-```rust
-pub struct ChatView {
-    messages: Vec<String>,
-    scroll_handle: ScrollHandle,
-    should_auto_scroll: bool,
-}
-
-impl ChatView {
-    fn add_message(&mut self, message: String) {
-        self.messages.push(message);
-
-        if self.should_auto_scroll {
-            // Scroll to bottom for new messages
-            let max_offset = self.scroll_handle.max_offset();
-            self.scroll_handle.set_offset(point(px(0.), max_offset.y));
-        }
-    }
-}
-```
-
-### Data Table with Virtual Scrolling
-
-```rust
-pub struct DataTable {
-    data: Vec<Vec<String>>,
-    scroll_handle: VirtualListScrollHandle,
-}
-
-impl Render for DataTable {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        VirtualList::new(
-            self.scroll_handle.clone(),
-            self.data.len(),
-            |_ix, _window, _cx| size(px(800.), px(32.)), // Fixed row height
-            |ix, bounds, _selected, _window, cx| {
-                h_flex()
-                    .size(bounds.size)
-                    .border_b_1()
-                    .border_color(cx.theme().border)
-                    .children(self.data[ix].iter().map(|cell| {
-                        div()
-                            .flex_1()
-                            .px_2()
-                            .flex()
-                            .items_center()
-                            .child(cell.clone())
-                    }))
-                    .into_any_element()
-            },
-        )
-    }
-}
 ```

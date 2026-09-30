@@ -15,7 +15,6 @@ use gpui_kit::component::TitleBar;
 ```
 
 ## Usage
-
 ### Basic Title Bar
 
 ```rust
@@ -120,66 +119,6 @@ WindowOptions {
     ..Default::default()
 }
 ```
-
-## Platform Differences
-
-### macOS
-
-- Uses native traffic light buttons (minimize, maximize, close)
-- Traffic light position is automatically set to `(9px, 9px)`
-- Double-click behavior calls `window.titlebar_double_click()`
-- Left padding accounts for traffic light buttons (80px)
-- Appears transparent by default
-
-### Windows
-
-- Custom window control buttons with system integration
-- Uses `WindowControlArea` for proper window management
-- Control buttons have hover and active states
-- Fixed button width of 34px each
-- Left padding is 12px
-
-### Linux
-
-- Custom window control buttons with manual event handling
-- Supports custom close window callback via `on_close_window()`
-- Double-click to maximize/restore window
-- Right-click shows window context menu
-- Window dragging supported in title bar area
-
-## API Reference
-
-### TitleBar
-
-| Method                | Description                              |
-| --------------------- | ---------------------------------------- |
-| `new()`               | Create a new title bar                   |
-| `child(element)`      | Add child element to the title bar       |
-| `on_close_window(fn)` | Custom close window handler (Linux only) |
-| `title_bar_options()` | Get default titlebar options for window  |
-| `window_options()`    | Get default window options for the title bar |
-
-### Window Configuration
-
-| Property                 | Description                                                    |
-| ------------------------ | -------------------------------------------------------------- |
-| `appears_transparent`    | Make title bar transparent (default: true)                     |
-| `traffic_light_position` | Position of macOS traffic lights                               |
-| `title`                  | Window title (optional when using custom title bar)            |
-| `app_owns_titlebar_drag` | Let the title bar own dragging and double clicking (macOS only) |
-
-### Title Bar Element (Internal)
-
-The `TitleBarElement` provides window dragging functionality on Linux platforms.
-
-### Constants
-
-| Constant                 | Value                           | Description               |
-| ------------------------ | ------------------------------- | ------------------------- |
-| `TITLE_BAR_HEIGHT`       | `34px`                          | Standard title bar height |
-| `TITLE_BAR_LEFT_PADDING` | `80px` (macOS), `12px` (others) | Left padding for content  |
-
-## Examples
 
 ### Application Title Bar
 
@@ -332,6 +271,32 @@ TitleBar::new()
     )
 ```
 
+## Platform Differences
+
+### macOS
+
+- Uses native traffic light buttons (minimize, maximize, close)
+- Traffic light position is automatically set to `(9px, 9px)`
+- Double-click behavior calls `window.titlebar_double_click()`
+- Left padding accounts for traffic light buttons (80px)
+- Appears transparent by default
+
+### Windows
+
+- Custom window control buttons with system integration
+- Uses `WindowControlArea` for proper window management
+- Control buttons have hover and active states
+- Fixed button width of 34px each
+- Left padding is 12px
+
+### Linux
+
+- Custom window control buttons with manual event handling
+- Supports custom close window callback via `on_close_window()`
+- Double-click to maximize/restore window
+- Right-click shows window context menu
+- Window dragging supported in title bar area
+
 ## Notes
 
 - The title bar automatically handles platform-specific styling and behavior
@@ -339,3 +304,35 @@ TitleBar::new()
 - The component integrates with GPUI's window management system
 - Custom styling should consider platform conventions
 - Window dragging is handled automatically in appropriate areas
+
+## API Reference
+
+### TitleBar
+
+| Method                | Description                              |
+| --------------------- | ---------------------------------------- |
+| `new()`               | Create a new title bar                   |
+| `child(element)`      | Add child element to the title bar       |
+| `on_close_window(fn)` | Custom close window handler (Linux only) |
+| `title_bar_options()` | Get default titlebar options for window  |
+| `window_options()`    | Get default window options for the title bar |
+
+### Window Configuration
+
+| Property                 | Description                                                    |
+| ------------------------ | -------------------------------------------------------------- |
+| `appears_transparent`    | Make title bar transparent (default: true)                     |
+| `traffic_light_position` | Position of macOS traffic lights                               |
+| `title`                  | Window title (optional when using custom title bar)            |
+| `app_owns_titlebar_drag` | Let the title bar own dragging and double clicking (macOS only) |
+
+### Title Bar Element (Internal)
+
+The `TitleBarElement` provides window dragging functionality on Linux platforms.
+
+### Constants
+
+| Constant                 | Value                           | Description               |
+| ------------------------ | ------------------------------- | ------------------------- |
+| `TITLE_BAR_HEIGHT`       | `34px`                          | Standard title bar height |
+| `TITLE_BAR_LEFT_PADDING` | `80px` (macOS), `12px` (others) | Left padding for content  |

@@ -29,8 +29,7 @@ use gpui_kit::component::select::{
 ```
 
 ## Usage
-
-### Basic Select
+### Framework
 
 You can create a basic select dropdown by initializing a `SelectState` with a list of items.
 
@@ -256,8 +255,6 @@ state.update(cx, |state, cx| {
     state.set_items(new_items, window, cx);
 });
 ```
-
-## Examples
 
 ### Language Selector
 

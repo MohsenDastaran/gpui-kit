@@ -25,7 +25,6 @@ Pass any `impl IntoElement` — a string, an `Icon`, a `Button`, a custom layout
 - For anything else, pass the element directly.
 
 ## Usage
-
 ### Labels
 
 ```rust
@@ -81,6 +80,12 @@ StatusBar::new()
     .left("Ready")
 ```
 
+## Notes
+
+- The center (via `child` / `children`) is centered with both `left` and `right`, end-aligned with only `left`, and start-aligned otherwise (only `right`, or neither — like a plain container).
+- Use a plain string (or any non-interactive element) for read-only items to avoid the button hover effect; use a ghost xsmall `Button` only for clickable items.
+- Colors come from the `status_bar` (background) and `status_bar_border` theme tokens, which fall back to `background` / `border`.
+
 ## API Reference
 
 ### StatusBar
@@ -93,9 +98,3 @@ StatusBar::new()
 | `child(c)` / `children(cs)` | Add element(s) to the center region        |
 
 Each region method takes `impl IntoElement`. `StatusBar` also implements `Styled`, so style methods (`bg`, `border_color`, `py`, etc.) can override the defaults.
-
-## Notes
-
-- The center (via `child` / `children`) is centered with both `left` and `right`, end-aligned with only `left`, and start-aligned otherwise (only `right`, or neither — like a plain container).
-- Use a plain string (or any non-interactive element) for read-only items to avoid the button hover effect; use a ghost xsmall `Button` only for clickable items.
-- Colors come from the `status_bar` (background) and `status_bar_border` theme tokens, which fall back to `background` / `border`.

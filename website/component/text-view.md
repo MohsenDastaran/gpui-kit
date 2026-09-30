@@ -18,7 +18,6 @@ use gpui_kit::component::text::{markdown, TextView};
 ```
 
 ## Usage
-
 ### Markdown
 
 Use the `markdown` helper when you only need to render Markdown text:

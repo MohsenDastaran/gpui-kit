@@ -17,7 +17,6 @@ use gpui_kit::component::{
 ```
 
 ## Usage
-
 ### Where notifications render
 
 The window's [Root](./root.md) automatically mounts and renders notifications. Open the window with `gpui_kit::open_window`, or wrap the application view in `Root::new`. Application views do not render overlay layers themselves.
@@ -148,6 +147,72 @@ Notification::new()
 use gpui_kit::component::text::markdown;
 
 let markdown_content = r#"
+
+### Form Validation Error
+
+```rust
+Notification::error("Please correct the following errors before submitting.")
+    .title("Validation Failed")
+    .autohide(false)
+    .action(|_, _, cx| {
+        Button::new("review")
+            .outline()
+            .label("Review Form")
+            .on_click(cx.listener(|this, _, window, cx| {
+                // Navigate to form
+                this.dismiss(window, cx);
+            }))
+    })
+```
+
+### File Upload Progress
+
+```rust
+struct UploadNotification;
+
+// Start upload notification
+window.push_notification(
+    Notification::info("Uploading file...")
+        .id::<UploadNotification>()
+        .title("File Upload")
+        .autohide(false),
+    cx,
+);
+
+// Update to success when complete
+window.push_notification(
+    Notification::success("File uploaded successfully!")
+        .id::<UploadNotification>()
+        .title("Upload Complete"),
+    cx,
+);
+```
+
+### System Status Updates
+
+```rust
+// Warning about maintenance
+Notification::warning("System maintenance will begin in 30 minutes.")
+    .title("Scheduled Maintenance")
+    .autohide(false)
+    .action(|_, cx| {
+        Button::new("details")
+            .link()
+            .label("View Details")
+            .on_click(cx.listener(|this, _, window, cx| {
+                // Show maintenance details
+                this.dismiss(window, cx);
+            }))
+    })
+```
+
+### Batch Operation Results
+
+```rust
+use gpui_kit::component::text::markdown;
+
+let results_content = r#"
+
 ## Custom Notification
 - **Feature**: New dashboard available
 - **Status**: Ready to use
@@ -241,72 +306,6 @@ Platform requirements:
 | Windows | Call `cx.set_app_identity(identifier, name)` early in startup | Supported |
 | Linux | An XDG notification daemon must be present | Unsupported (ages out) |
 
-## Examples
-
-### Form Validation Error
-
-```rust
-Notification::error("Please correct the following errors before submitting.")
-    .title("Validation Failed")
-    .autohide(false)
-    .action(|_, _, cx| {
-        Button::new("review")
-            .outline()
-            .label("Review Form")
-            .on_click(cx.listener(|this, _, window, cx| {
-                // Navigate to form
-                this.dismiss(window, cx);
-            }))
-    })
-```
-
-### File Upload Progress
-
-```rust
-struct UploadNotification;
-
-// Start upload notification
-window.push_notification(
-    Notification::info("Uploading file...")
-        .id::<UploadNotification>()
-        .title("File Upload")
-        .autohide(false),
-    cx,
-);
-
-// Update to success when complete
-window.push_notification(
-    Notification::success("File uploaded successfully!")
-        .id::<UploadNotification>()
-        .title("Upload Complete"),
-    cx,
-);
-```
-
-### System Status Updates
-
-```rust
-// Warning about maintenance
-Notification::warning("System maintenance will begin in 30 minutes.")
-    .title("Scheduled Maintenance")
-    .autohide(false)
-    .action(|_, cx| {
-        Button::new("details")
-            .link()
-            .label("View Details")
-            .on_click(cx.listener(|this, _, window, cx| {
-                // Show maintenance details
-                this.dismiss(window, cx);
-            }))
-    })
-```
-
-### Batch Operation Results
-
-```rust
-use gpui_kit::component::text::markdown;
-
-let results_content = r#"
 ## Batch Operation Complete
 
 **Processed**: 150 items

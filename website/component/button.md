@@ -34,16 +34,6 @@ pub fn primary_command() -> impl IntoElement {
 ```
 <!-- recipe:command-control:end -->
 
-### Basic Button
-
-```rust
-Button::new("my-button")
-    .label("Click me")
-    .on_click(|_, _, _| {
-        println!("Button clicked!");
-    })
-```
-
 ### Variants
 
 ```rust
@@ -77,7 +67,7 @@ Button::new("btn-link").link().label("Link")
 Button::new("btn-text").text().label("Text")
 ```
 
-### Outline Buttons
+### Outline
 
 Outline style is not a variant itself, but can be combined with other variants.
 
@@ -88,7 +78,7 @@ Button::new("btn").primary().outline().label("Primary Outline")
 Button::new("btn").danger().outline().label("Danger Outline")
 ```
 
-### Compact Button
+### Sizes
 
 The `compact` method reduces the padding of the button for a more condensed appearance.
 
@@ -99,20 +89,7 @@ Button::new("btn")
     .compact()
 ```
 
-### Sizeable
-
-The Button supports the [Sizable] trait for different sizes.
-
-```rust
-use gpui_kit::component::Sizable as _;
-
-Button::new("btn").xsmall().label("Extra Small")
-Button::new("btn").small().label("Small")
-Button::new("btn").label("Medium") // default
-Button::new("btn").large().label("Large")
-```
-
-### With Icons
+### Icons and states
 
 The `icon` method supports multiple types, allowing you to use different visual indicators:
 
@@ -252,7 +229,17 @@ Button::new("btn")
     .loading(true) // Icon will be replaced with Spinner
 ```
 
-### With a dropdown caret icon
+### Button group
+
+```rust
+Button::new("my-button")
+    .label("Click me")
+    .on_click(|_, _, _| {
+        println!("Button clicked!");
+    })
+```
+
+### Icon only
 
 The `.dropdown_caret` method can allows adding a dropdown caret icon to end of the button.
 
@@ -260,6 +247,19 @@ The `.dropdown_caret` method can allows adding a dropdown caret icon to end of t
 Button::new("btn")
     .label("Options")
     .dropdown_caret(true)
+```
+
+### Sizeable
+
+The Button supports the [Sizable] trait for different sizes.
+
+```rust
+use gpui_kit::component::Sizable as _;
+
+Button::new("btn").xsmall().label("Extra Small")
+Button::new("btn").small().label("Small")
+Button::new("btn").label("Medium") // default
+Button::new("btn").large().label("Large")
 ```
 
 ### Button States
@@ -284,6 +284,42 @@ Button::new("btn")
     .label("Selected")
     .selected(true)
 ```
+
+### With Tooltip
+
+```rust
+Button::new("btn")
+    .label("Hover me")
+    .tooltip("This is a helpful tooltip")
+    .tooltip_placement(Placement::Bottom)
+```
+
+Use `.tooltip_placement(...)` to prefer a side for either `.tooltip(...)` or
+`.tooltip_with_action(...)`. The tooltip still flips when that side does not fit.
+Omit placement to keep automatic positioning.
+
+### Custom Children
+
+```rust
+Button::new("btn")
+    .child(
+        h_flex()
+            .items_center()
+            .gap_2()
+            .child("Custom Content")
+            .child(IconName::ChevronDown)
+            .child(IconName::Eye)
+    )
+```
+
+[Button]: https://docs.rs/gpui-component/latest/gpui_component/button/struct.Button.html
+[ButtonGroup]: https://docs.rs/gpui-component/latest/gpui_component/button/struct.ButtonGroup.html
+[ButtonCustomVariant]: https://docs.rs/gpui-component/latest/gpui_component/button/struct.ButtonCustomVariant.html
+[Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
+[Spinner]: https://docs.rs/gpui-component/latest/gpui_component/spinner/struct.Spinner.html
+[ProgressCircle]: https://docs.rs/gpui-component/latest/gpui_component/progress/struct.ProgressCircle.html
+[Icon]: https://docs.rs/gpui-component/latest/gpui_component/icon/struct.Icon.html
+[IconName]: https://docs.rs/gpui-component/latest/gpui_component/icon/enum.IconName.html
 
 ## Button Group
 
@@ -333,41 +369,3 @@ Button::new("custom-btn")
 - [Button]
 - [ButtonGroup]
 - [ButtonCustomVariant]
-
-## Examples
-
-### With Tooltip
-
-```rust
-Button::new("btn")
-    .label("Hover me")
-    .tooltip("This is a helpful tooltip")
-    .tooltip_placement(Placement::Bottom)
-```
-
-Use `.tooltip_placement(...)` to prefer a side for either `.tooltip(...)` or
-`.tooltip_with_action(...)`. The tooltip still flips when that side does not fit.
-Omit placement to keep automatic positioning.
-
-### Custom Children
-
-```rust
-Button::new("btn")
-    .child(
-        h_flex()
-            .items_center()
-            .gap_2()
-            .child("Custom Content")
-            .child(IconName::ChevronDown)
-            .child(IconName::Eye)
-    )
-```
-
-[Button]: https://docs.rs/gpui-component/latest/gpui_component/button/struct.Button.html
-[ButtonGroup]: https://docs.rs/gpui-component/latest/gpui_component/button/struct.ButtonGroup.html
-[ButtonCustomVariant]: https://docs.rs/gpui-component/latest/gpui_component/button/struct.ButtonCustomVariant.html
-[Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
-[Spinner]: https://docs.rs/gpui-component/latest/gpui_component/spinner/struct.Spinner.html
-[ProgressCircle]: https://docs.rs/gpui-component/latest/gpui_component/progress/struct.ProgressCircle.html
-[Icon]: https://docs.rs/gpui-component/latest/gpui_component/icon/struct.Icon.html
-[IconName]: https://docs.rs/gpui-component/latest/gpui_component/icon/enum.IconName.html

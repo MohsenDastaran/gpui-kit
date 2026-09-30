@@ -16,8 +16,7 @@ use gpui_kit::component::checkbox::Checkbox;
 ```
 
 ## Usage
-
-### Basic Checkbox
+### Basic
 
 ```rust
 Checkbox::new("my-checkbox")
@@ -29,6 +28,17 @@ Checkbox::new("my-checkbox")
 ```
 
 The `on_change` callback is triggered when the user toggles the checkbox, receiving the **new checked state**.
+
+### Sizes
+
+```rust
+use gpui_kit::component::Sizable as _;
+
+Checkbox::new("cb").text_xs().label("Extra Small")
+Checkbox::new("cb").text_sm().label("Small")
+Checkbox::new("cb").label("Medium") // default
+Checkbox::new("cb").text_lg().label("Large")
+```
 
 ### Controlled Checkbox
 
@@ -67,17 +77,6 @@ impl Render for ControlledCheckbox {
 ```
 <!-- recipe:controlled-value:end -->
 
-### Different Sizes
-
-```rust
-use gpui_kit::component::Sizable as _;
-
-Checkbox::new("cb").text_xs().label("Extra Small")
-Checkbox::new("cb").text_sm().label("Small")
-Checkbox::new("cb").label("Medium") // default
-Checkbox::new("cb").text_lg().label("Large")
-```
-
 ### Disabled State
 
 ```rust
@@ -104,22 +103,6 @@ Checkbox::new("checkbox")
     .tab_index(2)
     .tab_stop(true)
 ```
-
-## API Reference
-
-- [Checkbox]
-
-### Styling
-
-Implements `Sizable` and `Disableable` traits:
-
-- `text_xs()` - Extra small text
-- `text_sm()` - Small text
-- `text_base()` - Base text (default)
-- `text_lg()` - Large text
-- `disabled(bool)` - Disabled state
-
-## Examples
 
 ### Checkbox List
 
@@ -162,3 +145,17 @@ v_flex()
 ```
 
 [Checkbox]: https://docs.rs/gpui-component/latest/gpui_component/checkbox/struct.Checkbox.html
+
+## API Reference
+
+- [Checkbox]
+
+### Styling
+
+Implements `Sizable` and `Disableable` traits:
+
+- `text_xs()` - Extra small text
+- `text_sm()` - Small text
+- `text_base()` - Base text (default)
+- `text_lg()` - Large text
+- `disabled(bool)` - Disabled state

@@ -12,6 +12,107 @@ Progress components visually represent the completion percentage of a task. The 
 
 Both components feature smooth transition animations when the value changes, a loading (indeterminate) animation mode, customizable colors, and automatic styling that adapts to the current theme.
 
+## Usage
+### Progress
+
+```rust
+struct FileUpload {
+    uploaded: u64,
+    total: u64,
+}
+
+impl FileUpload {
+    fn progress(&self) -> f32 {
+        if self.total == 0 { return 0.0; }
+        (self.uploaded as f32 / self.total as f32) * 100.0
+    }
+
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        v_flex()
+            .gap_2()
+            .child(
+                h_flex()
+                    .justify_between()
+                    .child("Uploading...")
+                    .child(format!("{:.0}%", self.progress())),
+            )
+            .child(Progress::new("upload").value(self.progress()))
+    }
+}
+```
+
+### Values
+
+```rust
+struct AppInit {
+    loading: bool,
+    progress: f32,
+}
+
+impl Render for AppInit {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        v_flex()
+            .gap_3()
+            .child(
+                h_flex()
+                    .gap_2()
+                    .items_center()
+                    .child(
+                        ProgressCircle::new("init-circle")
+                            .loading(self.loading)
+                            .value(self.progress)
+                            .size_4(),
+                    )
+                    .child(if self.loading { "Initializing..." } else { "Ready" }),
+            )
+            .child(
+                Progress::new("init-bar")
+                    .loading(self.loading)
+                    .value(self.progress),
+            )
+    }
+}
+```
+
+### Sizes and status colors
+
+```rust
+struct Install {
+    step: usize,       // current package index
+    total: usize,      // total packages
+    step_progress: f32,
+}
+
+impl Install {
+    fn overall(&self) -> f32 {
+        if self.total == 0 { return 0.0; }
+        (self.step as f32 + self.step_progress / 100.0) / self.total as f32 * 100.0
+    }
+
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        v_flex()
+            .gap_2()
+            .child(
+                h_flex()
+                    .justify_between()
+                    .child(format!("Package {}/{}", self.step + 1, self.total))
+                    .child(format!("{:.0}%", self.overall())),
+            )
+            .child(Progress::new("overall").value(self.overall()))
+            .child(
+                h_flex()
+                    .gap_2()
+                    .items_center()
+                    .child(Progress::new("package").value(self.step_progress).small())
+                    .child("Current package"),
+            )
+    }
+}
+```
+
+### Progress circle
+The live preview above is this sample.
+
 ## Progress
 
 ```rust
@@ -218,102 +319,3 @@ h_flex()
 | `xsmall()` / `small()` / `large()` | — | Set predefined size via `Sizable` |
 | `size(px(n))` | `Pixels` | Set custom size |
 | `ParentElement` | — | Place content inside the circle |
-
-## Examples
-
-### File Upload
-
-```rust
-struct FileUpload {
-    uploaded: u64,
-    total: u64,
-}
-
-impl FileUpload {
-    fn progress(&self) -> f32 {
-        if self.total == 0 { return 0.0; }
-        (self.uploaded as f32 / self.total as f32) * 100.0
-    }
-
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
-        v_flex()
-            .gap_2()
-            .child(
-                h_flex()
-                    .justify_between()
-                    .child("Uploading...")
-                    .child(format!("{:.0}%", self.progress())),
-            )
-            .child(Progress::new("upload").value(self.progress()))
-    }
-}
-```
-
-### Initialization with Loading State
-
-```rust
-struct AppInit {
-    loading: bool,
-    progress: f32,
-}
-
-impl Render for AppInit {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        v_flex()
-            .gap_3()
-            .child(
-                h_flex()
-                    .gap_2()
-                    .items_center()
-                    .child(
-                        ProgressCircle::new("init-circle")
-                            .loading(self.loading)
-                            .value(self.progress)
-                            .size_4(),
-                    )
-                    .child(if self.loading { "Initializing..." } else { "Ready" }),
-            )
-            .child(
-                Progress::new("init-bar")
-                    .loading(self.loading)
-                    .value(self.progress),
-            )
-    }
-}
-```
-
-### Multi-Step Process
-
-```rust
-struct Install {
-    step: usize,       // current package index
-    total: usize,      // total packages
-    step_progress: f32,
-}
-
-impl Install {
-    fn overall(&self) -> f32 {
-        if self.total == 0 { return 0.0; }
-        (self.step as f32 + self.step_progress / 100.0) / self.total as f32 * 100.0
-    }
-
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
-        v_flex()
-            .gap_2()
-            .child(
-                h_flex()
-                    .justify_between()
-                    .child(format!("Package {}/{}", self.step + 1, self.total))
-                    .child(format!("{:.0}%", self.overall())),
-            )
-            .child(Progress::new("overall").value(self.overall()))
-            .child(
-                h_flex()
-                    .gap_2()
-                    .items_center()
-                    .child(Progress::new("package").value(self.step_progress).small())
-                    .child("Current package"),
-            )
-    }
-}
-```

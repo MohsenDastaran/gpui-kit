@@ -14,20 +14,7 @@ use gpui_kit::component::badge::Badge;
 ```
 
 ## Usage
-
-### Badge with Count
-
-Use `count` to display a numeric badge, if the count is greater than zero (`> 0`) the badge will be shown, otherwise it will be hidden.
-
-There is a default maximum count of `99`, any count above this will be displayed as `99+`. You can customize this maximum using the [max](https://docs.rs/gpui-component/latest/gpui_component/badge/struct.Badge.html#method.max) method.
-
-```rust
-Badge::new()
-    .count(3)
-    .child(Icon::new(IconName::Bell))
-```
-
-### Variants
+### Icon
 
 - Default: Displays a numeric count.
 - Dot: A small dot indicator, typically used for status.
@@ -50,7 +37,19 @@ Badge::new()
     .child(Avatar::new().src("https://example.com/avatar.jpg"))
 ```
 
-### Badge Sizes
+### Count
+
+Use `count` to display a numeric badge, if the count is greater than zero (`> 0`) the badge will be shown, otherwise it will be hidden.
+
+There is a default maximum count of `99`, any count above this will be displayed as `99+`. You can customize this maximum using the [max](https://docs.rs/gpui-component/latest/gpui_component/badge/struct.Badge.html#method.max) method.
+
+```rust
+Badge::new()
+    .count(3)
+    .child(Icon::new(IconName::Bell))
+```
+
+### Badge icon
 
 The Badge is also implemented with the [Sizable] trait, allowing you to set small, medium (default), or large sizes.
 
@@ -73,7 +72,7 @@ Badge::new()
     .child(Avatar::new().large())
 ```
 
-### Badge Colors
+### Dot
 
 ```rust
 use gpui_kit::component::ActiveTheme;
@@ -95,7 +94,7 @@ Badge::new()
     .child(Icon::new(IconName::Bell))
 ```
 
-### Badge on Icons
+### Color
 
 ```rust
 use gpui_kit::component::{Icon, IconName};
@@ -117,7 +116,7 @@ Badge::new()
     .child(Icon::new(IconName::Mail))
 ```
 
-### Badge on Avatars
+### Sizes
 
 ```rust
 use gpui_kit::component::avatar::Avatar;
@@ -168,12 +167,6 @@ Badge::new()
             .child(Avatar::new().large().src("https://example.com/avatar.jpg"))
     )
 ```
-
-## API Reference
-
-- [Badge]
-
-## Examples
 
 ### Notification Indicators
 
@@ -245,3 +238,7 @@ Badge::new().count(0)    // Badge not visible
 
 [Badge]: https://docs.rs/gpui_component/latest/gpui_component/badge/struct.Badge.html
 [Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
+
+## API Reference
+
+- [Badge]

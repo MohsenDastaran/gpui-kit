@@ -56,7 +56,6 @@ on-demand CDN loader instead of embedding the complete bundle.
 
 :::
 
-
 ## Additional application icons
 
 Keep the default `Assets` registration. For extra catalog icons, follow the
@@ -65,7 +64,6 @@ Keep the default `Assets` registration. For extra catalog icons, follow the
 registers it together with the default source. For your own SVG files, see
 [custom assets](../docs/assets.md#add-your-own-asset-files).
 
-
 ## Import
 
 ```rust
@@ -73,6 +71,19 @@ use gpui_kit::component::{Icon, IconName};
 ```
 
 ## Usage
+### Icons
+
+```rust
+use gpui_kit::{Transformation, radians};
+
+// Rotate by radians
+Icon::new(IconName::ArrowUp)
+    .rotate(radians(std::f32::consts::FRAC_PI_2))
+
+// Transform with custom transformation
+Icon::new(IconName::ChevronRight)
+    .transform(Transformation::rotate(radians(std::f32::consts::PI)))
+```
 
 ### Basic Icon
 
@@ -107,20 +118,6 @@ Icon::new(IconName::Heart)
 // Using custom colors
 Icon::new(IconName::Star)
     .text_color(gpui_kit::red())
-```
-
-### Rotated Icons
-
-```rust
-use gpui_kit::{Transformation, radians};
-
-// Rotate by radians
-Icon::new(IconName::ArrowUp)
-    .rotate(radians(std::f32::consts::FRAC_PI_2))
-
-// Transform with custom transformation
-Icon::new(IconName::ChevronRight)
-    .transform(Transformation::rotate(radians(std::f32::consts::PI)))
 ```
 
 ### Custom SVG Path
@@ -194,6 +191,69 @@ Button::new("search").icon(Search);
 Existing `IconNamed` implementations continue to provide asset paths. A
 data-backed type uses the conversion above without also implementing `IconNamed`.
 Binary-size savings depend on which resources are referenced and on build settings.
+
+### Icon in Button
+
+```rust
+use gpui_kit::component::button::Button;
+
+Button::new("like-btn")
+    .icon(
+        Icon::new(IconName::Heart)
+            .text_color(cx.theme().red)
+            .large()
+    )
+    .label("Like")
+```
+
+### Animated Loading Icon
+
+```rust
+Icon::new(IconName::LoaderCircle)
+    .text_color(cx.theme().muted_foreground)
+    .medium()
+    // Add rotation animation in your render logic
+```
+
+### Status Icons
+
+```rust
+// Success
+Icon::new(IconName::CircleCheck)
+    .text_color(cx.theme().green)
+
+// Error
+Icon::new(IconName::CircleX)
+    .text_color(cx.theme().red)
+
+// Warning
+Icon::new(IconName::TriangleAlert)
+    .text_color(cx.theme().yellow)
+```
+
+### Navigation Icons
+
+```rust
+// Back button
+Icon::new(IconName::ArrowLeft)
+    .medium()
+    .text_color(cx.theme().foreground)
+
+// Dropdown indicator
+Icon::new(IconName::ChevronDown)
+    .small()
+    .text_color(cx.theme().muted_foreground)
+```
+
+### Custom Icon from Assets
+
+```rust
+// Using a custom SVG file
+Icon::empty()
+    .path("icons/my-brand-logo.svg")
+    .large()
+    .text_color(cx.theme().primary)
+```
 
 ## Available Icons
 
@@ -300,71 +360,6 @@ impl RenderOnce for IconName {
 // Now you can use it directly in your element tree:
 div()
     .child(IconName::Monsters)
-```
-
-## Examples
-
-### Icon in Button
-
-```rust
-use gpui_kit::component::button::Button;
-
-Button::new("like-btn")
-    .icon(
-        Icon::new(IconName::Heart)
-            .text_color(cx.theme().red)
-            .large()
-    )
-    .label("Like")
-```
-
-### Animated Loading Icon
-
-```rust
-Icon::new(IconName::LoaderCircle)
-    .text_color(cx.theme().muted_foreground)
-    .medium()
-    // Add rotation animation in your render logic
-```
-
-### Status Icons
-
-```rust
-// Success
-Icon::new(IconName::CircleCheck)
-    .text_color(cx.theme().green)
-
-// Error
-Icon::new(IconName::CircleX)
-    .text_color(cx.theme().red)
-
-// Warning
-Icon::new(IconName::TriangleAlert)
-    .text_color(cx.theme().yellow)
-```
-
-### Navigation Icons
-
-```rust
-// Back button
-Icon::new(IconName::ArrowLeft)
-    .medium()
-    .text_color(cx.theme().foreground)
-
-// Dropdown indicator
-Icon::new(IconName::ChevronDown)
-    .small()
-    .text_color(cx.theme().muted_foreground)
-```
-
-### Custom Icon from Assets
-
-```rust
-// Using a custom SVG file
-Icon::empty()
-    .path("icons/my-brand-logo.svg")
-    .large()
-    .text_color(cx.theme().primary)
 ```
 
 ## Notes

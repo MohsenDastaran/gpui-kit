@@ -24,35 +24,57 @@ export component TableExample inherits VerticalLayout {
     GroupBox {
         title: "Basic table";
         variant: GroupBoxVariant.outline;
-
         Table {
             TableHeader {
                 TableRow {
-                    TableHead { text: "Invoice"; }
-                    TableHead { text: "Status"; }
-                    TableHead { text: "Method"; }
-                    TableHead { text: "Amount"; align: TextHorizontalAlignment.right; }
+                    TableHead {
+                        text: "Invoice";
+                    }
+                    TableHead {
+                        text: "Status";
+                    }
+                    TableHead {
+                        text: "Method";
+                    }
+                    TableHead {
+                        text: "Amount";
+                        align: TextHorizontalAlignment.right;
+                    }
                 }
             }
             TableBody {
-                for row[i] in invoices: TableRow {
+                for row[
+                    i
+                ]
+                in invoices: TableRow {
                     index: i;
-                    TableCell { text: row.invoice; }
-                    TableCell { text: row.status; }
-                    TableCell { text: row.method; }
-                    TableCell { text: row.amount; align: TextHorizontalAlignment.right; }
+                    TableCell {
+                        text: row.invoice;
+                    }
+                    TableCell {
+                        text: row.status;
+                    }
+                    TableCell {
+                        text: row.method;
+                    }
+                    TableCell {
+                        text: row.amount;
+                        align: TextHorizontalAlignment.right;
+                    }
                 }
             }
-            TableCaption { text: "A list of your recent invoices."; }
+            TableCaption {
+                text: "A list of your recent invoices.";
+            }
         }
     }
 
     GroupBox {
         title: "Striped, bordered and sizes";
         variant: GroupBoxVariant.outline;
-
         GridLayout {
-            spacing: 8px;            Button {
+            spacing: 8px;
+            Button {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
@@ -76,7 +98,8 @@ export component TableExample inherits VerticalLayout {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 0;
-                 width: 8px; }
+                width: 8px;
+            }
             Button {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
@@ -107,29 +130,47 @@ export component TableExample inherits VerticalLayout {
                     table-size = ControlSize.large;
                 }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
-
+        }
         Table {
             bordered: bordered;
             TableHeader {
                 TableRow {
-                    TableHead { text: "Invoice"; size: table-size; }
-                    TableHead { text: "Status"; size: table-size; align: TextHorizontalAlignment.center; }
-                    TableHead { text: "Method"; size: table-size; }
-                    TableHead { text: "Amount"; size: table-size; align: TextHorizontalAlignment.right; }
+                    TableHead {
+                        text: "Invoice";
+                        size: table-size;
+                    }
+                    TableHead {
+                        text: "Status";
+                        size: table-size;
+                        align: TextHorizontalAlignment.center;
+                    }
+                    TableHead {
+                        text: "Method";
+                        size: table-size;
+                    }
+                    TableHead {
+                        text: "Amount";
+                        size: table-size;
+                        align: TextHorizontalAlignment.right;
+                    }
                 }
             }
             TableBody {
-                for row[i] in invoices: TableRow {
+                for row[
+                    i
+                ]
+                in invoices: TableRow {
                     index: i;
                     striped: striped;
-                    TableCell { text: row.invoice; size: table-size; }
+                    TableCell {
+                        text: row.invoice;
+                        size: table-size;
+                    }
                     TableCell {
                         size: table-size;
                         align: TextHorizontalAlignment.center;
@@ -154,14 +195,29 @@ export component TableExample inherits VerticalLayout {
                             }
                         }
                     }
-                    TableCell { text: row.method; size: table-size; }
-                    TableCell { text: row.amount; size: table-size; align: TextHorizontalAlignment.right; }
+                    TableCell {
+                        text: row.method;
+                        size: table-size;
+                    }
+                    TableCell {
+                        text: row.amount;
+                        size: table-size;
+                        align: TextHorizontalAlignment.right;
+                    }
                 }
             }
             TableFooter {
                 TableRow {
-                    TableCell { text: "Total"; size: table-size; col-span: 3; }
-                    TableCell { text: "$1,750.00"; size: table-size; align: TextHorizontalAlignment.right; }
+                    TableCell {
+                        text: "Total";
+                        size: table-size;
+                        col-span: 3;
+                    }
+                    TableCell {
+                        text: "$1,750.00";
+                        size: table-size;
+                        align: TextHorizontalAlignment.right;
+                    }
                 }
             }
         }
@@ -170,27 +226,55 @@ export component TableExample inherits VerticalLayout {
     GroupBox {
         title: "Column widths";
         variant: GroupBoxVariant.outline;
-
         Table {
             TableHeader {
                 TableRow {
-                    TableHead { text: "ID"; width: 80px; }
-                    TableHead { text: "Name"; }
-                    TableHead { text: "Email"; col-span: 2; }
-                    TableHead { text: "Date"; width: 120px; }
+                    TableHead {
+                        text: "ID";
+                        width: 80px;
+                    }
+                    TableHead {
+                        text: "Name";
+                    }
+                    TableHead {
+                        text: "Email";
+                        col-span: 2;
+                    }
+                    TableHead {
+                        text: "Date";
+                        width: 120px;
+                    }
                 }
             }
             TableBody {
-                for person[i] in [
+                for person[
+                    i
+                ]
+                in [
                     { id: "1", name: "John Doe", email: "john@example.com", date: "2026-01-12" },
                     { id: "2", name: "Jane Smith", email: "jane@example.com", date: "2026-02-03" },
                     { id: "3", name: "Carlos Rivera", email: "carlos@example.com", date: "2026-03-21" },
-                ]: TableRow {
+                ]
+                : TableRow {
                     index: i;
-                    TableCell { text: person.id; width: 80px; mono: true; text-color: Theme.muted-foreground; }
-                    TableCell { text: person.name; }
-                    TableCell { text: person.email; col-span: 2; }
-                    TableCell { text: person.date; width: 120px; mono: true; }
+                    TableCell {
+                        text: person.id;
+                        width: 80px;
+                        mono: true;
+                        text-color: Theme.muted-foreground;
+                    }
+                    TableCell {
+                        text: person.name;
+                    }
+                    TableCell {
+                        text: person.email;
+                        col-span: 2;
+                    }
+                    TableCell {
+                        text: person.date;
+                        width: 120px;
+                        mono: true;
+                    }
                 }
             }
         }

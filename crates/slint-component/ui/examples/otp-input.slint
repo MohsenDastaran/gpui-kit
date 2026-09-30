@@ -9,9 +9,16 @@ export component OtpInputExample inherits VerticalLayout {
     alignment: start;
 
     private property <string> code;
-    GroupBox { title: "Verification"; variant: GroupBoxVariant.outline;
-        OtpInput { value <=> root.code; }
-        Text { text: root.code == "" ? "Enter the 6-digit code." : "Code: \{root.code}"; color: Theme.muted-foreground; }
+    GroupBox {
+        title: "Verification";
+        variant: GroupBoxVariant.outline;
+        OtpInput {
+            value <=> root.code;
+        }
+        Text {
+            text: root.code == "" ? "Enter the 6-digit code." : "Code: \{root.code}";
+            color: Theme.muted-foreground;
+        }
     }
 
 }

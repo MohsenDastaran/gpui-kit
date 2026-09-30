@@ -15,7 +15,6 @@ use gpui_kit::component::WindowExt;
 ```
 
 ## Usage
-
 ### Where dialogs render
 
 The window's [Root](./root.md) automatically mounts and renders dialogs. Open the window with `gpui_kit::open_window`, or wrap the application view in `Root::new`. Application views do not render overlay layers themselves.

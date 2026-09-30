@@ -40,7 +40,6 @@ CommandState                    // query, focus, selection, scrolling
 ```
 
 ## Usage
-
 ### Inline
 
 Define Actions and bindings in application setup. The default row resolves an

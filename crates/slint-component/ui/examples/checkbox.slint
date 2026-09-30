@@ -10,42 +10,69 @@ export component CheckboxExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Basic"; variant: GroupBoxVariant.outline;
-        Checkbox { label: "Accept terms and conditions"; checked: true; }
-        Checkbox { label: "Receive product updates"; description: "Occasional emails about new releases."; }
-        Checkbox { label: "Indeterminate"; indeterminate: true; }
-        Checkbox { label: "Disabled"; enabled: false; }
+    GroupBox {
+        title: "Basic";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "Accept terms and conditions";
+            checked: true;
+        }
+        Checkbox {
+            label: "Receive product updates";
+            description: "Occasional emails about new releases.";
+        }
+        Checkbox {
+            label: "Indeterminate";
+            indeterminate: true;
+        }
+        Checkbox {
+            label: "Disabled";
+            enabled: false;
+        }
     }
-    GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
         GridLayout {
-            horizontal-stretch: 1; spacing: 16px;
+            horizontal-stretch: 1;
+            spacing: 16px;
             Checkbox {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
-                 label: "XS"; size: ControlSize.xsmall; checked: true; }
+                label: "XS";
+                size: ControlSize.xsmall;
+                checked: true;
+            }
             Checkbox {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
-                 label: "SM"; size: ControlSize.small; checked: true; }
+                label: "SM";
+                size: ControlSize.small;
+                checked: true;
+            }
             Checkbox {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 0;
-                 label: "MD"; checked: true; }
+                label: "MD";
+                checked: true;
+            }
             Checkbox {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
                 horizontal-stretch: 0;
-                 label: "LG"; size: ControlSize.large; checked: true; }
-        
+                label: "LG";
+                size: ControlSize.large;
+                checked: true;
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
 }

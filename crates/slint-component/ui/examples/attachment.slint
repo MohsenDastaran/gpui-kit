@@ -35,8 +35,12 @@ export component AttachmentExample inherits VerticalLayout {
             name: "design-mockups.png";
             size: "PNG · 1.8 MB";
             clickable: true;
-            clicked => { root.notice = "Opening design-mockups.png…"; }
-            removed => { root.notice = "Removed design-mockups.png"; }
+            clicked => {
+                root.notice = "Opening design-mockups.png…";
+            }
+            removed => {
+                root.notice = "Removed design-mockups.png";
+            }
         }
         if root.notice != "": Text {
             text: root.notice;

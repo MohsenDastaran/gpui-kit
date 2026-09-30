@@ -16,7 +16,6 @@ use gpui_kit::component::color_picker::{
 ```
 
 ## Usage
-
 ### Basic Color Picker
 
 ```rust
@@ -141,107 +140,6 @@ ColorSelect::new(&color_picker).large()
 // Shown while no color is selected.
 ColorSelect::new(&color_picker).placeholder("Pick a color")
 ```
-
-## Color Selection Interface
-
-### Color Palettes
-
-The color picker includes predefined color palettes organized by color family:
-
-- **Stone**: Neutral grays and stone colors
-- **Red**: Red color variations from light to dark
-- **Orange**: Orange color variations
-- **Yellow**: Yellow color variations
-- **Green**: Green color variations
-- **Cyan**: Cyan color variations
-- **Blue**: Blue color variations
-- **Purple**: Purple color variations
-- **Pink**: Pink color variations
-
-Each palette provides multiple shades and tints of the base color, allowing for precise color selection.
-
-### Featured Colors Section
-
-A customizable section at the top of the picker that displays frequently used or brand colors. If not specified, defaults to theme colors:
-
-- Primary colors from the current theme
-- Light variants of theme colors
-- Essential UI colors (red, blue, green, yellow, cyan, magenta)
-
-### Hex Input Field
-
-A text input field that allows direct entry of hex color values:
-
-- Supports standard 6-digit hex format (#RRGGBB)
-- Real-time validation and preview
-- Updates color picker state automatically
-- Press Enter to confirm selection
-
-## Color Formats
-
-### RGB (Red, Green, Blue)
-
-Colors are internally represented using GPUI's `Hsla` format but can be converted to RGB:
-
-```rust
-let color = cx.theme().blue;
-// Access RGB components through Hsla methods
-```
-
-### HSL (Hue, Saturation, Lightness)
-
-Native format used by the color picker:
-
-```rust
-use gpui_kit::Hsla;
-
-// Create HSL color
-let color = Hsla::hsl(240.0, 100.0, 50.0); // Blue color
-
-// Access components
-let hue = color.h;
-let saturation = color.s;
-let lightness = color.l;
-```
-
-### Hex Format
-
-Standard web hex format with # prefix:
-
-```rust
-// Convert color to hex
-let hex_string = color.to_hex(); // Returns "#3366FF"
-
-// Parse hex string to color
-if let Ok(color) = Hsla::parse_hex("#3366FF") {
-    // Use parsed color
-}
-```
-
-## Alpha Channel
-
-Full alpha channel support for transparency:
-
-```rust
-use gpui_kit::hsla;
-
-// Create color with alpha
-let semi_transparent = hsla(0.5, 0.8, 0.6, 0.7); // 70% opacity
-
-// Modify existing color opacity
-let transparent_blue = cx.theme().blue.opacity(0.5);
-```
-
-The color picker preserves alpha values when selecting colors and allows modification through the alpha component of HSLA colors.
-
-## API Reference
-
-- [ColorPicker]
-- [ColorSelect]
-- [ColorPickerState]
-- [ColorPickerEvent]
-
-## Examples
 
 ### Color Theme Editor
 
@@ -401,3 +299,102 @@ let _subscription = cx.subscribe(&color_picker, |this, _, ev, _| match ev {
 [ColorSelect]: https://docs.rs/gpui-component/latest/gpui_component/color_picker/struct.ColorSelect.html
 [ColorPickerState]: https://docs.rs/gpui-component/latest/gpui_component/color_picker/struct.ColorPickerState.html
 [ColorPickerEvent]: https://docs.rs/gpui-component/latest/gpui_component/color_picker/enum.ColorPickerEvent.html
+
+## Color Selection Interface
+
+### Color Palettes
+
+The color picker includes predefined color palettes organized by color family:
+
+- **Stone**: Neutral grays and stone colors
+- **Red**: Red color variations from light to dark
+- **Orange**: Orange color variations
+- **Yellow**: Yellow color variations
+- **Green**: Green color variations
+- **Cyan**: Cyan color variations
+- **Blue**: Blue color variations
+- **Purple**: Purple color variations
+- **Pink**: Pink color variations
+
+Each palette provides multiple shades and tints of the base color, allowing for precise color selection.
+
+### Featured Colors Section
+
+A customizable section at the top of the picker that displays frequently used or brand colors. If not specified, defaults to theme colors:
+
+- Primary colors from the current theme
+- Light variants of theme colors
+- Essential UI colors (red, blue, green, yellow, cyan, magenta)
+
+### Hex Input Field
+
+A text input field that allows direct entry of hex color values:
+
+- Supports standard 6-digit hex format (#RRGGBB)
+- Real-time validation and preview
+- Updates color picker state automatically
+- Press Enter to confirm selection
+
+## Color Formats
+
+### RGB (Red, Green, Blue)
+
+Colors are internally represented using GPUI's `Hsla` format but can be converted to RGB:
+
+```rust
+let color = cx.theme().blue;
+// Access RGB components through Hsla methods
+```
+
+### HSL (Hue, Saturation, Lightness)
+
+Native format used by the color picker:
+
+```rust
+use gpui_kit::Hsla;
+
+// Create HSL color
+let color = Hsla::hsl(240.0, 100.0, 50.0); // Blue color
+
+// Access components
+let hue = color.h;
+let saturation = color.s;
+let lightness = color.l;
+```
+
+### Hex Format
+
+Standard web hex format with # prefix:
+
+```rust
+// Convert color to hex
+let hex_string = color.to_hex(); // Returns "#3366FF"
+
+// Parse hex string to color
+if let Ok(color) = Hsla::parse_hex("#3366FF") {
+    // Use parsed color
+}
+```
+
+## Alpha Channel
+
+Full alpha channel support for transparency:
+
+```rust
+use gpui_kit::hsla;
+
+// Create color with alpha
+let semi_transparent = hsla(0.5, 0.8, 0.6, 0.7); // 70% opacity
+
+// Modify existing color opacity
+let transparent_blue = cx.theme().blue.opacity(0.5);
+```
+
+The color picker preserves alpha values when selecting colors and allows modification through the alpha component of HSLA colors.
+
+## API Reference
+
+- [ColorPicker]
+- [ColorSelect]
+- [ColorPickerState]
+- [ColorPickerEvent]

@@ -8,10 +8,16 @@ export component SelectExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Framework"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Framework";
+        variant: GroupBoxVariant.outline;
         Select {
             placeholder: "Choose a framework";
-            items: [{ label: "GPUI", value: "gpui" }, { label: "Slint", value: "slint" }, { label: "egui", value: "egui" }];
+            items: [
+                { label: "GPUI", value: "gpui" },
+                { label: "Slint", value: "slint" },
+                { label: "egui", value: "egui" }
+            ];
             selected: 0;
         }
     }

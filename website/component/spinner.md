@@ -14,33 +14,14 @@ use gpui_kit::component::spinner::Spinner;
 ```
 
 ## Usage
-
-### Basic
+### Colors
 
 ```rust
 // Default loader icon
 Spinner::new()
 ```
 
-### Spinner with Custom Color
-
-```rust
-use gpui_kit::component::ActiveTheme;
-
-// Blue spinner
-Spinner::new()
-    .color(cx.theme().blue)
-
-// Green spinner for success states
-Spinner::new()
-    .color(cx.theme().green)
-
-// Custom color
-Spinner::new()
-    .color(cx.theme().cyan)
-```
-
-### Spinner Sizes
+### Sizes
 
 ```rust
 // Extra small spinner
@@ -57,6 +38,24 @@ Spinner::new().large()
 
 // Custom size
 Spinner::new().with_size(px(64.))
+```
+
+### In context
+
+```rust
+use gpui_kit::component::ActiveTheme;
+
+// Blue spinner
+Spinner::new()
+    .color(cx.theme().blue)
+
+// Green spinner for success states
+Spinner::new()
+    .color(cx.theme().green)
+
+// Custom color
+Spinner::new()
+    .color(cx.theme().cyan)
 ```
 
 ### Spinner with Custom Icon
@@ -79,40 +78,6 @@ Spinner::new()
     .icon(IconName::Loader)
     .color(cx.theme().primary)
 ```
-
-## Available Icons
-
-The Spinner component supports various loading and progress icons:
-
-### Loading Icons
-
-- `Loader` (default) - Rotating line spinner
-- `LoaderCircle` - Circular loading spinner
-
-### Other Compatible Icons
-
-- Any icon from the `IconName` enum can be used, though loading-specific icons work best with the rotation animation
-
-## Animation
-
-The Spinner component features a built-in rotation animation:
-
-- **Duration**: 0.8 seconds (configurable via speed parameter)
-- **Easing**: Ease-in-out transition
-- **Repeat**: Infinite loop
-- **Transform**: 360-degree rotation
-
-## Size Reference
-
-| Size        | Method              | Approximate Pixels |
-| ----------- | ------------------- | ------------------ |
-| Extra Small | `.xsmall()`         | ~12px              |
-| Small       | `.small()`          | ~14px              |
-| Medium      | (default)           | ~16px              |
-| Large       | `.large()`          | ~24px              |
-| Custom      | `.with_size(px(n))` | n px               |
-
-## Examples
 
 ### Loading States
 
@@ -234,6 +199,38 @@ div()
             .color(cx.theme().primary)
     )
 ```
+
+## Available Icons
+
+The Spinner component supports various loading and progress icons:
+
+### Loading Icons
+
+- `Loader` (default) - Rotating line spinner
+- `LoaderCircle` - Circular loading spinner
+
+### Other Compatible Icons
+
+- Any icon from the `IconName` enum can be used, though loading-specific icons work best with the rotation animation
+
+## Animation
+
+The Spinner component features a built-in rotation animation:
+
+- **Duration**: 0.8 seconds (configurable via speed parameter)
+- **Easing**: Ease-in-out transition
+- **Repeat**: Infinite loop
+- **Transform**: 360-degree rotation
+
+## Size Reference
+
+| Size        | Method              | Approximate Pixels |
+| ----------- | ------------------- | ------------------ |
+| Extra Small | `.xsmall()`         | ~12px              |
+| Small       | `.small()`          | ~14px              |
+| Medium      | (default)           | ~16px              |
+| Large       | `.large()`          | ~24px              |
+| Custom      | `.with_size(px(n))` | n px               |
 
 ## Performance Considerations
 

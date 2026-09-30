@@ -61,13 +61,12 @@ export component StepperExample inherits VerticalLayout {
                     root.order-step += 1;
                 }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
@@ -88,53 +87,73 @@ export component StepperExample inherits VerticalLayout {
         spacing: 24px;
 
         GroupBox {
-                row: Theme.wrap-row(0, root.wrap-cols);
-                col: Theme.wrap-col(0, root.wrap-cols);
-            title: "Vertical";
-            variant: GroupBoxVariant.outline;
-            horizontal-stretch: 1;
-            Stepper {
-                vertical: true;
-                selected-index <=> root.vertical-step;
-                items: [
-                    { label: "Step 1", description: "Description for step 1.", icon: "house" },
-                    { label: "Step 2", description: "Description for step 2.", icon: "sparkles" },
-                    { label: "Step 3", description: "Description for step 3.", icon: "folder" },
-                    { label: "Step 4", description: "Description for step 4.", icon: "circle-check" },
-                ];
-            }
+        row: Theme.wrap-row(0, root.wrap-cols);
+        col: Theme.wrap-col(0, root.wrap-cols);
+        title: "Vertical";
+        variant: GroupBoxVariant.outline;
+        horizontal-stretch: 1;
+        Stepper {
+            vertical: true;
+            selected-index <=> root.vertical-step;
+            items: [
+                { label: "Step 1", description: "Description for step 1.", icon: "house" },
+                { label: "Step 2", description: "Description for step 2.", icon: "sparkles" },
+                { label: "Step 3", description: "Description for step 3.", icon: "folder" },
+                { label: "Step 4", description: "Description for step 4.", icon: "circle-check" },
+            ];
         }
+    }
 
         GroupBox {
-                row: Theme.wrap-row(1, root.wrap-cols);
-                col: Theme.wrap-col(1, root.wrap-cols);
-            title: "Sizes and disabled";
-            variant: GroupBoxVariant.outline;
-            horizontal-stretch: 2;
-            Stepper {
-                size: ControlSize.xsmall;
-                selected-index <=> root.size-step;
-                items: [{ label: "Cart" }, { label: "Address" }, { label: "Payment" }];
-            }
-            Stepper {
-                size: ControlSize.small;
-                selected-index <=> root.size-step;
-                items: [{ label: "Cart" }, { label: "Address" }, { label: "Payment" }];
-            }
-            Stepper {
-                size: ControlSize.large;
-                selected-index <=> root.size-step;
-                items: [{ label: "Cart" }, { label: "Address" }, { label: "Payment" }];
-            }
-            Stepper {
-                items: [{ label: "Available" }, { label: "Locked", disabled: true }, { label: "Available" }];
-            }
-            Stepper {
-                enabled: false;
-                selected-index: 1;
-                items: [{ label: "Account" }, { label: "Profile" }, { label: "Review" }];
-            }
+        row: Theme.wrap-row(1, root.wrap-cols);
+        col: Theme.wrap-col(1, root.wrap-cols);
+        title: "Sizes and disabled";
+        variant: GroupBoxVariant.outline;
+        horizontal-stretch: 2;
+        Stepper {
+            size: ControlSize.xsmall;
+            selected-index <=> root.size-step;
+            items: [
+                { label: "Cart" },
+                { label: "Address" },
+                { label: "Payment" }
+            ];
         }
+        Stepper {
+            size: ControlSize.small;
+            selected-index <=> root.size-step;
+            items: [
+                { label: "Cart" },
+                { label: "Address" },
+                { label: "Payment" }
+            ];
+        }
+        Stepper {
+            size: ControlSize.large;
+            selected-index <=> root.size-step;
+            items: [
+                { label: "Cart" },
+                { label: "Address" },
+                { label: "Payment" }
+            ];
+        }
+        Stepper {
+            items: [
+                { label: "Available" },
+                { label: "Locked", disabled: true },
+                { label: "Available" }
+            ];
+        }
+        Stepper {
+            enabled: false;
+            selected-index: 1;
+            items: [
+                { label: "Account" },
+                { label: "Profile" },
+                { label: "Review" }
+            ];
+        }
+    }
     
             Rectangle {
                 row: 0;

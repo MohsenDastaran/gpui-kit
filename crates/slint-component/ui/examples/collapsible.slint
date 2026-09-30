@@ -8,11 +8,16 @@ export component CollapsibleExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Details"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Details";
+        variant: GroupBoxVariant.outline;
         Collapsible {
             title: "Advanced";
             open: true;
-            Text { text: "These options are for power users."; color: Theme.foreground; }
+            Text {
+                text: "These options are for power users.";
+                color: Theme.foreground;
+            }
         }
     }
 

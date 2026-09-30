@@ -14,8 +14,7 @@ use gpui_kit::component::collapsible::Collapsible;
 ```
 
 ## Usage
-
-### Basic Use
+### Details
 
 ```rust
 Collapsible::new()

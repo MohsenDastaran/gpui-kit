@@ -53,331 +53,387 @@ export component AlertDialogExample inherits VerticalLayout {
         spacing: 16px;
 
         GroupBox {
-            row: root.row-of(0);
-            col: root.col-of(0);
-            title: "Default";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Discard Draft";
-                clicked => { root.discard-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.discard-open;
-                    show-close: false;
-                    title: "Discard unsaved changes?";
-                    description: "Your edits since the last save will be permanently lost.";
-                    DialogFooter {
-                        centered: true;
-                        Button {
-                            text: "Cancel";
-                            outline: true;
-                            clicked => { root.discard-open = false; }
+        row: root.row-of(0);
+        col: root.col-of(0);
+        title: "Default";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Discard Draft";
+            clicked => {
+                root.discard-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.discard-open;
+                show-close: false;
+                title: "Discard unsaved changes?";
+                description: "Your edits since the last save will be permanently lost.";
+                DialogFooter {
+                    centered: true;
+                    Button {
+                        text: "Cancel";
+                        outline: true;
+                        clicked => {
+                            root.discard-open = false;
                         }
-                        Button {
-                            text: "Discard";
-                            variant: ButtonVariant.danger;
-                            clicked => { root.discard-open = false; }
+                    }
+                    Button {
+                        text: "Discard";
+                        variant: ButtonVariant.danger;
+                        clicked => {
+                            root.discard-open = false;
                         }
                     }
                 }
             }
         }
+    }
 
         GroupBox {
-            row: root.row-of(1);
-            col: root.col-of(1);
-            title: "Delete file";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Delete File";
-                clicked => { root.delete-file-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.delete-file-open;
-                    show-close: false;
-                    HorizontalLayout {
-                        spacing: 12px;
-                        Icon { name: "info"; size: 20px; color: Theme.danger; }
-                        VerticalLayout {
-                            spacing: 4px;
-                            horizontal-stretch: 1;
-                            Text {
-                                text: "Delete File";
-                                color: Theme.foreground;
-                                font-size: Theme.font-size-lg;
-                                font-weight: 600;
-                            }
-                            Text {
-                                text: "Are you sure you want to delete this file? This action cannot be undone.";
-                                color: Theme.muted-foreground;
-                                font-size: Theme.font-size-sm;
-                                wrap: word-wrap;
-                            }
-                        }
-                    }
-                    DialogFooter {
-                        centered: true;
-                        Button {
-                            text: "Cancel";
-                            clicked => { root.delete-file-open = false; }
-                        }
-                        Button {
-                            text: "Delete";
-                            variant: ButtonVariant.danger;
-                            clicked => { root.delete-file-open = false; }
-                        }
-                    }
-                }
+        row: root.row-of(1);
+        col: root.col-of(1);
+        title: "Delete file";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Delete File";
+            clicked => {
+                root.delete-file-open = true;
             }
-        }
-
-        GroupBox {
-            row: root.row-of(2);
-            col: root.col-of(2);
-            title: "Icon";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Request Permission";
-                clicked => { root.permission-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.permission-open;
-                    show-close: false;
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.delete-file-open;
+                show-close: false;
+                HorizontalLayout {
+                    spacing: 12px;
+                    Icon {
+                        name: "info";
+                        size: 20px;
+                        color: Theme.danger;
+                    }
                     VerticalLayout {
-                        alignment: center;
-                        spacing: 8px;
-                        Icon { name: "triangle-alert"; size: 40px; color: Theme.warning; }
+                        spacing: 4px;
+                        horizontal-stretch: 1;
                         Text {
-                            text: "Network Permission Required";
+                            text: "Delete File";
                             color: Theme.foreground;
                             font-size: Theme.font-size-lg;
                             font-weight: 600;
-                            horizontal-alignment: center;
-                            wrap: word-wrap;
                         }
                         Text {
-                            text: "We need your permission to access the network. Allow access to continue.";
+                            text: "Are you sure you want to delete this file? This action cannot be undone.";
                             color: Theme.muted-foreground;
                             font-size: Theme.font-size-sm;
-                            horizontal-alignment: center;
                             wrap: word-wrap;
                         }
                     }
-                    VerticalLayout {
-                        spacing: 8px;
-                        Button {
-                            text: "Allow";
-                            variant: ButtonVariant.primary;
-                            horizontal-stretch: 1;
-                            clicked => { root.permission-open = false; }
-                        }
-                        Button {
-                            text: "Deny";
-                            outline: true;
-                            horizontal-stretch: 1;
-                            clicked => { root.permission-open = false; }
-                        }
-                    }
                 }
-            }
-        }
-
-        GroupBox {
-            row: root.row-of(3);
-            col: root.col-of(3);
-            title: "Destructive";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Delete Account";
-                variant: ButtonVariant.danger;
-                clicked => { root.account-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.account-open;
-                    show-close: false;
-                    title: "Delete Account";
-                    description: "This will permanently delete your account and all associated data. This action cannot be undone.";
-                    DialogFooter {
-                        centered: true;
-                        Button {
-                            text: "Cancel";
-                            outline: true;
-                            horizontal-stretch: 1;
-                            clicked => { root.account-open = false; }
-                        }
-                        Button {
-                            text: "Delete";
-                            outline: true;
-                            variant: ButtonVariant.danger;
-                            horizontal-stretch: 1;
-                            clicked => { root.account-open = false; }
-                        }
-                    }
-                }
-            }
-        }
-
-        GroupBox {
-            row: root.row-of(4);
-            col: root.col-of(4);
-            title: "Without title";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Continue without Title";
-                clicked => { root.untitled-open = true; }
-                AlertDialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.untitled-open;
-                    description: "Continue with this action?";
-                    confirm-text: "Continue";
-                }
-            }
-        }
-
-        GroupBox {
-            row: root.row-of(5);
-            col: root.col-of(5);
-            title: "Custom footer";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Show Session Expiry";
-                clicked => { root.session-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.session-open;
-                    show-close: false;
-                    title: "Session Expired";
-                    description: "Your session has expired due to inactivity. Please log in again to continue.";
+                DialogFooter {
+                    centered: true;
                     Button {
-                        text: "Sign in";
+                        text: "Cancel";
+                        clicked => {
+                            root.delete-file-open = false;
+                        }
+                    }
+                    Button {
+                        text: "Delete";
+                        variant: ButtonVariant.danger;
+                        clicked => {
+                            root.delete-file-open = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+        GroupBox {
+        row: root.row-of(2);
+        col: root.col-of(2);
+        title: "Icon";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Request Permission";
+            clicked => {
+                root.permission-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.permission-open;
+                show-close: false;
+                VerticalLayout {
+                    alignment: center;
+                    spacing: 8px;
+                    Icon {
+                        name: "triangle-alert";
+                        size: 40px;
+                        color: Theme.warning;
+                    }
+                    Text {
+                        text: "Network Permission Required";
+                        color: Theme.foreground;
+                        font-size: Theme.font-size-lg;
+                        font-weight: 600;
+                        horizontal-alignment: center;
+                        wrap: word-wrap;
+                    }
+                    Text {
+                        text: "We need your permission to access the network. Allow access to continue.";
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-sm;
+                        horizontal-alignment: center;
+                        wrap: word-wrap;
+                    }
+                }
+                VerticalLayout {
+                    spacing: 8px;
+                    Button {
+                        text: "Allow";
                         variant: ButtonVariant.primary;
                         horizontal-stretch: 1;
-                        clicked => { root.session-open = false; }
+                        clicked => {
+                            root.permission-open = false;
+                        }
+                    }
+                    Button {
+                        text: "Deny";
+                        outline: true;
+                        horizontal-stretch: 1;
+                        clicked => {
+                            root.permission-open = false;
+                        }
                     }
                 }
             }
         }
+    }
 
         GroupBox {
-            row: root.row-of(6);
-            col: root.col-of(6);
-            title: "Custom content";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Install Update";
-                clicked => { root.update-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.update-open;
-                    show-close: false;
-                    title: "Update Available";
-                    description: "A new version (v2.0.0) is available. This update includes new features and bug fixes.";
-                    Rectangle {
-                        background: Theme.muted;
-                        border-radius: Theme.radius-md;
-                        HorizontalLayout {
-                            padding: 12px;
-                            spacing: 8px;
-                            Button {
-                                text: "Later";
-                                outline: true;
-                                horizontal-stretch: 1;
-                                clicked => { root.update-open = false; }
+        row: root.row-of(3);
+        col: root.col-of(3);
+        title: "Destructive";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Delete Account";
+            variant: ButtonVariant.danger;
+            clicked => {
+                root.account-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.account-open;
+                show-close: false;
+                title: "Delete Account";
+                description: "This will permanently delete your account and all associated data. This action cannot be undone.";
+                DialogFooter {
+                    centered: true;
+                    Button {
+                        text: "Cancel";
+                        outline: true;
+                        horizontal-stretch: 1;
+                        clicked => {
+                            root.account-open = false;
+                        }
+                    }
+                    Button {
+                        text: "Delete";
+                        outline: true;
+                        variant: ButtonVariant.danger;
+                        horizontal-stretch: 1;
+                        clicked => {
+                            root.account-open = false;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+        GroupBox {
+        row: root.row-of(4);
+        col: root.col-of(4);
+        title: "Without title";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Continue without Title";
+            clicked => {
+                root.untitled-open = true;
+            }
+            AlertDialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.untitled-open;
+                description: "Continue with this action?";
+                confirm-text: "Continue";
+            }
+        }
+    }
+
+        GroupBox {
+        row: root.row-of(5);
+        col: root.col-of(5);
+        title: "Custom footer";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Show Session Expiry";
+            clicked => {
+                root.session-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.session-open;
+                show-close: false;
+                title: "Session Expired";
+                description: "Your session has expired due to inactivity. Please log in again to continue.";
+                Button {
+                    text: "Sign in";
+                    variant: ButtonVariant.primary;
+                    horizontal-stretch: 1;
+                    clicked => {
+                        root.session-open = false;
+                    }
+                }
+            }
+        }
+    }
+
+        GroupBox {
+        row: root.row-of(6);
+        col: root.col-of(6);
+        title: "Custom content";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Install Update";
+            clicked => {
+                root.update-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.update-open;
+                show-close: false;
+                title: "Update Available";
+                description: "A new version (v2.0.0) is available. This update includes new features and bug fixes.";
+                Rectangle {
+                    background: Theme.muted;
+                    border-radius: Theme.radius-md;
+                    HorizontalLayout {
+                        padding: 12px;
+                        spacing: 8px;
+                        Button {
+                            text: "Later";
+                            outline: true;
+                            horizontal-stretch: 1;
+                            clicked => {
+                                root.update-open = false;
                             }
-                            Button {
-                                text: "Update";
-                                variant: ButtonVariant.primary;
-                                horizontal-stretch: 1;
-                                clicked => { root.update-open = false; }
+                        }
+                        Button {
+                            text: "Update";
+                            variant: ButtonVariant.primary;
+                            horizontal-stretch: 1;
+                            clicked => {
+                                root.update-open = false;
                             }
                         }
                     }
                 }
             }
         }
+    }
 
         GroupBox {
-            row: root.row-of(7);
-            col: root.col-of(7);
-            title: "Notice";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Review Notice";
-                clicked => { root.notice-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.notice-open;
-                    show-close: false;
-                    title: "Important Notice";
-                    description: "Please read this important notice carefully before proceeding.";
-                    DialogFooter {
-                        centered: true;
-                        Button {
-                            text: "Got It";
-                            variant: ButtonVariant.primary;
-                            clicked => { root.notice-open = false; }
+        row: root.row-of(7);
+        col: root.col-of(7);
+        title: "Notice";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Review Notice";
+            clicked => {
+                root.notice-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.notice-open;
+                show-close: false;
+                title: "Important Notice";
+                description: "Please read this important notice carefully before proceeding.";
+                DialogFooter {
+                    centered: true;
+                    Button {
+                        text: "Got It";
+                        variant: ButtonVariant.primary;
+                        clicked => {
+                            root.notice-open = false;
                         }
                     }
                 }
             }
         }
+    }
 
         GroupBox {
-            row: root.row-of(8);
-            col: root.col-of(8);
-            title: "Confirm";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Open Confirmation";
-                clicked => { root.confirm-open = true; }
-                AlertDialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.confirm-open;
-                    title: "Are you sure?";
-                    description: "Continue with this action?";
-                    confirm-text: "OK";
-                }
+        row: root.row-of(8);
+        col: root.col-of(8);
+        title: "Confirm";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Open Confirmation";
+            clicked => {
+                root.confirm-open = true;
+            }
+            AlertDialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.confirm-open;
+                title: "Are you sure?";
+                description: "Continue with this action?";
+                confirm-text: "OK";
             }
         }
+    }
 
         GroupBox {
-            row: root.row-of(9);
-            col: root.col-of(9);
-            title: "Prevent close";
-            variant: GroupBoxVariant.outline;
-            Preview {
-                label: "Close During Sync";
-                clicked => { root.sync-open = true; }
-                Dialog {
-                    width: 100%;
-                    height: 100%;
-                    open <=> root.sync-open;
-                    title: "Sync in progress";
-                    description: root.sync-note == "" ? "Your changes are still syncing. The dialog stays open until syncing finishes." : root.sync-note;
-                    DialogFooter {
-                        centered: true;
-                        Button {
-                            text: "Wait";
-                            clicked => { root.sync-note = "Waiting for sync to finish."; }
+        row: root.row-of(9);
+        col: root.col-of(9);
+        title: "Prevent close";
+        variant: GroupBoxVariant.outline;
+        Preview {
+            label: "Close During Sync";
+            clicked => {
+                root.sync-open = true;
+            }
+            Dialog {
+                width: 100%;
+                height: 100%;
+                open <=> root.sync-open;
+                title: "Sync in progress";
+                description: root.sync-note == "" ? "Your changes are still syncing. The dialog stays open until syncing finishes." : root.sync-note;
+                DialogFooter {
+                    centered: true;
+                    Button {
+                        text: "Wait";
+                        clicked => {
+                            root.sync-note = "Waiting for sync to finish.";
                         }
-                        Button {
-                            text: "Close";
-                            variant: ButtonVariant.primary;
-                            clicked => { root.sync-note = "Cannot close while syncing."; }
+                    }
+                    Button {
+                        text: "Close";
+                        variant: ButtonVariant.primary;
+                        clicked => {
+                            root.sync-note = "Cannot close while syncing.";
                         }
                     }
                 }
             }
         }
+    }
     }
 
     pure function row-of(index: int) -> int {

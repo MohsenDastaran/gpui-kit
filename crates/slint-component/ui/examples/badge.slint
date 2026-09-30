@@ -15,67 +15,83 @@ export component BadgeExample inherits VerticalLayout {
         title: "Icon";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 24px;            Badge {
+            spacing: 24px;
+            Badge {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 3;
-                Icon { name: "bell"; size: 24px; color: Theme.foreground; }
+                Icon {
+                    name: "bell";
+                    size: 24px;
+                    color: Theme.foreground;
+                }
             }
             Badge {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 103;
-                Icon { name: "inbox"; size: 24px; color: Theme.foreground; }
+                Icon {
+                    name: "inbox";
+                    size: 24px;
+                    color: Theme.foreground;
+                }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
         title: "Count";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 24px;            Badge {
+            spacing: 24px;
+            Badge {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 3;
-                Avatar { initials: "AL"; }
+                Avatar {
+                    initials: "AL";
+                }
             }
             Badge {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 103;
-                Avatar { initials: "MK"; fill: Theme.muted; }
+                Avatar {
+                    initials: "MK";
+                    fill: Theme.muted;
+                }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
         title: "Badge icon";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 24px;            Badge {
+            spacing: 24px;
+            Badge {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
                 icon: "check";
                 color: Theme.info;
-                Avatar { initials: "AL"; }
+                Avatar {
+                    initials: "AL";
+                }
             }
             Badge {
                 row: Theme.wrap-row(1, root.wrap-cols);
@@ -83,15 +99,16 @@ export component BadgeExample inherits VerticalLayout {
                 horizontal-stretch: 0;
                 icon: "star";
                 color: Theme.warning;
-                Avatar { initials: "JR"; }
+                Avatar {
+                    initials: "JR";
+                }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
@@ -103,7 +120,9 @@ export component BadgeExample inherits VerticalLayout {
             Badge {
                 dot: true;
                 count: 1;
-                Avatar { initials: "AL"; }
+                Avatar {
+                    initials: "AL";
+                }
             }
         }
     }
@@ -112,13 +131,16 @@ export component BadgeExample inherits VerticalLayout {
         title: "Color";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 24px;            Badge {
+            spacing: 24px;
+            Badge {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 3;
                 color: Theme.selection;
-                Avatar { initials: "AL"; }
+                Avatar {
+                    initials: "AL";
+                }
             }
             Badge {
                 row: Theme.wrap-row(1, root.wrap-cols);
@@ -127,35 +149,45 @@ export component BadgeExample inherits VerticalLayout {
                 dot: true;
                 count: 1;
                 color: Theme.success;
-                Avatar { initials: "AL"; }
+                Avatar {
+                    initials: "AL";
+                }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
         title: "Sizes";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 24px;            Badge {
+            spacing: 24px;
+            Badge {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 2;
                 size: ControlSize.small;
-                Icon { name: "bell"; size: 16px; color: Theme.foreground; }
+                Icon {
+                    name: "bell";
+                    size: 16px;
+                    color: Theme.foreground;
+                }
             }
             Badge {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
                 count: 2;
-                Icon { name: "bell"; size: 24px; color: Theme.foreground; }
+                Icon {
+                    name: "bell";
+                    size: 24px;
+                    color: Theme.foreground;
+                }
             }
             Badge {
                 row: Theme.wrap-row(2, root.wrap-cols);
@@ -163,14 +195,17 @@ export component BadgeExample inherits VerticalLayout {
                 horizontal-stretch: 0;
                 count: 2;
                 size: ControlSize.large;
-                Icon { name: "bell"; size: 32px; color: Theme.foreground; }
+                Icon {
+                    name: "bell";
+                    size: 32px;
+                    color: Theme.foreground;
+                }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 }

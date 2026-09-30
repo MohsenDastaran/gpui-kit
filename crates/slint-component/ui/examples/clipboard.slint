@@ -10,25 +10,29 @@ export component ClipboardExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Copy"; variant: GroupBoxVariant.outline;
-        GridLayout { spacing: 8px;
+    GroupBox {
+        title: "Copy";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 8px;
             Input {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
-                 text: "gpui-kit"; }
+                text: "gpui-kit";
+            }
             Clipboard {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
-                 value: "gpui-kit"; }
-        
+                value: "gpui-kit";
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
 }

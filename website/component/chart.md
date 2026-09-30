@@ -15,6 +15,189 @@ use gpui_kit::component::chart::{
 };
 ```
 
+## Usage
+### Sales Dashboard
+
+```rust
+#[derive(Clone)]
+struct SalesData {
+    month: String,
+    revenue: f64,
+    profit: f64,
+    region: String,
+}
+
+fn sales_dashboard(data: Vec<SalesData>, cx: &mut Context<Self>) -> impl IntoElement {
+    v_flex()
+        .gap_4()
+        .child(
+            h_flex()
+                .gap_4()
+                .child(
+                    chart_container(
+                        "Monthly Revenue",
+                        LineChart::new(data.clone())
+                            .x(|d| d.month.clone())
+                            .y(|d| d.revenue)
+                            .stroke(cx.theme().chart_1)
+                            .dot(),
+                        false,
+                        cx,
+                    )
+                )
+                .child(
+                    chart_container(
+                        "Profit Breakdown",
+                        PieChart::new(data.clone())
+                            .value(|d| d.profit as f32)
+                            .outer_radius(80.)
+                            .color(|d| match d.region.as_str() {
+                                "North" => cx.theme().chart_1,
+                                "South" => cx.theme().chart_2,
+                                "East" => cx.theme().chart_3,
+                                "West" => cx.theme().chart_4,
+                                _ => cx.theme().chart_5,
+                            }),
+                        true,
+                        cx,
+                    )
+                )
+        )
+        .child(
+            chart_container(
+                "Regional Performance",
+                BarChart::new(data)
+                    .band(|d| d.region.clone())
+                    .value(|d| d.revenue)
+                    .fill(|d, _, _, _| match d.region.as_str() {
+                        "North" => cx.theme().chart_1,
+                        "South" => cx.theme().chart_2,
+                        "East" => cx.theme().chart_3,
+                        "West" => cx.theme().chart_4,
+                        _ => cx.theme().chart_5,
+                    })
+                    .label(|d| format!("${:.0}k", d.revenue / 1000.)),
+                false,
+                cx,
+            )
+        )
+}
+```
+
+### Multi-Series Time Chart
+
+```rust
+#[derive(Clone)]
+struct DeviceUsage {
+    date: String,
+    desktop: f64,
+    mobile: f64,
+    tablet: f64,
+}
+
+fn device_usage_chart(data: Vec<DeviceUsage>, cx: &mut Context<Self>) -> impl IntoElement {
+    chart_container(
+        "Device Usage Over Time",
+        AreaChart::new(data)
+            .x(|d| d.date.clone())
+            .y(|d| d.desktop)
+            .stroke(cx.theme().chart_1)
+            .fill(linear_gradient(
+                0.,
+                linear_color_stop(cx.theme().chart_1.opacity(0.4), 1.),
+                linear_color_stop(cx.theme().background.opacity(0.3), 0.),
+            ))
+            .y(|d| d.mobile)
+            .stroke(cx.theme().chart_2)
+            .fill(linear_gradient(
+                0.,
+                linear_color_stop(cx.theme().chart_2.opacity(0.4), 1.),
+                linear_color_stop(cx.theme().background.opacity(0.3), 0.),
+            ))
+            .y(|d| d.tablet)
+            .stroke(cx.theme().chart_3)
+            .fill(linear_gradient(
+                0.,
+                linear_color_stop(cx.theme().chart_3.opacity(0.4), 1.),
+                linear_color_stop(cx.theme().background.opacity(0.3), 0.),
+            ))
+            .tick_margin(3),
+        false,
+        cx,
+    )
+}
+```
+
+### Financial Chart
+
+```rust
+#[derive(Clone)]
+struct StockData {
+    date: String,
+    price: f64,
+    volume: u64,
+}
+
+#[derive(Clone)]
+struct StockOHLC {
+    date: String,
+    open: f64,
+    high: f64,
+    low: f64,
+    close: f64,
+}
+
+fn stock_chart(ohlc_data: Vec<StockOHLC>, price_data: Vec<StockData>, cx: &mut Context<Self>) -> impl IntoElement {
+    v_flex()
+        .gap_4()
+        .child(
+            chart_container(
+                "Stock Price - Candlestick",
+                CandlestickChart::new(ohlc_data.clone())
+                    .x(|d| d.date.clone())
+                    .open(|d| d.open)
+                    .high(|d| d.high)
+                    .low(|d| d.low)
+                    .close(|d| d.close)
+                    .tick_margin(3),
+                false,
+                cx,
+            )
+        )
+        .child(
+            chart_container(
+                "Stock Price - Line",
+                LineChart::new(price_data.clone())
+                    .x(|d| d.date.clone())
+                    .y(|d| d.price)
+                    .stroke(cx.theme().chart_1)
+                    .linear()
+                    .tick_margin(5),
+                false,
+                cx,
+            )
+        )
+        .child(
+            chart_container(
+                "Trading Volume",
+                BarChart::new(price_data)
+                    .band(|d| d.date.clone())
+                    .value(|d| d.volume as f64)
+                    .fill(|d, _, _, _| {
+                        if d.volume > 1000000 {
+                            cx.theme().chart_1
+                        } else {
+                            cx.theme().muted_foreground.opacity(0.6)
+                        }
+                    })
+                    .tick_margin(5),
+                false,
+                cx,
+            )
+        )
+}
+```
+
 ## Chart Types
 
 ### LineChart
@@ -947,200 +1130,6 @@ let chart = LineChart::new(data)
 // cx.theme().chart_1 … cx.theme().chart_5
 ```
 
-## API Reference
-
-- [LineChart]
-- [BarChart]
-- [AreaChart]
-- [PieChart]
-- [RadarChart]
-- [CandlestickChart]
-- [SankeyChart]
-
-## Examples
-
-### Sales Dashboard
-
-```rust
-#[derive(Clone)]
-struct SalesData {
-    month: String,
-    revenue: f64,
-    profit: f64,
-    region: String,
-}
-
-fn sales_dashboard(data: Vec<SalesData>, cx: &mut Context<Self>) -> impl IntoElement {
-    v_flex()
-        .gap_4()
-        .child(
-            h_flex()
-                .gap_4()
-                .child(
-                    chart_container(
-                        "Monthly Revenue",
-                        LineChart::new(data.clone())
-                            .x(|d| d.month.clone())
-                            .y(|d| d.revenue)
-                            .stroke(cx.theme().chart_1)
-                            .dot(),
-                        false,
-                        cx,
-                    )
-                )
-                .child(
-                    chart_container(
-                        "Profit Breakdown",
-                        PieChart::new(data.clone())
-                            .value(|d| d.profit as f32)
-                            .outer_radius(80.)
-                            .color(|d| match d.region.as_str() {
-                                "North" => cx.theme().chart_1,
-                                "South" => cx.theme().chart_2,
-                                "East" => cx.theme().chart_3,
-                                "West" => cx.theme().chart_4,
-                                _ => cx.theme().chart_5,
-                            }),
-                        true,
-                        cx,
-                    )
-                )
-        )
-        .child(
-            chart_container(
-                "Regional Performance",
-                BarChart::new(data)
-                    .band(|d| d.region.clone())
-                    .value(|d| d.revenue)
-                    .fill(|d, _, _, _| match d.region.as_str() {
-                        "North" => cx.theme().chart_1,
-                        "South" => cx.theme().chart_2,
-                        "East" => cx.theme().chart_3,
-                        "West" => cx.theme().chart_4,
-                        _ => cx.theme().chart_5,
-                    })
-                    .label(|d| format!("${:.0}k", d.revenue / 1000.)),
-                false,
-                cx,
-            )
-        )
-}
-```
-
-### Multi-Series Time Chart
-
-```rust
-#[derive(Clone)]
-struct DeviceUsage {
-    date: String,
-    desktop: f64,
-    mobile: f64,
-    tablet: f64,
-}
-
-fn device_usage_chart(data: Vec<DeviceUsage>, cx: &mut Context<Self>) -> impl IntoElement {
-    chart_container(
-        "Device Usage Over Time",
-        AreaChart::new(data)
-            .x(|d| d.date.clone())
-            .y(|d| d.desktop)
-            .stroke(cx.theme().chart_1)
-            .fill(linear_gradient(
-                0.,
-                linear_color_stop(cx.theme().chart_1.opacity(0.4), 1.),
-                linear_color_stop(cx.theme().background.opacity(0.3), 0.),
-            ))
-            .y(|d| d.mobile)
-            .stroke(cx.theme().chart_2)
-            .fill(linear_gradient(
-                0.,
-                linear_color_stop(cx.theme().chart_2.opacity(0.4), 1.),
-                linear_color_stop(cx.theme().background.opacity(0.3), 0.),
-            ))
-            .y(|d| d.tablet)
-            .stroke(cx.theme().chart_3)
-            .fill(linear_gradient(
-                0.,
-                linear_color_stop(cx.theme().chart_3.opacity(0.4), 1.),
-                linear_color_stop(cx.theme().background.opacity(0.3), 0.),
-            ))
-            .tick_margin(3),
-        false,
-        cx,
-    )
-}
-```
-
-### Financial Chart
-
-```rust
-#[derive(Clone)]
-struct StockData {
-    date: String,
-    price: f64,
-    volume: u64,
-}
-
-#[derive(Clone)]
-struct StockOHLC {
-    date: String,
-    open: f64,
-    high: f64,
-    low: f64,
-    close: f64,
-}
-
-fn stock_chart(ohlc_data: Vec<StockOHLC>, price_data: Vec<StockData>, cx: &mut Context<Self>) -> impl IntoElement {
-    v_flex()
-        .gap_4()
-        .child(
-            chart_container(
-                "Stock Price - Candlestick",
-                CandlestickChart::new(ohlc_data.clone())
-                    .x(|d| d.date.clone())
-                    .open(|d| d.open)
-                    .high(|d| d.high)
-                    .low(|d| d.low)
-                    .close(|d| d.close)
-                    .tick_margin(3),
-                false,
-                cx,
-            )
-        )
-        .child(
-            chart_container(
-                "Stock Price - Line",
-                LineChart::new(price_data.clone())
-                    .x(|d| d.date.clone())
-                    .y(|d| d.price)
-                    .stroke(cx.theme().chart_1)
-                    .linear()
-                    .tick_margin(5),
-                false,
-                cx,
-            )
-        )
-        .child(
-            chart_container(
-                "Trading Volume",
-                BarChart::new(price_data)
-                    .band(|d| d.date.clone())
-                    .value(|d| d.volume as f64)
-                    .fill(|d, _, _, _| {
-                        if d.volume > 1000000 {
-                            cx.theme().chart_1
-                        } else {
-                            cx.theme().muted_foreground.opacity(0.6)
-                        }
-                    })
-                    .tick_margin(5),
-                false,
-                cx,
-            )
-        )
-}
-```
-
 ## Customization Options
 
 ### Color Schemes
@@ -1290,3 +1279,13 @@ impl LiveChart {
 [PieChart]: https://docs.rs/gpui-component/latest/gpui_component/chart/struct.PieChart.html
 [RadarChart]: https://docs.rs/gpui-component/latest/gpui_component/chart/struct.RadarChart.html
 [CandlestickChart]: https://docs.rs/gpui-component/latest/gpui_component/chart/struct.CandlestickChart.html
+
+## API Reference
+
+- [LineChart]
+- [BarChart]
+- [AreaChart]
+- [PieChart]
+- [RadarChart]
+- [CandlestickChart]
+- [SankeyChart]

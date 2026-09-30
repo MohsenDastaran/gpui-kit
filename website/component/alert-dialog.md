@@ -24,83 +24,50 @@ use gpui_kit::component::WindowExt;
 ```
 
 ## Usage
-
-### Setup Application Root View
+### Default
 
 Like Dialog, you need to set up your application's root view to render the dialog layer. See [Dialog documentation](./dialog.md#setup-application-root-view) for details.
 
-### Basic AlertDialog (Declarative API)
+### Delete file
 
-Create a fully declarative AlertDialog using `trigger` and `content`:
+Using imperative API:
 
 ```rust
-use gpui_kit::component::dialog::{AlertDialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter};
-
-AlertDialog::new(cx)
-    .trigger(
-        Button::new("show-alert")
-            .outline()
-            .label("Show Alert")
-    )
-    .content(|content, _, cx| {
-        content
-            .child(
-                DialogHeader::new()
-                    .child(DialogTitle::new().child("Are you absolutely sure?"))
-                    .child(DialogDescription::new().child(
-                        "This action cannot be undone. \
-                        This will permanently delete your account from our servers."
-                    ))
-            )
-            .child(
-                DialogFooter::new()
-                    .child(
-                        Button::new("cancel")
-                            .outline()
-                            .label("Cancel")
-                            .on_click(|_, window, cx| {
-                                window.close_dialog(cx);
-                            })
-                    )
-                    .child(
-                        Button::new("ok")
-                            .primary()
-                            .label("Continue")
-                            .on_click(|_, window, cx| {
-                                window.push_notification("Confirmed", cx);
-                                window.close_dialog(cx);
-                            })
-                    )
-            )
+Button::new("delete")
+    .danger()
+    .label("Delete")
+    .on_click(|_, window, cx| {
+        window.open_alert_dialog(cx, |alert, _, _| {
+            alert
+                .title("Delete File?")
+                .description("This action cannot be undone.")
+                .confirm()
+                .ok_text("Delete")
+                .ok_variant(ButtonVariant::Danger)
+                .on_ok(|_, window, cx| {
+                    // Perform delete operation
+                    window.push_notification("File deleted", cx);
+                    true
+                })
+        });
     })
 ```
 
-### Using DialogAction and DialogClose
-
-`DialogAction` and `DialogClose` are wrapper components that simplify button click handling by automatically triggering the appropriate actions:
-
-- **DialogClose**: Wraps a button to trigger the `Cancel` action, invoking `on_cancel` callback
-- **DialogAction**: Wraps a button to trigger the `Confirm` action, invoking `on_ok` callback
-
-These components eliminate the need to manually call `window.close_dialog(cx)`:
+Or using declarative API with DialogAction/DialogClose:
 
 ```rust
 AlertDialog::new(cx)
-    .trigger(Button::new("show-alert").outline().label("Show Alert"))
+    .trigger(Button::new("delete").danger().label("Delete"))
     .on_ok(|_, window, cx| {
-        window.push_notification("You confirmed!", cx);
-        true  // Return true to close dialog
-    })
-    .on_cancel(|_, window, cx| {
-        window.push_notification("You cancelled!", cx);
+        window.push_notification("File deleted", cx);
         true
     })
     .content(|content, _, cx| {
         content
             .child(
                 DialogHeader::new()
-                    .child(DialogTitle::new().child("Confirm Action"))
-                    .child(DialogDescription::new().child("Do you want to proceed?"))
+                    .child(DialogTitle::new().child("Delete File?"))
+                    .child(DialogDescription::new().child("This action cannot be undone."))
             )
             .child(
                 DialogFooter::new()
@@ -111,80 +78,14 @@ AlertDialog::new(cx)
                     )
                     .child(
                         DialogAction::new().child(
-                            Button::new("ok").primary().label("Confirm")
+                            Button::new("delete-confirm").danger().label("Delete")
                         )
                     )
             )
     })
 ```
 
-**Benefits:**
-- No need to manually close the dialog
-- Automatically connects to `on_ok` and `on_cancel` callbacks
-- Cleaner, more declarative code
-- Supports returning `false` from callbacks to prevent closing
-
-### Basic AlertDialog (Imperative API)
-
-Open a dialog imperatively using `WindowExt::open_alert_dialog`:
-
-```rust
-window.open_alert_dialog(cx, |alert, _, _| {
-    alert
-        .title("Delete File")
-        .description("Are you sure you want to delete this file? This action cannot be undone.")
-        .show_cancel(true)
-        .on_ok(|_, window, cx| {
-            window.push_notification("File deleted", cx);
-            true // Return true to close dialog
-        })
-})
-```
-
-### Custom Buttons
-
-Set the button text and variant directly on the dialog:
-
-```rust
-use gpui_kit::component::button::ButtonVariant;
-
-window.open_alert_dialog(cx, |alert, _, _| {
-    alert
-        .title("Delete Account")
-        .description("This will permanently delete your account and all associated data.")
-        .confirm()
-        .ok_text("Delete")
-        .ok_variant(ButtonVariant::Danger)
-        .cancel_text("Keep")
-        .on_ok(|_, window, cx| {
-            window.push_notification("Account deleted", cx);
-            true
-        })
-})
-```
-
-`button_props` takes the same properties as one value, for a configuration you
-want to build up or pass around. It overrides only the fields the value sets,
-so everything the dialog already carries — the Cancel button `confirm` asked
-for, a callback an earlier `on_ok` installed — survives, whatever the call
-order:
-
-```rust
-use gpui_kit::component::dialog::DialogButtonProps;
-
-window.open_alert_dialog(cx, move |alert, _, _| {
-    alert
-        .title("Delete Account")
-        .confirm()
-        .button_props(
-            DialogButtonProps::default()
-                .ok_text("Delete")
-                .ok_variant(ButtonVariant::Danger)
-        )
-})
-```
-
-### AlertDialog with Icon
+### Icon
 
 Using icon in declarative API:
 
@@ -245,7 +146,7 @@ window.open_alert_dialog(cx, |alert, _, cx| {
 })
 ```
 
-### Destructive Action Confirmation
+### Destructive
 
 ```rust
 AlertDialog::new(cx)
@@ -289,7 +190,96 @@ AlertDialog::new(cx)
     })
 ```
 
-### Custom Width
+### Without title
+
+Create a fully declarative AlertDialog using `trigger` and `content`:
+
+```rust
+use gpui_kit::component::dialog::{AlertDialog, DialogHeader, DialogTitle, DialogDescription, DialogFooter};
+
+AlertDialog::new(cx)
+    .trigger(
+        Button::new("show-alert")
+            .outline()
+            .label("Show Alert")
+    )
+    .content(|content, _, cx| {
+        content
+            .child(
+                DialogHeader::new()
+                    .child(DialogTitle::new().child("Are you absolutely sure?"))
+                    .child(DialogDescription::new().child(
+                        "This action cannot be undone. \
+                        This will permanently delete your account from our servers."
+                    ))
+            )
+            .child(
+                DialogFooter::new()
+                    .child(
+                        Button::new("cancel")
+                            .outline()
+                            .label("Cancel")
+                            .on_click(|_, window, cx| {
+                                window.close_dialog(cx);
+                            })
+                    )
+                    .child(
+                        Button::new("ok")
+                            .primary()
+                            .label("Continue")
+                            .on_click(|_, window, cx| {
+                                window.push_notification("Confirmed", cx);
+                                window.close_dialog(cx);
+                            })
+                    )
+            )
+    })
+```
+
+### Custom footer
+
+Set the button text and variant directly on the dialog:
+
+```rust
+use gpui_kit::component::button::ButtonVariant;
+
+window.open_alert_dialog(cx, |alert, _, _| {
+    alert
+        .title("Delete Account")
+        .description("This will permanently delete your account and all associated data.")
+        .confirm()
+        .ok_text("Delete")
+        .ok_variant(ButtonVariant::Danger)
+        .cancel_text("Keep")
+        .on_ok(|_, window, cx| {
+            window.push_notification("Account deleted", cx);
+            true
+        })
+})
+```
+
+`button_props` takes the same properties as one value, for a configuration you
+want to build up or pass around. It overrides only the fields the value sets,
+so everything the dialog already carries — the Cancel button `confirm` asked
+for, a callback an earlier `on_ok` installed — survives, whatever the call
+order:
+
+```rust
+use gpui_kit::component::dialog::DialogButtonProps;
+
+window.open_alert_dialog(cx, move |alert, _, _| {
+    alert
+        .title("Delete Account")
+        .confirm()
+        .button_props(
+            DialogButtonProps::default()
+                .ok_text("Delete")
+                .ok_variant(ButtonVariant::Danger)
+        )
+})
+```
+
+### Custom content
 
 ```rust
 AlertDialog::new(cx)
@@ -300,7 +290,73 @@ AlertDialog::new(cx)
     })
 ```
 
-### Controlling Dialog Close Behavior
+### Notice
+
+`DialogAction` and `DialogClose` are wrapper components that simplify button click handling by automatically triggering the appropriate actions:
+
+- **DialogClose**: Wraps a button to trigger the `Cancel` action, invoking `on_cancel` callback
+- **DialogAction**: Wraps a button to trigger the `Confirm` action, invoking `on_ok` callback
+
+These components eliminate the need to manually call `window.close_dialog(cx)`:
+
+```rust
+AlertDialog::new(cx)
+    .trigger(Button::new("show-alert").outline().label("Show Alert"))
+    .on_ok(|_, window, cx| {
+        window.push_notification("You confirmed!", cx);
+        true  // Return true to close dialog
+    })
+    .on_cancel(|_, window, cx| {
+        window.push_notification("You cancelled!", cx);
+        true
+    })
+    .content(|content, _, cx| {
+        content
+            .child(
+                DialogHeader::new()
+                    .child(DialogTitle::new().child("Confirm Action"))
+                    .child(DialogDescription::new().child("Do you want to proceed?"))
+            )
+            .child(
+                DialogFooter::new()
+                    .child(
+                        DialogClose::new().child(
+                            Button::new("cancel").outline().label("Cancel")
+                        )
+                    )
+                    .child(
+                        DialogAction::new().child(
+                            Button::new("ok").primary().label("Confirm")
+                        )
+                    )
+            )
+    })
+```
+
+**Benefits:**
+- No need to manually close the dialog
+- Automatically connects to `on_ok` and `on_cancel` callbacks
+- Cleaner, more declarative code
+- Supports returning `false` from callbacks to prevent closing
+
+### Confirm
+
+Open a dialog imperatively using `WindowExt::open_alert_dialog`:
+
+```rust
+window.open_alert_dialog(cx, |alert, _, _| {
+    alert
+        .title("Delete File")
+        .description("Are you sure you want to delete this file? This action cannot be undone.")
+        .show_cancel(true)
+        .on_ok(|_, window, cx| {
+            window.push_notification("File deleted", cx);
+            true // Return true to close dialog
+        })
+})
+```
+
+### Prevent close
 
 #### Allow Overlay Click to Close
 
@@ -371,141 +427,6 @@ window.open_alert_dialog(cx, |alert, _, _| {
             window.push_notification("Dialog closed", cx);
         })
 })
-```
-
-## API Reference
-
-### AlertDialog
-
-| Method                   | Description                                                   |
-| ------------------------ | ------------------------------------------------------------- |
-| `new(cx)`                | Create a new AlertDialog                                      |
-| `trigger(element)`       | Set trigger element that opens the dialog when clicked        |
-| `content(builder)`       | Set dialog content using a builder function (declarative API) |
-| `title(title)`           | Set dialog title (imperative API)                             |
-| `description(desc)`      | Set dialog description (imperative API)                       |
-| `icon(icon)`             | Set dialog icon (imperative API)                              |
-| `confirm()`              | Show OK and Cancel buttons                                    |
-| `ok_text(text)`          | Set OK button text, default "OK"                              |
-| `ok_variant(variant)`    | Set OK button variant, default `Primary`                      |
-| `cancel_text(text)`      | Set cancel button text, default "Cancel"                      |
-| `cancel_variant(variant)`| Set cancel button variant                                     |
-| `button_props(props)`    | Override the button properties the value sets, keep the rest  |
-| `show_cancel(bool)`      | Show/hide cancel button, default `false`                      |
-| `width(px)`              | Set dialog width, default `420px`                             |
-| `overlay_closable(bool)` | Allow clicking overlay to close, default `false`              |
-| `close_button(bool)`     | Show/hide close button, default `false`                       |
-| `keyboard(bool)`         | Support ESC key to close, default `true`                      |
-| `on_ok(callback)`        | Set OK button callback, return `true` to close dialog         |
-| `on_cancel(callback)`    | Set cancel button callback, return `true` to close dialog     |
-| `on_close(callback)`     | Set callback after dialog closes                              |
-
-### DialogButtonProps
-
-Every property is unset until a builder sets it, and an unset property keeps
-whatever the dialog already carries.
-
-| Method                    | Description                              |
-| ------------------------- | ---------------------------------------- |
-| `ok_text(text)`           | Set OK button text, default "OK"         |
-| `cancel_text(text)`       | Set cancel button text, default "Cancel" |
-| `ok_variant(variant)`     | Set OK button variant                    |
-| `cancel_variant(variant)` | Set cancel button variant                |
-| `show_cancel(bool)`       | Show/hide cancel button                  |
-| `on_ok(callback)`         | Set OK callback                          |
-| `on_cancel(callback)`     | Set cancel callback                      |
-
-### DialogAction
-
-A wrapper component that automatically triggers the `Confirm` action when its child element is clicked. This invokes the `on_ok` callback set on the AlertDialog.
-
-**Usage:**
-```rust
-DialogAction::new().child(
-    Button::new("ok").primary().label("Confirm")
-)
-```
-
-**Behavior:**
-- Dispatches `Confirm` action on click
-- Invokes the `on_ok` callback
-- Dialog closes if callback returns `true`
-- Dialog stays open if callback returns `false`
-
-### DialogClose
-
-A wrapper component that automatically triggers the `Cancel` action when its child element is clicked. This invokes the `on_cancel` callback set on the AlertDialog.
-
-**Usage:**
-```rust
-DialogClose::new().child(
-    Button::new("cancel").outline().label("Cancel")
-)
-```
-
-**Behavior:**
-- Dispatches `Cancel` action on click
-- Invokes the `on_cancel` callback
-- Dialog closes if callback returns `true` (or if no callback is set)
-- Dialog stays open if callback returns `false`
-
-## Examples
-
-### Delete Confirmation
-
-Using imperative API:
-
-```rust
-Button::new("delete")
-    .danger()
-    .label("Delete")
-    .on_click(|_, window, cx| {
-        window.open_alert_dialog(cx, |alert, _, _| {
-            alert
-                .title("Delete File?")
-                .description("This action cannot be undone.")
-                .confirm()
-                .ok_text("Delete")
-                .ok_variant(ButtonVariant::Danger)
-                .on_ok(|_, window, cx| {
-                    // Perform delete operation
-                    window.push_notification("File deleted", cx);
-                    true
-                })
-        });
-    })
-```
-
-Or using declarative API with DialogAction/DialogClose:
-
-```rust
-AlertDialog::new(cx)
-    .trigger(Button::new("delete").danger().label("Delete"))
-    .on_ok(|_, window, cx| {
-        window.push_notification("File deleted", cx);
-        true
-    })
-    .content(|content, _, cx| {
-        content
-            .child(
-                DialogHeader::new()
-                    .child(DialogTitle::new().child("Delete File?"))
-                    .child(DialogDescription::new().child("This action cannot be undone."))
-            )
-            .child(
-                DialogFooter::new()
-                    .child(
-                        DialogClose::new().child(
-                            Button::new("cancel").outline().label("Cancel")
-                        )
-                    )
-                    .child(
-                        DialogAction::new().child(
-                            Button::new("delete-confirm").danger().label("Delete")
-                        )
-                    )
-            )
-    })
 ```
 
 ### Session Timeout
@@ -608,3 +529,79 @@ AlertDialog::new(cx)
 [DialogFooter]: https://docs.rs/gpui-component/latest/gpui_component/dialog/struct.DialogFooter.html
 [DialogAction]: https://docs.rs/gpui-component/latest/gpui_component/dialog/struct.DialogAction.html
 [DialogClose]: https://docs.rs/gpui-component/latest/gpui_component/dialog/struct.DialogClose.html
+
+## API Reference
+
+### AlertDialog
+
+| Method                   | Description                                                   |
+| ------------------------ | ------------------------------------------------------------- |
+| `new(cx)`                | Create a new AlertDialog                                      |
+| `trigger(element)`       | Set trigger element that opens the dialog when clicked        |
+| `content(builder)`       | Set dialog content using a builder function (declarative API) |
+| `title(title)`           | Set dialog title (imperative API)                             |
+| `description(desc)`      | Set dialog description (imperative API)                       |
+| `icon(icon)`             | Set dialog icon (imperative API)                              |
+| `confirm()`              | Show OK and Cancel buttons                                    |
+| `ok_text(text)`          | Set OK button text, default "OK"                              |
+| `ok_variant(variant)`    | Set OK button variant, default `Primary`                      |
+| `cancel_text(text)`      | Set cancel button text, default "Cancel"                      |
+| `cancel_variant(variant)`| Set cancel button variant                                     |
+| `button_props(props)`    | Override the button properties the value sets, keep the rest  |
+| `show_cancel(bool)`      | Show/hide cancel button, default `false`                      |
+| `width(px)`              | Set dialog width, default `420px`                             |
+| `overlay_closable(bool)` | Allow clicking overlay to close, default `false`              |
+| `close_button(bool)`     | Show/hide close button, default `false`                       |
+| `keyboard(bool)`         | Support ESC key to close, default `true`                      |
+| `on_ok(callback)`        | Set OK button callback, return `true` to close dialog         |
+| `on_cancel(callback)`    | Set cancel button callback, return `true` to close dialog     |
+| `on_close(callback)`     | Set callback after dialog closes                              |
+
+### DialogButtonProps
+
+Every property is unset until a builder sets it, and an unset property keeps
+whatever the dialog already carries.
+
+| Method                    | Description                              |
+| ------------------------- | ---------------------------------------- |
+| `ok_text(text)`           | Set OK button text, default "OK"         |
+| `cancel_text(text)`       | Set cancel button text, default "Cancel" |
+| `ok_variant(variant)`     | Set OK button variant                    |
+| `cancel_variant(variant)` | Set cancel button variant                |
+| `show_cancel(bool)`       | Show/hide cancel button                  |
+| `on_ok(callback)`         | Set OK callback                          |
+| `on_cancel(callback)`     | Set cancel callback                      |
+
+### DialogAction
+
+A wrapper component that automatically triggers the `Confirm` action when its child element is clicked. This invokes the `on_ok` callback set on the AlertDialog.
+
+**Usage:**
+```rust
+DialogAction::new().child(
+    Button::new("ok").primary().label("Confirm")
+)
+```
+
+**Behavior:**
+- Dispatches `Confirm` action on click
+- Invokes the `on_ok` callback
+- Dialog closes if callback returns `true`
+- Dialog stays open if callback returns `false`
+
+### DialogClose
+
+A wrapper component that automatically triggers the `Cancel` action when its child element is clicked. This invokes the `on_cancel` callback set on the AlertDialog.
+
+**Usage:**
+```rust
+DialogClose::new().child(
+    Button::new("cancel").outline().label("Cancel")
+)
+```
+
+**Behavior:**
+- Dispatches `Cancel` action on click
+- Invokes the `on_cancel` callback
+- Dialog closes if callback returns `true` (or if no callback is set)
+- Dialog stays open if callback returns `false`

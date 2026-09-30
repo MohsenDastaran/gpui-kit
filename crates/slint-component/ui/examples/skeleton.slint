@@ -8,10 +8,19 @@ export component SkeletonExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Loading"; variant: GroupBoxVariant.outline;
-        Skeleton { height: 16px; }
-        Skeleton { height: 16px; width: 70%; }
-        Skeleton { height: 80px; }
+    GroupBox {
+        title: "Loading";
+        variant: GroupBoxVariant.outline;
+        Skeleton {
+            height: 16px;
+        }
+        Skeleton {
+            height: 16px;
+            width: 70%;
+        }
+        Skeleton {
+            height: 80px;
+        }
     }
 
 }

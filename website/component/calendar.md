@@ -19,15 +19,14 @@ use gpui_kit::component::{
 ```
 
 ## Usage
-
-### Basic Calendar
+### Calendar
 
 ```rust
 let state = cx.new(|cx| CalendarState::new(window, cx));
 Calendar::new(&state)
 ```
 
-### Calendar with Initial Date
+### Two columns
 
 ```rust
 use chrono::Local;
@@ -41,7 +40,7 @@ let state = cx.new(|cx| {
 Calendar::new(&state)
 ```
 
-### Date Range Calendar
+### Three columns
 
 ```rust
 use chrono::{Local, Days};
@@ -79,6 +78,76 @@ Calendar::new(&state).large()
 Calendar::new(&state) // medium (default)
 Calendar::new(&state).small()
 ```
+
+### Event Planning Calendar
+
+```rust
+let event_calendar = cx.new(|cx| {
+    let mut state = CalendarState::new(window, cx);
+    // Disable past dates and weekends
+    state = state.disabled_matcher(Matcher::custom(|date| {
+        let now = Local::now().naive_local().date();
+        *date < now || matches!(date.weekday(), Weekday::Sat | Weekday::Sun)
+    }));
+    state
+});
+
+Calendar::new(&event_calendar)
+    .large() // Easier to see and interact with
+```
+
+### Vacation Booking Calendar
+
+```rust
+let vacation_calendar = cx.new(|cx| {
+    let mut state = CalendarState::new(window, cx);
+    state.set_date(Date::Range(None, None), window, cx); // Range mode
+    state
+});
+
+Calendar::new(&vacation_calendar)
+    .number_of_months(2) // Show 2 months for range selection
+```
+
+### Report Date Range Selector
+
+```rust
+let report_calendar = cx.new(|cx| {
+    let mut state = CalendarState::new(window, cx)
+        .year_range((2020, 2025)); // Limit to business years
+
+    state.set_date(Date::Range(None, None), window, cx);
+    state
+});
+
+Calendar::new(&report_calendar)
+    .number_of_months(3)
+    .small() // Compact for dashboard use
+```
+
+### Availability Calendar
+
+```rust
+use std::collections::HashSet;
+
+let unavailable_dates: HashSet<NaiveDate> = get_unavailable_dates();
+
+let availability_calendar = cx.new(|cx| {
+    CalendarState::new(window, cx)
+        .disabled_matcher(Matcher::custom(move |date| {
+            unavailable_dates.contains(date)
+        }))
+});
+
+Calendar::new(&availability_calendar)
+    .number_of_months(2)
+```
+
+The Calendar component provides a foundation for any date-related UI requirements, from simple date pickers to complex scheduling interfaces.
+
+[Calendar]: https://docs.rs/gpui-component/latest/gpui_component/calendar/struct.Calendar.html
+[CalendarState]: https://docs.rs/gpui-component/latest/gpui_component/calendar/struct.CalendarState.html
+[RangeMatcher]: https://docs.rs/gpui-component/latest/gpui_component/calendar/struct.RangeMatcher.html
 
 ## Date Restrictions
 
@@ -304,75 +373,3 @@ Calendar::new(&calendar)
 - [Calendar]
 - [CalendarState]
 - [RangeMatcher]
-
-## Examples
-
-### Event Planning Calendar
-
-```rust
-let event_calendar = cx.new(|cx| {
-    let mut state = CalendarState::new(window, cx);
-    // Disable past dates and weekends
-    state = state.disabled_matcher(Matcher::custom(|date| {
-        let now = Local::now().naive_local().date();
-        *date < now || matches!(date.weekday(), Weekday::Sat | Weekday::Sun)
-    }));
-    state
-});
-
-Calendar::new(&event_calendar)
-    .large() // Easier to see and interact with
-```
-
-### Vacation Booking Calendar
-
-```rust
-let vacation_calendar = cx.new(|cx| {
-    let mut state = CalendarState::new(window, cx);
-    state.set_date(Date::Range(None, None), window, cx); // Range mode
-    state
-});
-
-Calendar::new(&vacation_calendar)
-    .number_of_months(2) // Show 2 months for range selection
-```
-
-### Report Date Range Selector
-
-```rust
-let report_calendar = cx.new(|cx| {
-    let mut state = CalendarState::new(window, cx)
-        .year_range((2020, 2025)); // Limit to business years
-
-    state.set_date(Date::Range(None, None), window, cx);
-    state
-});
-
-Calendar::new(&report_calendar)
-    .number_of_months(3)
-    .small() // Compact for dashboard use
-```
-
-### Availability Calendar
-
-```rust
-use std::collections::HashSet;
-
-let unavailable_dates: HashSet<NaiveDate> = get_unavailable_dates();
-
-let availability_calendar = cx.new(|cx| {
-    CalendarState::new(window, cx)
-        .disabled_matcher(Matcher::custom(move |date| {
-            unavailable_dates.contains(date)
-        }))
-});
-
-Calendar::new(&availability_calendar)
-    .number_of_months(2)
-```
-
-The Calendar component provides a foundation for any date-related UI requirements, from simple date pickers to complex scheduling interfaces.
-
-[Calendar]: https://docs.rs/gpui-component/latest/gpui_component/calendar/struct.Calendar.html
-[CalendarState]: https://docs.rs/gpui-component/latest/gpui_component/calendar/struct.CalendarState.html
-[RangeMatcher]: https://docs.rs/gpui-component/latest/gpui_component/calendar/struct.RangeMatcher.html

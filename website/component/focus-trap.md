@@ -16,7 +16,6 @@ use gpui_kit::component::FocusTrapElement;
 ```
 
 ## Usage
-
 ### Basic Focus Trap
 
 ```rust
@@ -99,35 +98,6 @@ window.open_sheet(cx, |sheet, _, _| {
     // Focus automatically cycles within the sheet panel
 })
 ```
-
-## How It Works
-
-The focus trap system consists of three key components:
-
-1. **FocusTrapContainer**: Wraps any container element and registers it as a focus trap area
-2. **FocusTrapManager**: Global state manager that tracks all active focus traps
-3. **Root Integration**: The [Root] view intercepts Tab/Shift-Tab events and enforces focus cycling
-
-When Tab or Shift-Tab is pressed:
-
-1. [Root] detects if the currently focused element is inside a focus trap
-2. If yes, it calculates the next focusable element within the same trap
-3. If focus would escape the trap, it cycles back to the beginning (Tab) or end (Shift-Tab)
-4. This prevents focus from leaving the trapped container
-
-### Built-in Focus Trap Components
-
-The following components have focus trap functionality built-in and don't require manual `focus_trap()` calls:
-
-- **[Dialog]** - Modal dialogs automatically trap focus (see `dialog.rs:437`)
-- **[Sheet]** - Side panels automatically trap focus (see `sheet.rs:197`)
-
-## API Reference
-
-- [FocusTrapElement](https://docs.rs/gpui-component/latest/gpui_component/trait.FocusTrapElement.html)
-- [FocusTrapContainer](https://docs.rs/gpui-component/latest/gpui_component/struct.FocusTrapContainer.html)
-
-## Examples
 
 ### Custom Modal with Focus Trap
 
@@ -235,6 +205,28 @@ impl Render for ModalView {
 }
 ```
 
+## How It Works
+
+The focus trap system consists of three key components:
+
+1. **FocusTrapContainer**: Wraps any container element and registers it as a focus trap area
+2. **FocusTrapManager**: Global state manager that tracks all active focus traps
+3. **Root Integration**: The [Root] view intercepts Tab/Shift-Tab events and enforces focus cycling
+
+When Tab or Shift-Tab is pressed:
+
+1. [Root] detects if the currently focused element is inside a focus trap
+2. If yes, it calculates the next focusable element within the same trap
+3. If focus would escape the trap, it cycles back to the beginning (Tab) or end (Shift-Tab)
+4. This prevents focus from leaving the trapped container
+
+### Built-in Focus Trap Components
+
+The following components have focus trap functionality built-in and don't require manual `focus_trap()` calls:
+
+- **[Dialog]** - Modal dialogs automatically trap focus (see `dialog.rs:437`)
+- **[Sheet]** - Side panels automatically trap focus (see `sheet.rs:197`)
+
 ## Accessibility Notes
 
 - Focus trapping is essential for modal dialogs and overlays to meet WCAG accessibility guidelines
@@ -254,3 +246,8 @@ impl Render for ModalView {
 [FocusTrapElement]: https://docs.rs/gpui-component/latest/gpui_component/trait.FocusTrapElement.html
 [Dialog]: ./dialog.md
 [Sheet]: ./sheet.md
+
+## API Reference
+
+- [FocusTrapElement](https://docs.rs/gpui-component/latest/gpui_component/trait.FocusTrapElement.html)
+- [FocusTrapContainer](https://docs.rs/gpui-component/latest/gpui_component/struct.FocusTrapContainer.html)

@@ -28,8 +28,7 @@ export component InputExample inherits VerticalLayout {
                 horizontal-stretch: 1;
                 text: "John Doe";
             }
-        
-}
+        }
         Text {
             text: name.text == "" ? "Type to see the value." : "Hello, \{name.text}!";
             color: Theme.muted-foreground;
@@ -72,8 +71,7 @@ export component InputExample inherits VerticalLayout {
                 suffix-text: "USD";
                 horizontal-alignment: TextHorizontalAlignment.right;
             }
-        
-}
+        }
     }
 
     GroupBox {
@@ -99,8 +97,7 @@ export component InputExample inherits VerticalLayout {
                 text: "Press Escape";
                 clean-on-escape: true;
             }
-        
-}
+        }
     }
 
     GroupBox {
@@ -113,24 +110,42 @@ export component InputExample inherits VerticalLayout {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 1;
-                 alignment: center; Input { placeholder: "Large"; size: ControlSize.large; } }
+                alignment: center;
+                Input {
+                    placeholder: "Large";
+                    size: ControlSize.large;
+                }
+            }
             VerticalLayout {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 1;
-                 alignment: center; Input { placeholder: "Medium"; } }
+                alignment: center;
+                Input {
+                    placeholder: "Medium";
+                }
+            }
             VerticalLayout {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 1;
-                 alignment: center; Input { placeholder: "Small"; size: ControlSize.small; } }
+                alignment: center;
+                Input {
+                    placeholder: "Small";
+                    size: ControlSize.small;
+                }
+            }
             VerticalLayout {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
                 horizontal-stretch: 1;
-                 alignment: center; Input { placeholder: "Extra small"; size: ControlSize.xsmall; } }
-        
-}
+                alignment: center;
+                Input {
+                    placeholder: "Extra small";
+                    size: ControlSize.xsmall;
+                }
+            }
+        }
     }
 
     GroupBox {
@@ -160,7 +175,6 @@ export component InputExample inherits VerticalLayout {
                 text: "not-an-email";
                 invalid: true;
             }
-        
-}
+        }
     }
 }

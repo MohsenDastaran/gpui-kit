@@ -185,8 +185,6 @@ resizable_panel()
     .child("Fixed Panel")
 ```
 
-## Examples
-
 ### File Explorer Layout
 
 ```rust

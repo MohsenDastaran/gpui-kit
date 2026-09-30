@@ -17,8 +17,7 @@ use gpui_kit::component::table::{
 ```
 
 ## Usage
-
-### Basic Table
+### Basic table
 
 ```rust
 Table::new()
@@ -41,7 +40,7 @@ Table::new()
     .child(TableCaption::new().child("A list of recent invoices."))
 ```
 
-### With Footer
+### Striped, bordered and sizes
 
 ```rust
 Table::new()
@@ -65,7 +64,7 @@ Table::new()
     ))
 ```
 
-### Column Widths
+### Column widths
 
 Use `.w()` on `TableHead` and `TableCell` to set fixed column widths:
 
@@ -127,6 +126,23 @@ TableCell::new()
 | `TableCell` | Data cell with alignment and width options |
 | `TableCaption` | Caption text below the table |
 
+## Table vs DataTable
+
+| Feature | Table | DataTable |
+|---------|-------|-----------|
+| Virtual scrolling | No | Yes |
+| Column sorting | No | Yes |
+| Column resizing | No | Yes |
+| Column moving | No | Yes |
+| Cell selection | No | Yes |
+| Row selection | No | Yes |
+| Infinite loading | No | Yes |
+| Keyboard navigation | No | Yes |
+| State management | Stateless | TableState |
+| Best for | Small, static data | Large, interactive datasets |
+
+[DataTable]: ./data-table.md
+
 ## API Reference
 
 ### Table
@@ -146,20 +162,3 @@ TableCell::new()
 
 - `new()` - Create a new instance
 - Implements `Styled`, `ParentElement`, `RenderOnce`
-
-## Table vs DataTable
-
-| Feature | Table | DataTable |
-|---------|-------|-----------|
-| Virtual scrolling | No | Yes |
-| Column sorting | No | Yes |
-| Column resizing | No | Yes |
-| Column moving | No | Yes |
-| Cell selection | No | Yes |
-| Row selection | No | Yes |
-| Infinite loading | No | Yes |
-| Keyboard navigation | No | Yes |
-| State management | Stateless | TableState |
-| Best for | Small, static data | Large, interactive datasets |
-
-[DataTable]: ./data-table.md

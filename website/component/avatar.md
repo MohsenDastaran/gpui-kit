@@ -14,8 +14,7 @@ use gpui_kit::component::avatar::{Avatar, AvatarGroup};
 ```
 
 ## Usage
-
-### Basic Avatar
+### Image
 
 You can create an [Avatar] by providing an image source URL and a user name:
 
@@ -25,7 +24,7 @@ Avatar::new()
     .src("https://example.com/avatar.jpg")
 ```
 
-### Avatar with Fallback Text
+### Fallback
 
 When no image source is provided, the Avatar displays user initials with an automatically generated color background:
 
@@ -45,7 +44,7 @@ lightness and chroma, which keeps every avatar at the same visual weight and its
 text above WCAG AA contrast in both the light and dark themes. The outline
 follows the same hue; an Avatar showing an image keeps the neutral border.
 
-### Avatar Placeholder
+### Group
 
 For anonymous users or when no name is provided:
 
@@ -59,6 +58,32 @@ Avatar::new()
 Avatar::new()
     .placeholder(IconName::Building2)
 ```
+
+### Custom shape
+
+```rust
+Avatar::new()
+    .src("https://example.com/avatar.jpg")
+    .with_size(px(100.))
+    .border_3()
+    .border_color(cx.theme().foreground)
+    .shadow_sm()
+    .rounded(px(20.))  // Custom border radius
+```
+
+### Custom style
+
+```rust
+// The avatar automatically generates colors based on the name
+// Different names will get different colors from the color palette
+Avatar::new().name("Alice")    // Gets one color
+Avatar::new().name("Bob")      // Gets a different color
+Avatar::new().name("Charlie")  // Gets another color
+```
+
+[Avatar]: https://docs.rs/gpui-component/latest/gpui_component/avatar/struct.Avatar.html
+[AvatarGroup]: https://docs.rs/gpui-component/latest/gpui_component/avatar/struct.AvatarGroup.html
+[Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
 
 ### Avatar Sizes
 
@@ -84,16 +109,55 @@ Avatar::new()
     .with_size(px(100.))
 ```
 
-### Custom Styling
+### Team Display
 
 ```rust
+use gpui_kit::component::{h_flex, v_flex};
+
+v_flex()
+    .gap_4()
+    .child("Development Team")
+    .child(
+        AvatarGroup::new()
+            .limit(4)
+            .ellipsis()
+            .child(Avatar::new().name("Alice Johnson").src("https://example.com/alice.jpg"))
+            .child(Avatar::new().name("Bob Smith").src("https://example.com/bob.jpg"))
+            .child(Avatar::new().name("Charlie Brown"))
+            .child(Avatar::new().name("Diana Prince"))
+            .child(Avatar::new().name("Eve Wilson"))
+    )
+```
+
+### User Profile Header
+
+```rust
+h_flex()
+    .items_center()
+    .gap_4()
+    .child(
+        Avatar::new()
+            .src("https://example.com/profile.jpg")
+            .name("John Doe")
+            .large()
+            .border_2()
+            .border_color(cx.theme().primary)
+    )
+    .child(
+        v_flex()
+            .child("John Doe")
+            .child("Software Engineer")
+    )
+```
+
+### Anonymous User
+
+```rust
+use gpui_kit::component::IconName;
+
 Avatar::new()
-    .src("https://example.com/avatar.jpg")
-    .with_size(px(100.))
-    .border_3()
-    .border_color(cx.theme().foreground)
-    .shadow_sm()
-    .rounded(px(20.))  // Custom border radius
+    .placeholder(IconName::UserCircle)
+    .medium()
 ```
 
 ## AvatarGroup
@@ -188,70 +252,3 @@ AvatarGroup::new()
 
 - [Avatar]
 - [AvatarGroup]
-
-## Examples
-
-### Team Display
-
-```rust
-use gpui_kit::component::{h_flex, v_flex};
-
-v_flex()
-    .gap_4()
-    .child("Development Team")
-    .child(
-        AvatarGroup::new()
-            .limit(4)
-            .ellipsis()
-            .child(Avatar::new().name("Alice Johnson").src("https://example.com/alice.jpg"))
-            .child(Avatar::new().name("Bob Smith").src("https://example.com/bob.jpg"))
-            .child(Avatar::new().name("Charlie Brown"))
-            .child(Avatar::new().name("Diana Prince"))
-            .child(Avatar::new().name("Eve Wilson"))
-    )
-```
-
-### User Profile Header
-
-```rust
-h_flex()
-    .items_center()
-    .gap_4()
-    .child(
-        Avatar::new()
-            .src("https://example.com/profile.jpg")
-            .name("John Doe")
-            .large()
-            .border_2()
-            .border_color(cx.theme().primary)
-    )
-    .child(
-        v_flex()
-            .child("John Doe")
-            .child("Software Engineer")
-    )
-```
-
-### Anonymous User
-
-```rust
-use gpui_kit::component::IconName;
-
-Avatar::new()
-    .placeholder(IconName::UserCircle)
-    .medium()
-```
-
-### Avatar with Custom Colors
-
-```rust
-// The avatar automatically generates colors based on the name
-// Different names will get different colors from the color palette
-Avatar::new().name("Alice")    // Gets one color
-Avatar::new().name("Bob")      // Gets a different color
-Avatar::new().name("Charlie")  // Gets another color
-```
-
-[Avatar]: https://docs.rs/gpui-component/latest/gpui_component/avatar/struct.Avatar.html
-[AvatarGroup]: https://docs.rs/gpui-component/latest/gpui_component/avatar/struct.AvatarGroup.html
-[Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html

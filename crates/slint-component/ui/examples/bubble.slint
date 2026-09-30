@@ -254,7 +254,9 @@ export component BubbleExample inherits VerticalLayout {
                     icon: "chevrons-up-down";
                     variant: ButtonVariant.ghost;
                     size: ControlSize.small;
-                    clicked => { root.details-open = !root.details-open; }
+                    clicked => {
+                        root.details-open = !root.details-open;
+                    }
                 }
             }
         }

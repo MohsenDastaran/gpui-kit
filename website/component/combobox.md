@@ -31,7 +31,6 @@ use gpui_kit::component::searchable_list::{
 ```
 
 ## Usage
-
 ### Basic Single-Select
 
 ```rust

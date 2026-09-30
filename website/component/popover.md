@@ -14,6 +14,21 @@ use gpui_kit::component::popover::{Popover};
 ```
 
 ## Usage
+### Click
+
+Sometimes you may want to show a popover on right-click, for example, to create a special your ownen context menu. The `mouse_button` method allows you to specify which mouse button triggers the popover.
+
+```rust
+use gpui_kit::MouseButton;
+
+Popover::new("context-menu")
+    .anchor(Anchor::BottomRight)
+    .mouse_button(MouseButton::Right)
+    .trigger(Button::new("right-click").label("Right Click Me").outline())
+    .child("Context Menu")
+    .child(Separator::horizontal())
+    .child("This is a custom context menu.")
+```
 
 ### Basic Popover
 
@@ -153,22 +168,6 @@ Popover::new("complex-popover")
                     .outline()
             )
     })
-```
-
-### Right-Click Popover
-
-Sometimes you may want to show a popover on right-click, for example, to create a special your ownen context menu. The `mouse_button` method allows you to specify which mouse button triggers the popover.
-
-```rust
-use gpui_kit::MouseButton;
-
-Popover::new("context-menu")
-    .anchor(Anchor::BottomRight)
-    .mouse_button(MouseButton::Right)
-    .trigger(Button::new("right-click").label("Right Click Me").outline())
-    .child("Context Menu")
-    .child(Separator::horizontal())
-    .child("This is a custom context menu.")
 ```
 
 ### Dismiss Popover manually

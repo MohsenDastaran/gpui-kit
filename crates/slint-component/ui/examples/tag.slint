@@ -10,30 +10,40 @@ export component TagExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Tags"; variant: GroupBoxVariant.outline;
-        GridLayout { spacing: 8px;
+    GroupBox {
+        title: "Tags";
+        variant: GroupBoxVariant.outline;
+        GridLayout {
+            spacing: 8px;
             Tag {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
-                 text: "Rust"; icon: "code"; }
+                text: "Rust";
+                icon: "code";
+            }
             Tag {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
-                 text: "Draft"; variant: TagVariant.outline; closable: true; }
+                text: "Draft";
+                variant: TagVariant.outline;
+                closable: true;
+            }
             Tag {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 0;
-                 text: "Live"; variant: TagVariant.status; status: Status.success; }
-        
+                text: "Live";
+                variant: TagVariant.status;
+                status: Status.success;
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
 }

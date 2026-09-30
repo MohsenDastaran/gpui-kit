@@ -30,8 +30,7 @@ use gpui_kit::component::table::{
 ```
 
 ## Usage
-
-### Basic Table
+### Invoices
 
 To create a table, you need to implement the `TableDelegate` trait and provide column definitions, and use `TableState` to manage the table state.
 
@@ -455,8 +454,6 @@ DataTable::new(&state)
     .bordered(true)                 // Border around table
     .scrollbar_visible(true, true)  // Vertical, horizontal scrollbars
 ```
-
-## Examples
 
 ### Financial Data Table
 

@@ -31,9 +31,13 @@ export component AvatarExample inherits VerticalLayout {
         VerticalLayout {
             spacing: 12px;
             alignment: start;
-            Avatar { initials: "JL"; }
-            Avatar { }
-            Avatar { icon: "box"; }
+            Avatar {
+                initials: "JL";
+            }
+            Avatar {}
+            Avatar {
+                icon: "box";
+            }
         }
     }
 
@@ -43,20 +47,44 @@ export component AvatarExample inherits VerticalLayout {
             spacing: 20px;
             alignment: start;
             AvatarGroup {
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
             }
             AvatarGroup {
                 limit: 5;
                 ellipsis: true;
                 overflow-count: 11;
                 avatar-size: AvatarSize.medium;
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
-                Avatar { source: root.portrait; horizontal-stretch: 0; }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
+                Avatar {
+                    source: root.portrait;
+                    horizontal-stretch: 0;
+                }
             }
         }
     }

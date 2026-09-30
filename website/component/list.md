@@ -15,7 +15,6 @@ use gpui_kit::component::IndexPath;
 ```
 
 ## Usage
-
 ### Basic List
 
 To create a list, you need to implement the `ListDelegate` trait for your data:
@@ -366,43 +365,6 @@ impl ListDelegate for MyListDelegate {
 }
 ```
 
-## Configuration Options
-
-### List Configuration
-
-```rust
-List::new(&state)
-    .max_h(px(400.))                    // Set maximum height
-    .scrollbar_visible(false)           // Hide scrollbar
-    .paddings(Edges::all(px(8.)))       // Set internal padding
-```
-
-### Scrolling Control
-
-```rust
-// Scroll to specific item
-state.update(cx, |state, cx| {
-    state.scroll_to_item(
-        IndexPath::new(0).section(1),  // Row 0 of section 1
-        ScrollStrategy::Center,
-        window,
-        cx,
-    );
-});
-
-// Scroll to selected item
-state.update(cx, |state, cx| {
-    state.scroll_to_selected_item(window, cx);
-});
-
-// Set selected index without scrolling
-state.update(cx, |state, cx| {
-    state.set_selected_index(Some(IndexPath::new(5)), window, cx);
-});
-```
-
-## Examples
-
 ### File Browser List
 
 ```rust
@@ -490,4 +452,39 @@ impl ListDelegate for ContactListDelegate {
         )
     }
 }
+```
+
+## Configuration Options
+
+### List Configuration
+
+```rust
+List::new(&state)
+    .max_h(px(400.))                    // Set maximum height
+    .scrollbar_visible(false)           // Hide scrollbar
+    .paddings(Edges::all(px(8.)))       // Set internal padding
+```
+
+### Scrolling Control
+
+```rust
+// Scroll to specific item
+state.update(cx, |state, cx| {
+    state.scroll_to_item(
+        IndexPath::new(0).section(1),  // Row 0 of section 1
+        ScrollStrategy::Center,
+        window,
+        cx,
+    );
+});
+
+// Scroll to selected item
+state.update(cx, |state, cx| {
+    state.scroll_to_selected_item(window, cx);
+});
+
+// Set selected index without scrolling
+state.update(cx, |state, cx| {
+    state.set_selected_index(Some(IndexPath::new(5)), window, cx);
+});
 ```

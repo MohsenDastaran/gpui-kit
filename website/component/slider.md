@@ -14,6 +14,57 @@ use gpui_kit::component::slider::{Slider, SliderState, SliderEvent, SliderValue}
 ```
 
 ## Usage
+### Volume
+
+```rust
+struct VolumeControl {
+    volume_slider: Entity<SliderState>,
+    volume: f32,
+}
+
+impl VolumeControl {
+    fn new(cx: &mut Context<Self>) -> Self {
+        let volume_slider = cx.new(|_| {
+            SliderState::new()
+                .min(0.0)
+                .max(100.0)
+                .step(1.0)
+                .default_value(50.0)
+        });
+
+        let subscription = cx.subscribe(&volume_slider, |this, _, event: &SliderEvent, cx| {
+            match event {
+                SliderEvent::Change(value) => {
+                    this.volume = value.start();
+                    this.apply_volume_change();
+                    cx.notify();
+                }
+            }
+        });
+
+        Self {
+            volume_slider,
+            volume: 50.0,
+        }
+    }
+
+    fn apply_volume_change(&self) {
+        // Apply volume change to audio system
+        println!("Volume changed to: {}%", self.volume);
+    }
+}
+
+impl Render for VolumeControl {
+    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
+        h_flex()
+            .items_center()
+            .gap_3()
+            .child("🔊")
+            .child(Slider::new(&self.volume_slider).flex_1())
+            .child(format!("{}%", self.volume as i32))
+    }
+}
+```
 
 ### Basic Slider
 
@@ -217,8 +268,6 @@ The slider component implements `Styled` trait and supports:
 - Border radius
 - Size customization
 
-## Examples
-
 ### Color Picker
 
 ```rust
@@ -295,58 +344,6 @@ impl Render for ColorPicker {
                     .child(Slider::new(&self.saturation_slider).vertical().h(px(120.)))
             )
             // ... other sliders
-    }
-}
-```
-
-### Volume Control
-
-```rust
-struct VolumeControl {
-    volume_slider: Entity<SliderState>,
-    volume: f32,
-}
-
-impl VolumeControl {
-    fn new(cx: &mut Context<Self>) -> Self {
-        let volume_slider = cx.new(|_| {
-            SliderState::new()
-                .min(0.0)
-                .max(100.0)
-                .step(1.0)
-                .default_value(50.0)
-        });
-
-        let subscription = cx.subscribe(&volume_slider, |this, _, event: &SliderEvent, cx| {
-            match event {
-                SliderEvent::Change(value) => {
-                    this.volume = value.start();
-                    this.apply_volume_change();
-                    cx.notify();
-                }
-            }
-        });
-
-        Self {
-            volume_slider,
-            volume: 50.0,
-        }
-    }
-
-    fn apply_volume_change(&self) {
-        // Apply volume change to audio system
-        println!("Volume changed to: {}%", self.volume);
-    }
-}
-
-impl Render for VolumeControl {
-    fn render(&mut self, _: &mut Window, _: &mut Context<Self>) -> impl IntoElement {
-        h_flex()
-            .items_center()
-            .gap_3()
-            .child("🔊")
-            .child(Slider::new(&self.volume_slider).flex_1())
-            .child(format!("{}%", self.volume as i32))
     }
 }
 ```

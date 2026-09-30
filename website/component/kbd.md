@@ -15,18 +15,7 @@ use gpui_kit::Keystroke;
 ```
 
 ## Usage
-
-### Basic Keyboard Shortcut
-
-```rust
-// Create from a keystroke
-let kbd = Kbd::new(Keystroke::parse("cmd-shift-p").unwrap());
-
-// Or convert directly from keystroke
-let kbd: Kbd = Keystroke::parse("escape").unwrap().into();
-```
-
-### Common Shortcuts
+### Shortcuts
 
 ```rust
 // Command palette
@@ -43,6 +32,16 @@ Kbd::new(Keystroke::parse("cmd-+").unwrap())  // Zoom in
 Kbd::new(Keystroke::parse("escape").unwrap())
 Kbd::new(Keystroke::parse("enter").unwrap())
 Kbd::new(Keystroke::parse("backspace").unwrap())
+```
+
+### Basic Keyboard Shortcut
+
+```rust
+// Create from a keystroke
+let kbd = Kbd::new(Keystroke::parse("cmd-shift-p").unwrap());
+
+// Or convert directly from keystroke
+let kbd: Kbd = Keystroke::parse("escape").unwrap().into();
 ```
 
 ### Multiple Modifiers
@@ -100,37 +99,6 @@ if let Some(kbd) = Kbd::binding_for_action_in(&MyAction {}, &focus_handle, windo
     // Display shortcut for focused element
 }
 ```
-
-## Platform Differences
-
-The Kbd component automatically formats shortcuts according to platform conventions:
-
-### macOS
-
-- Uses symbols: ⌃ ⌥ ⇧ ⌘
-- No separators between modifiers
-- Order: Control, Option, Shift, Command
-- Special keys: ⌫ (backspace), ⎋ (escape), ⏎ (enter), ← → ↑ ↓ (arrows)
-
-### Windows/Linux
-
-- Uses text labels: Ctrl, Alt, Shift, Win
-- Plus sign (+) separators
-- Order: Ctrl, Alt, Shift, Win
-- Special keys: Backspace, Esc, Enter, Left, Right, Up, Down
-
-### Examples by Platform
-
-| Input               | macOS | Windows/Linux     |
-| ------------------- | ----- | ----------------- |
-| `cmd-a`             | ⌘A    | Win+A             |
-| `ctrl-shift-a`      | ⌃⇧A   | Ctrl+Shift+A      |
-| `cmd-alt-backspace` | ⌥⌘⌫   | Win+Alt+Backspace |
-| `escape`            | ⎋     | Esc               |
-| `enter`             | ⏎     | Enter             |
-| `left`              | ←     | Left              |
-
-## Examples
 
 ### Keyboard Shortcut Help
 
@@ -200,6 +168,35 @@ Kbd::new(Keystroke::parse("cmd-k").unwrap())
 let shortcut_text = Kbd::format(&Keystroke::parse("cmd-shift-p").unwrap());
 div().child(format!("Shortcut: {}", shortcut_text))
 ```
+
+## Platform Differences
+
+The Kbd component automatically formats shortcuts according to platform conventions:
+
+### macOS
+
+- Uses symbols: ⌃ ⌥ ⇧ ⌘
+- No separators between modifiers
+- Order: Control, Option, Shift, Command
+- Special keys: ⌫ (backspace), ⎋ (escape), ⏎ (enter), ← → ↑ ↓ (arrows)
+
+### Windows/Linux
+
+- Uses text labels: Ctrl, Alt, Shift, Win
+- Plus sign (+) separators
+- Order: Ctrl, Alt, Shift, Win
+- Special keys: Backspace, Esc, Enter, Left, Right, Up, Down
+
+### Examples by Platform
+
+| Input               | macOS | Windows/Linux     |
+| ------------------- | ----- | ----------------- |
+| `cmd-a`             | ⌘A    | Win+A             |
+| `ctrl-shift-a`      | ⌃⇧A   | Ctrl+Shift+A      |
+| `cmd-alt-backspace` | ⌥⌘⌫   | Win+Alt+Backspace |
+| `escape`            | ⎋     | Esc               |
+| `enter`             | ⏎     | Enter             |
+| `left`              | ←     | Left              |
 
 ## Styling
 

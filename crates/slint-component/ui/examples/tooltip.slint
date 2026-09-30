@@ -9,10 +9,15 @@ export component TooltipExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Hover the button"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Hover the button";
+        variant: GroupBoxVariant.outline;
         Tooltip {
             text: "Create a new document";
-            Button { text: "New file"; icon: "file"; }
+            Button {
+                text: "New file";
+                icon: "file";
+            }
         }
     }
 

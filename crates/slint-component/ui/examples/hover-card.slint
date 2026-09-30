@@ -10,11 +10,16 @@ export component HoverCardExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Hover"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Hover";
+        variant: GroupBoxVariant.outline;
         HoverCard {
             title: "Ada Lovelace";
             description: "Mathematician and the first computer programmer.";
-            Button { text: "@ada"; variant: ButtonVariant.link; }
+            Button {
+                text: "@ada";
+                variant: ButtonVariant.link;
+            }
         }
     }
 

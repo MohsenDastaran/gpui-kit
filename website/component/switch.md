@@ -16,8 +16,7 @@ use gpui_kit::component::switch::Switch;
 ```
 
 ## Usage
-
-### Basic Switch
+### Basic
 
 ```rust
 Switch::new("my-switch")
@@ -25,6 +24,24 @@ Switch::new("my-switch")
     .on_change(|checked, _, _| {
         println!("Switch is now: {}", checked);
     })
+```
+
+### Sizes
+
+```rust
+// Small switch
+Switch::new("small-switch")
+    .small()
+    .label("Small switch")
+
+// Medium switch (default)
+Switch::new("medium-switch")
+    .label("Medium switch")
+
+// Using explicit size
+Switch::new("custom-switch")
+    .with_size(Size::Small)
+    .label("Custom size")
 ```
 
 ### Controlled Switch
@@ -55,24 +72,6 @@ Switch::new("notifications")
     .on_change(|checked, _, _| {
         println!("Notifications: {}", if *checked { "enabled" } else { "disabled" });
     })
-```
-
-### Different Sizes
-
-```rust
-// Small switch
-Switch::new("small-switch")
-    .small()
-    .label("Small switch")
-
-// Medium switch (default)
-Switch::new("medium-switch")
-    .label("Medium switch")
-
-// Using explicit size
-Switch::new("custom-switch")
-    .with_size(Size::Small)
-    .label("Custom size")
 ```
 
 ### Disabled State
@@ -140,43 +139,6 @@ Switch::new("switch")
     .label("Quiet focus")
     .focus_ring(false)
 ```
-
-## API Reference
-
-### Switch
-
-| Method             | Description                                                 |
-| ------------------ | ----------------------------------------------------------- |
-| `new(id)`          | Create a new switch with the given ID                       |
-| `checked(bool)`    | Set the checked/toggled state                               |
-| `label(text)`      | Set label text for the switch                               |
-| `label_side(side)` | Position label (Side::Left or Side::Right)                  |
-| `disabled(bool)`   | Set disabled state                                          |
-| `tooltip(text)`    | Add tooltip text                                            |
-| `color(color)`     | Set background color when checked (default: `theme.primary`) |
-| `on_change(fn)`     | Requested checked value, receives `&bool` |
-| `focus_ring(bool)` | Draw the focus ring around the track when focused (default: `true`) |
-| `tab_stop(bool)`   | Take part in Tab traversal (default: `true`)                |
-| `tab_index(isize)` | Position in the tab order within a tab group (default: `0`) |
-
-### Styling
-
-Implements `Sizable` and `Disableable` traits:
-
-- `small()` - Small switch size (28x16px toggle area)
-- `medium()` - Medium switch size (36x20px toggle area, default)
-- `with_size(size)` - Set explicit size
-- `disabled(bool)` - Disabled state
-
-### Styling Properties
-
-The switch can also be styled using GPUI's styling methods:
-
-- `w(width)` - Custom width
-- `h(height)` - Custom height
-- Standard margin, padding, and positioning methods
-
-## Examples
 
 ### Settings Panel
 
@@ -327,3 +289,38 @@ The switch features smooth animations:
 - **Background color transition**: Changes from switch color to primary color
 - **Position animation**: Smooth movement of the toggle indicator
 - **Disabled state**: Animations are disabled when the switch is disabled
+
+## API Reference
+
+### Switch
+
+| Method             | Description                                                 |
+| ------------------ | ----------------------------------------------------------- |
+| `new(id)`          | Create a new switch with the given ID                       |
+| `checked(bool)`    | Set the checked/toggled state                               |
+| `label(text)`      | Set label text for the switch                               |
+| `label_side(side)` | Position label (Side::Left or Side::Right)                  |
+| `disabled(bool)`   | Set disabled state                                          |
+| `tooltip(text)`    | Add tooltip text                                            |
+| `color(color)`     | Set background color when checked (default: `theme.primary`) |
+| `on_change(fn)`     | Requested checked value, receives `&bool` |
+| `focus_ring(bool)` | Draw the focus ring around the track when focused (default: `true`) |
+| `tab_stop(bool)`   | Take part in Tab traversal (default: `true`)                |
+| `tab_index(isize)` | Position in the tab order within a tab group (default: `0`) |
+
+### Styling
+
+Implements `Sizable` and `Disableable` traits:
+
+- `small()` - Small switch size (28x16px toggle area)
+- `medium()` - Medium switch size (36x20px toggle area, default)
+- `with_size(size)` - Set explicit size
+- `disabled(bool)` - Disabled state
+
+### Styling Properties
+
+The switch can also be styled using GPUI's styling methods:
+
+- `w(width)` - Custom width
+- `h(height)` - Custom height
+- Standard margin, padding, and positioning methods

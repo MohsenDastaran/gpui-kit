@@ -14,7 +14,6 @@ use gpui_kit::component::tab::{Tab, TabBar};
 ```
 
 ## Usage
-
 ### Basic Tabs
 
 ```rust
@@ -257,74 +256,6 @@ TabBar::new("custom-tabs")
     )
 ```
 
-## API Reference
-
-### TabBar
-
-| Method                      | Description                                        |
-| --------------------------- | -------------------------------------------------- |
-| `new(id)`                   | Create a new tab bar with the given ID             |
-| `child(tab)`                | Add a tab to the bar                               |
-| `children(tabs)`            | Add multiple tabs to the bar                       |
-| `selected_index(index)`     | Set the active tab index                           |
-| `on_click(fn)`              | Callback when a tab is clicked, receives tab index |
-| `prefix(element)`           | Add element before the tabs                        |
-| `suffix(element)`           | Add element after the tabs                         |
-| `last_empty_space(element)` | Custom element for empty space at the end          |
-| `track_scroll(handle)`      | Enable scrolling with a scroll handle              |
-| `with_menu(bool)`           | Enable dropdown menu for tab selection             |
-| `max_width(width)`      | Set maximum width of each tab; truncates           |
-
-### TabBar Variants
-
-| Method                  | Description                          |
-| ----------------------- | ------------------------------------ |
-| `with_variant(variant)` | Set the tab variant for all children |
-| `underline()`           | Use underline variant                |
-| `pill()`                | Use pill variant                     |
-| `outline()`             | Use outline variant                  |
-| `segmented()`           | Use segmented variant                |
-
-### Tab
-
-| Method                  | Description                                    |
-| ----------------------- | ---------------------------------------------- |
-| `new(label)`            | Create a new tab with a label                  |
-| `empty()`               | Create an empty tab                            |
-| `icon(icon)`            | Create a tab with only an icon                 |
-| `id(id)`                | Set custom ID for the tab                      |
-| `with_variant(variant)` | Set the tab variant                            |
-| `pill()`                | Use pill variant                               |
-| `outline()`             | Use outline variant                            |
-| `segmented()`           | Use segmented variant                          |
-| `underline()`           | Use underline variant                          |
-| `prefix(element)`       | Add element before tab content                 |
-| `suffix(element)`       | Add element after tab content                  |
-| `disabled(bool)`        | Set disabled state                             |
-| `selected(bool)`        | Set selected state (usually handled by TabBar) |
-| `on_click(fn)`          | Custom click handler for individual tab        |
-
-### TabVariant
-
-```rust
-pub enum TabVariant {
-    Tab,      // Default bordered tabs
-    Outline,  // Rounded outline tabs
-    Pill,     // Rounded pill-shaped tabs
-    Segmented, // Segmented control style
-    Underline, // Underline indicator tabs
-}
-```
-
-### Styling
-
-Both `TabBar` and `Tab` implement `Sizable` trait:
-
-- `xsmall()` - Extra small size
-- `small()` - Small size
-- `medium()` - Medium size (default)
-- `large()` - Large size
-
 ## Advanced Examples
 
 ### Custom Tab Content
@@ -452,3 +383,71 @@ impl Render for CloseableTabsView {
 - The `with_menu` option adds a dropdown for tab selection when there are many tabs
 - Scrolling is automatically enabled when tabs overflow the container width
 - The dock system provides advanced closeable tab functionality for complex layouts
+
+## API Reference
+
+### TabBar
+
+| Method                      | Description                                        |
+| --------------------------- | -------------------------------------------------- |
+| `new(id)`                   | Create a new tab bar with the given ID             |
+| `child(tab)`                | Add a tab to the bar                               |
+| `children(tabs)`            | Add multiple tabs to the bar                       |
+| `selected_index(index)`     | Set the active tab index                           |
+| `on_click(fn)`              | Callback when a tab is clicked, receives tab index |
+| `prefix(element)`           | Add element before the tabs                        |
+| `suffix(element)`           | Add element after the tabs                         |
+| `last_empty_space(element)` | Custom element for empty space at the end          |
+| `track_scroll(handle)`      | Enable scrolling with a scroll handle              |
+| `with_menu(bool)`           | Enable dropdown menu for tab selection             |
+| `max_width(width)`      | Set maximum width of each tab; truncates           |
+
+### TabBar Variants
+
+| Method                  | Description                          |
+| ----------------------- | ------------------------------------ |
+| `with_variant(variant)` | Set the tab variant for all children |
+| `underline()`           | Use underline variant                |
+| `pill()`                | Use pill variant                     |
+| `outline()`             | Use outline variant                  |
+| `segmented()`           | Use segmented variant                |
+
+### Tab
+
+| Method                  | Description                                    |
+| ----------------------- | ---------------------------------------------- |
+| `new(label)`            | Create a new tab with a label                  |
+| `empty()`               | Create an empty tab                            |
+| `icon(icon)`            | Create a tab with only an icon                 |
+| `id(id)`                | Set custom ID for the tab                      |
+| `with_variant(variant)` | Set the tab variant                            |
+| `pill()`                | Use pill variant                               |
+| `outline()`             | Use outline variant                            |
+| `segmented()`           | Use segmented variant                          |
+| `underline()`           | Use underline variant                          |
+| `prefix(element)`       | Add element before tab content                 |
+| `suffix(element)`       | Add element after tab content                  |
+| `disabled(bool)`        | Set disabled state                             |
+| `selected(bool)`        | Set selected state (usually handled by TabBar) |
+| `on_click(fn)`          | Custom click handler for individual tab        |
+
+### TabVariant
+
+```rust
+pub enum TabVariant {
+    Tab,      // Default bordered tabs
+    Outline,  // Rounded outline tabs
+    Pill,     // Rounded pill-shaped tabs
+    Segmented, // Segmented control style
+    Underline, // Underline indicator tabs
+}
+```
+
+### Styling
+
+Both `TabBar` and `Tab` implement `Sizable` trait:
+
+- `xsmall()` - Extra small size
+- `small()` - Small size
+- `medium()` - Medium size (default)
+- `large()` - Large size

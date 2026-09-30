@@ -9,9 +9,16 @@ export component RatingExample inherits VerticalLayout {
     alignment: start;
 
     private property <int> stars: 4;
-    GroupBox { title: "Rate this"; variant: GroupBoxVariant.outline;
-        Rating { value <=> root.stars; }
-        Text { text: "\{root.stars} of 5"; color: Theme.muted-foreground; }
+    GroupBox {
+        title: "Rate this";
+        variant: GroupBoxVariant.outline;
+        Rating {
+            value <=> root.stars;
+        }
+        Text {
+            text: "\{root.stars} of 5";
+            color: Theme.muted-foreground;
+        }
     }
 
 }

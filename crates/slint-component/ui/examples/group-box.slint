@@ -10,7 +10,10 @@ export component GroupBoxExample inherits VerticalLayout {
     alignment: start;
 
     GroupBox {
-        Text { text: "Content without a visual container"; color: Theme.foreground; }
+        Text {
+            text: "Content without a visual container";
+            color: Theme.foreground;
+        }
     }
 
     GroupBox {
@@ -21,33 +24,42 @@ export component GroupBoxExample inherits VerticalLayout {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
-                 text: "Make profile private"; color: Theme.foreground; vertical-alignment: center; }
+                text: "Make profile private";
+                color: Theme.foreground;
+                vertical-alignment: center;
+            }
             Rectangle {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
-                 }
+            }
             Button {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 0;
-                 text: "Private"; }
-        
+                text: "Private";
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
         HorizontalLayout {
             alignment: start;
-            Button { text: "Save Changes"; variant: ButtonVariant.primary; }
+            Button {
+                text: "Save Changes";
+                variant: ButtonVariant.primary;
+            }
         }
     }
 
     GroupBox {
         title: "Preferences";
         variant: GroupBoxVariant.outline;
-        Text { text: "Content with a border and no background."; color: Theme.foreground; }
+        Text {
+            text: "Content with a border and no background.";
+            color: Theme.foreground;
+        }
     }
 }

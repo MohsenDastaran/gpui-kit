@@ -18,8 +18,7 @@ use gpui_kit::component::{
 ```
 
 ## Usage
-
-### Basic Date Picker
+### Date
 
 ```rust
 let date_picker = cx.new(|cx| DatePickerState::new(window, cx));
@@ -191,6 +190,55 @@ div()
     .border_color(cx.theme().border)
     .bg(cx.theme().secondary)
     .child(DatePicker::new(&date_picker).appearance(false))
+```
+
+### Event Date Picker
+
+```rust
+let event_date = cx.new(|cx| {
+    let mut picker = DatePickerState::new(window, cx)
+        .date_format("%B %d, %Y")
+        .disabled_matcher(calendar::Matcher::custom(|date| {
+            // Disable past dates
+            *date < Local::now().naive_local().date()
+        }));
+    picker
+});
+
+DatePicker::new(&event_date)
+    .placeholder("Choose event date")
+    .cleanable(true)
+```
+
+### Booking System Date Range
+
+```rust
+let booking_range = cx.new(|cx| DatePickerState::range(window, cx));
+
+let booking_presets = vec![
+    DateRangePreset::range("This Weekend", /* weekend dates */),
+    DateRangePreset::range("Next Week", /* next week dates */),
+    DateRangePreset::range("This Month", /* this month dates */),
+];
+
+DatePicker::new(&booking_range)
+    .number_of_months(2)
+    .presets(booking_presets)
+    .placeholder("Select check-in and check-out dates")
+```
+
+### Financial Period Selector
+
+```rust
+let financial_period = cx.new(|cx| {
+    DatePickerState::range(window, cx)
+        .date_format("%Y-%m-%d")
+});
+
+DatePicker::new(&financial_period)
+    .number_of_months(3)
+    .presets(quarterly_presets)
+    .placeholder("Select reporting period")
 ```
 
 ## Date Restrictions
@@ -451,55 +499,4 @@ let quarterly_presets = vec![
 
 DatePicker::new(&date_picker)
     .presets(quarterly_presets)
-```
-
-## Examples
-
-### Event Date Picker
-
-```rust
-let event_date = cx.new(|cx| {
-    let mut picker = DatePickerState::new(window, cx)
-        .date_format("%B %d, %Y")
-        .disabled_matcher(calendar::Matcher::custom(|date| {
-            // Disable past dates
-            *date < Local::now().naive_local().date()
-        }));
-    picker
-});
-
-DatePicker::new(&event_date)
-    .placeholder("Choose event date")
-    .cleanable(true)
-```
-
-### Booking System Date Range
-
-```rust
-let booking_range = cx.new(|cx| DatePickerState::range(window, cx));
-
-let booking_presets = vec![
-    DateRangePreset::range("This Weekend", /* weekend dates */),
-    DateRangePreset::range("Next Week", /* next week dates */),
-    DateRangePreset::range("This Month", /* this month dates */),
-];
-
-DatePicker::new(&booking_range)
-    .number_of_months(2)
-    .presets(booking_presets)
-    .placeholder("Select check-in and check-out dates")
-```
-
-### Financial Period Selector
-
-```rust
-let financial_period = cx.new(|cx| {
-    DatePickerState::range(window, cx)
-        .date_format("%Y-%m-%d")
-});
-
-DatePicker::new(&financial_period)
-    .number_of_months(3)
-    .presets(quarterly_presets)
-    .placeholder("Select reporting period")
 ```

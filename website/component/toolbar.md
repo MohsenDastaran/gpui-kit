@@ -124,6 +124,12 @@ The toolbar exposes `Toolbar` semantics to assistive technology and owns roving 
 
 Focus wraps around at the ends. Hosted inputs keep their own arrow-key caret behavior; place inputs at the trailing end of the bar. This behavior comes from the unstyled `gpui_base::Toolbar` primitive, so applications building custom toolbars on the base layer get the same contract.
 
+## Notes
+
+- Use `content(div().flex_1())` when later items need to align to the trailing edge.
+- Keep the primary command visible; move low-frequency actions into a dropdown or overflow menu rather than hiding them behind hover.
+- Toolbar has no default background or border; its host surface supplies them.
+
 ## API Reference
 
 ### Toolbar
@@ -137,9 +143,3 @@ Focus wraps around at the ends. Hosted inputs keep their own arrow-key caret beh
 | `disabled(value)` | Disable roving navigation; the owner also disables hosted controls |
 
 Control methods require `Sizable + IntoElement`; content methods accept general elements. `Toolbar` also implements `Styled` and `Sizable`.
-
-## Notes
-
-- Use `content(div().flex_1())` when later items need to align to the trailing edge.
-- Keep the primary command visible; move low-frequency actions into a dropdown or overflow menu rather than hiding them behind hover.
-- Toolbar has no default background or border; its host surface supplies them.

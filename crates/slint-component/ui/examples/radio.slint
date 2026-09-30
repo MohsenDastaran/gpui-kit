@@ -8,11 +8,25 @@ export component RadioExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Group"; variant: GroupBoxVariant.outline;
-        RadioGroup { options: ["Email", "SMS", "Push"]; selected: 0; }
+    GroupBox {
+        title: "Group";
+        variant: GroupBoxVariant.outline;
+        RadioGroup {
+            options: [
+                "Email",
+                "SMS",
+                "Push"
+            ];
+            selected: 0;
+        }
     }
-    GroupBox { title: "Standalone"; variant: GroupBoxVariant.outline;
-        Radio { label: "Disabled"; enabled: false; }
+    GroupBox {
+        title: "Standalone";
+        variant: GroupBoxVariant.outline;
+        Radio {
+            label: "Disabled";
+            enabled: false;
+        }
     }
 
 }

@@ -14,6 +14,22 @@ use gpui_kit::component::label::{Label, HighlightsMatch};
 ```
 
 ## Usage
+### Form labels
+
+```rust
+// Required field
+Label::new("Email Address")
+    .secondary("*")
+    .text_color(cx.theme().destructive)
+
+// Optional field
+Label::new("Phone Number")
+    .secondary("(optional)")
+
+// Field with description
+Label::new("Password")
+    .secondary("(minimum 8 characters)")
+```
 
 ### Basic Label
 
@@ -119,66 +135,6 @@ Label::new("Small").text_sm()
 Label::new("Extra Small").text_xs()
 ```
 
-## API Reference
-
-### Label
-
-| Method              | Description                                                   |
-| ------------------- | ------------------------------------------------------------- |
-| `new(text)`         | Create a new label with text                                  |
-| `secondary(text)`   | Add secondary text (usually for optional/required indicators) |
-| `masked(bool)`      | Show/hide text with bullet characters                         |
-| `highlights(match)` | Highlight matching text                                       |
-
-### HighlightsMatch
-
-| Variant        | Description                                      |
-| -------------- | ------------------------------------------------ |
-| `Full(text)`   | Highlights all occurrences of the text           |
-| `Prefix(text)` | Highlights only if text appears at the beginning |
-
-| Method        | Description                     |
-| ------------- | ------------------------------- |
-| `as_str()`    | Get the search text as string   |
-| `is_prefix()` | Check if this is a prefix match |
-
-### Styling Methods (via Styled trait)
-
-| Method                | Description                 |
-| --------------------- | --------------------------- |
-| `text_color(color)`   | Set text color              |
-| `text_size(size)`     | Set font size               |
-| `text_center()`       | Center align text           |
-| `text_right()`        | Right align text            |
-| `font_semibold()`     | Set font weight to semibold |
-| `font_bold()`         | Set font weight to bold     |
-| `line_height(height)` | Set line height             |
-| `text_xs()`           | Extra small text size       |
-| `text_sm()`           | Small text size             |
-| `text_base()`         | Base text size (default)    |
-| `text_lg()`           | Large text size             |
-| `text_xl()`           | Extra large text size       |
-| `text_2xl()`          | 2x large text size          |
-
-## Examples
-
-### Form Labels
-
-```rust
-// Required field
-Label::new("Email Address")
-    .secondary("*")
-    .text_color(cx.theme().destructive)
-
-// Optional field
-Label::new("Phone Number")
-    .secondary("(optional)")
-
-// Field with description
-Label::new("Password")
-    .secondary("(minimum 8 characters)")
-```
-
 ### Search Highlighting
 
 ```rust
@@ -250,3 +206,44 @@ v_flex()
     .child(Label::new("Email:").font_semibold())
     .child(Label::new("john@example.com"))
 ```
+
+## API Reference
+
+### Label
+
+| Method              | Description                                                   |
+| ------------------- | ------------------------------------------------------------- |
+| `new(text)`         | Create a new label with text                                  |
+| `secondary(text)`   | Add secondary text (usually for optional/required indicators) |
+| `masked(bool)`      | Show/hide text with bullet characters                         |
+| `highlights(match)` | Highlight matching text                                       |
+
+### HighlightsMatch
+
+| Variant        | Description                                      |
+| -------------- | ------------------------------------------------ |
+| `Full(text)`   | Highlights all occurrences of the text           |
+| `Prefix(text)` | Highlights only if text appears at the beginning |
+
+| Method        | Description                     |
+| ------------- | ------------------------------- |
+| `as_str()`    | Get the search text as string   |
+| `is_prefix()` | Check if this is a prefix match |
+
+### Styling Methods (via Styled trait)
+
+| Method                | Description                 |
+| --------------------- | --------------------------- |
+| `text_color(color)`   | Set text color              |
+| `text_size(size)`     | Set font size               |
+| `text_center()`       | Center align text           |
+| `text_right()`        | Right align text            |
+| `font_semibold()`     | Set font weight to semibold |
+| `font_bold()`         | Set font weight to bold     |
+| `line_height(height)` | Set line height             |
+| `text_xs()`           | Extra small text size       |
+| `text_sm()`           | Small text size             |
+| `text_base()`         | Base text size (default)    |
+| `text_lg()`           | Large text size             |
+| `text_xl()`           | Extra large text size       |
+| `text_2xl()`          | 2x large text size          |

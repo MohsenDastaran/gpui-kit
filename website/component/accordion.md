@@ -14,8 +14,7 @@ use gpui_kit::component::accordion::Accordion;
 ```
 
 ## Usage
-
-### Basic Accordion
+### Single
 
 ```rust
 Accordion::new("my-accordion")
@@ -33,7 +32,7 @@ Accordion::new("my-accordion")
     })
 ```
 
-### Multiple Open Items
+### Multiple
 
 By default, only one accordion item can be open at a time. Use `multiple()` to allow multiple items to be open:
 
@@ -44,15 +43,22 @@ Accordion::new("my-accordion")
     .item(|item| item.title("Section 2").child("Content 2"))
 ```
 
-### With Borders
+### Icons and custom content
 
 ```rust
 Accordion::new("my-accordion")
-    .bordered(true)
-    .item(|item| item.title("Section 1").child("Content 1"))
+    .item(|item| {
+        item.title(
+            h_flex()
+                .gap_2()
+                .child(Icon::new(IconName::Settings))
+                .child("Settings")
+        )
+        .child("Settings content here")
+    })
 ```
 
-### Different Sizes
+### Sizes
 
 ```rust
 use gpui_kit::component::{Sizable as _, Size};
@@ -66,6 +72,22 @@ Accordion::new("my-accordion")
     .item(|item| item.title("Large Section").child("Content"))
 ```
 
+### Borderless and disabled
+
+```rust
+Accordion::new("my-accordion")
+    .disabled(true)
+    .item(|item| item.title("Disabled Section").child("Content"))
+```
+
+### With Borders
+
+```rust
+Accordion::new("my-accordion")
+    .bordered(true)
+    .item(|item| item.title("Section 1").child("Content 1"))
+```
+
 ### Handle Toggle Events
 
 ```rust
@@ -74,45 +96,6 @@ Accordion::new("my-accordion")
         println!("Open items: {:?}", open_indices);
     })
     .item(|item| item.title("Section 1").child("Content 1"))
-```
-
-### Disabled State
-
-```rust
-Accordion::new("my-accordion")
-    .disabled(true)
-    .item(|item| item.title("Disabled Section").child("Content"))
-```
-
-## API Reference
-
-- [Accordion]
-- [AccordionItem]
-
-### Sizing
-
-Implements [Sizable] trait:
-
-- `small()` - Small size
-- `medium()` - Medium size (default)
-- `large()` - Large size
-- `xsmall()` - Extra small size
-
-## Examples
-
-### With Custom Icons
-
-```rust
-Accordion::new("my-accordion")
-    .item(|item| {
-        item.title(
-            h_flex()
-                .gap_2()
-                .child(Icon::new(IconName::Settings))
-                .child("Settings")
-        )
-        .child("Settings content here")
-    })
 ```
 
 ### Nested Accordions
@@ -132,3 +115,17 @@ Accordion::new("outer")
 [Accordion]: https://docs.rs/gpui-component/latest/gpui_component/accordion/struct.Accordion.html
 [AccordionItem]: https://docs.rs/gpui-component/latest/gpui_component/accordion/struct.AccordionItem.html
 [Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
+
+## API Reference
+
+- [Accordion]
+- [AccordionItem]
+
+### Sizing
+
+Implements [Sizable] trait:
+
+- `small()` - Small size
+- `medium()` - Medium size (default)
+- `large()` - Large size
+- `xsmall()` - Extra small size

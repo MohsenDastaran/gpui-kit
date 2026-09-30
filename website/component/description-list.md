@@ -14,7 +14,6 @@ use gpui_kit::component::description_list::{DescriptionList, DescriptionItem, De
 ```
 
 ## Usage
-
 ### Basic Description List
 
 ```rust
@@ -159,8 +158,6 @@ DescriptionList::new()
         DescriptionItem::new("Language").value("Rust").span(1),
     ])
 ```
-
-## Examples
 
 ### User Profile Information
 

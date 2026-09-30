@@ -14,8 +14,7 @@ use gpui_kit::component::button::{Toggle, ToggleGroup};
 ```
 
 ## Usage
-
-### Basic Toggle
+### Toggle
 
 ```rust
 Toggle::new("toggle1").
@@ -28,7 +27,7 @@ Toggle::new("toggle1").
 
 Here, we can use `on_click` to handle toggle state changes. The callback receives the **new checked state** as a `bool`.
 
-### Icon Toggle
+### Group
 
 ```rust
 use gpui_kit::component::IconName;
@@ -114,158 +113,6 @@ Toggle::new("disabled-checked-toggle")
     .disabled(true)
     .checked(true)
 ```
-
-## Toggle vs Switch
-
-| Feature                | Toggle                                      | Switch                                    |
-| ---------------------- | ------------------------------------------- | ----------------------------------------- |
-| **Appearance**         | Button-like, can be pressed in/out          | Traditional switch with sliding indicator |
-| **Use Cases**          | Toolbar buttons, filters, binary options    | Settings, preferences, on/off states      |
-| **Visual Style**       | Rectangular button shape                    | Rounded switch track with thumb           |
-| **State Indication**   | Background color change, pressed appearance | Position of sliding thumb                 |
-| **Multiple Selection** | Supports groups with multiple selection     | Individual switches only                  |
-
-**Use Toggle when you want:**
-
-- Button-like appearance for binary states
-- Grouping multiple related options
-- Toolbar or filter interfaces
-- Options that feel like "selections" rather than "settings"
-
-**Use Switch when you want:**
-
-- Traditional on/off control appearance
-- Settings or preferences interface
-- Clear visual indication of state with sliding animation
-- Individual boolean controls
-
-## Integration with ToggleGroup
-
-Toggle buttons can be grouped together using `ToggleGroup` for related options:
-
-### Basic Toggle Group
-
-```rust
-ToggleGroup::new("filter-group")
-    .child(Toggle::new(0).icon(IconName::Bell))
-    .child(Toggle::new(1).icon(IconName::Bot))
-    .child(Toggle::new(2).icon(IconName::Inbox))
-    .child(Toggle::new(3).label("Other"))
-    .on_click(|checkeds, _, _| {
-        println!("Selected toggles: {:?}", checkeds);
-    })
-```
-
-The `on_click` callback receives a `Vec<bool>` representing the **new checked state** of each toggle in the group.
-
-### Toggle Group with Controlled State
-
-```rust
-struct FilterView {
-    notifications: bool,
-    bots: bool,
-    inbox: bool,
-    other: bool,
-}
-
-impl Render for FilterView {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        ToggleGroup::new("filters")
-            .child(Toggle::new(0).icon(IconName::Bell).checked(self.notifications))
-            .child(Toggle::new(1).icon(IconName::Bot).checked(self.bots))
-            .child(Toggle::new(2).icon(IconName::Inbox).checked(self.inbox))
-            .child(Toggle::new(3).label("Other").checked(self.other))
-            .on_click(cx.listener(|view, checkeds, _, cx| {
-                view.notifications = checkeds[0];
-                view.bots = checkeds[1];
-                view.inbox = checkeds[2];
-                view.other = checkeds[3];
-                cx.notify();
-            }))
-    }
-}
-```
-
-### Toggle Group Variants and Sizes
-
-```rust
-// Outline variant, small size
-ToggleGroup::new("compact-filters")
-    .outline()
-    .small()
-    .child(Toggle::new(0).icon(IconName::Filter))
-    .child(Toggle::new(1).icon(IconName::Sort))
-    .child(Toggle::new(2).icon(IconName::Search))
-
-// Ghost variant (default), extra small
-ToggleGroup::new("mini-toolbar")
-    .xsmall()
-    .child(Toggle::new(0).icon(IconName::Bold))
-    .child(Toggle::new(1).icon(IconName::Italic))
-    .child(Toggle::new(2).icon(IconName::Underline))
-```
-
-### Segmented Toggle Group
-
-Use `segmented()` when a group should render as a connected segmented control. The
-group still uses the same multi-toggle behavior: `on_click` receives a `Vec<bool>`
-with the new checked state for each item.
-
-```rust
-ToggleGroup::new("formatting")
-    .segmented()
-    .outline()
-    .child(Toggle::new(0).label("Bold").checked(self.bold))
-    .child(Toggle::new(1).label("Italic").checked(self.italic))
-    .child(Toggle::new(2).label("Code").checked(self.code))
-    .on_click(cx.listener(|view, states, _, cx| {
-        view.bold = states[0];
-        view.italic = states[1];
-        view.code = states[2];
-        cx.notify();
-    }))
-```
-
-By default, segmented groups use a zero gap so adjacent items share one outline.
-Pass a non-zero gap when you want the segmented sizing and variants but separated
-items:
-
-```rust
-use gpui_kit::px;
-
-ToggleGroup::new("quick-actions")
-    .segmented()
-    .outline()
-    .gap(px(8.))
-    .small()
-    .child(Toggle::new(0).label("Star"))
-    .child(Toggle::new(1).label("Watch"))
-    .child(Toggle::new(2).label("Pin"))
-```
-
-If you need mutually exclusive behavior, keep that state in your view model and
-set only one child to `checked(true)` until a dedicated single-selection API is
-available.
-
-## Event Handling
-
-### Individual Toggle Events
-
-```rust
-Toggle::new("subscribe-toggle")
-    .label("Subscribe")
-    .on_click(|checked, window, cx| {
-        if *checked {
-            // Handle subscription logic
-            println!("Subscribed!");
-        } else {
-            // Handle unsubscription logic
-            println!("Unsubscribed!");
-        }
-    })
-```
-
-## Examples
 
 ### Toolbar with Toggle Buttons
 
@@ -422,6 +269,156 @@ v_flex()
                 cx.notify();
             }))
     )
+```
+
+## Toggle vs Switch
+
+| Feature                | Toggle                                      | Switch                                    |
+| ---------------------- | ------------------------------------------- | ----------------------------------------- |
+| **Appearance**         | Button-like, can be pressed in/out          | Traditional switch with sliding indicator |
+| **Use Cases**          | Toolbar buttons, filters, binary options    | Settings, preferences, on/off states      |
+| **Visual Style**       | Rectangular button shape                    | Rounded switch track with thumb           |
+| **State Indication**   | Background color change, pressed appearance | Position of sliding thumb                 |
+| **Multiple Selection** | Supports groups with multiple selection     | Individual switches only                  |
+
+**Use Toggle when you want:**
+
+- Button-like appearance for binary states
+- Grouping multiple related options
+- Toolbar or filter interfaces
+- Options that feel like "selections" rather than "settings"
+
+**Use Switch when you want:**
+
+- Traditional on/off control appearance
+- Settings or preferences interface
+- Clear visual indication of state with sliding animation
+- Individual boolean controls
+
+## Integration with ToggleGroup
+
+Toggle buttons can be grouped together using `ToggleGroup` for related options:
+
+### Basic Toggle Group
+
+```rust
+ToggleGroup::new("filter-group")
+    .child(Toggle::new(0).icon(IconName::Bell))
+    .child(Toggle::new(1).icon(IconName::Bot))
+    .child(Toggle::new(2).icon(IconName::Inbox))
+    .child(Toggle::new(3).label("Other"))
+    .on_click(|checkeds, _, _| {
+        println!("Selected toggles: {:?}", checkeds);
+    })
+```
+
+The `on_click` callback receives a `Vec<bool>` representing the **new checked state** of each toggle in the group.
+
+### Toggle Group with Controlled State
+
+```rust
+struct FilterView {
+    notifications: bool,
+    bots: bool,
+    inbox: bool,
+    other: bool,
+}
+
+impl Render for FilterView {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        ToggleGroup::new("filters")
+            .child(Toggle::new(0).icon(IconName::Bell).checked(self.notifications))
+            .child(Toggle::new(1).icon(IconName::Bot).checked(self.bots))
+            .child(Toggle::new(2).icon(IconName::Inbox).checked(self.inbox))
+            .child(Toggle::new(3).label("Other").checked(self.other))
+            .on_click(cx.listener(|view, checkeds, _, cx| {
+                view.notifications = checkeds[0];
+                view.bots = checkeds[1];
+                view.inbox = checkeds[2];
+                view.other = checkeds[3];
+                cx.notify();
+            }))
+    }
+}
+```
+
+### Toggle Group Variants and Sizes
+
+```rust
+// Outline variant, small size
+ToggleGroup::new("compact-filters")
+    .outline()
+    .small()
+    .child(Toggle::new(0).icon(IconName::Filter))
+    .child(Toggle::new(1).icon(IconName::Sort))
+    .child(Toggle::new(2).icon(IconName::Search))
+
+// Ghost variant (default), extra small
+ToggleGroup::new("mini-toolbar")
+    .xsmall()
+    .child(Toggle::new(0).icon(IconName::Bold))
+    .child(Toggle::new(1).icon(IconName::Italic))
+    .child(Toggle::new(2).icon(IconName::Underline))
+```
+
+### Segmented Toggle Group
+
+Use `segmented()` when a group should render as a connected segmented control. The
+group still uses the same multi-toggle behavior: `on_click` receives a `Vec<bool>`
+with the new checked state for each item.
+
+```rust
+ToggleGroup::new("formatting")
+    .segmented()
+    .outline()
+    .child(Toggle::new(0).label("Bold").checked(self.bold))
+    .child(Toggle::new(1).label("Italic").checked(self.italic))
+    .child(Toggle::new(2).label("Code").checked(self.code))
+    .on_click(cx.listener(|view, states, _, cx| {
+        view.bold = states[0];
+        view.italic = states[1];
+        view.code = states[2];
+        cx.notify();
+    }))
+```
+
+By default, segmented groups use a zero gap so adjacent items share one outline.
+Pass a non-zero gap when you want the segmented sizing and variants but separated
+items:
+
+```rust
+use gpui_kit::px;
+
+ToggleGroup::new("quick-actions")
+    .segmented()
+    .outline()
+    .gap(px(8.))
+    .small()
+    .child(Toggle::new(0).label("Star"))
+    .child(Toggle::new(1).label("Watch"))
+    .child(Toggle::new(2).label("Pin"))
+```
+
+If you need mutually exclusive behavior, keep that state in your view model and
+set only one child to `checked(true)` until a dedicated single-selection API is
+available.
+
+## Event Handling
+
+### Individual Toggle Events
+
+```rust
+Toggle::new("subscribe-toggle")
+    .label("Subscribe")
+    .on_click(|checked, window, cx| {
+        if *checked {
+            // Handle subscription logic
+            println!("Subscribed!");
+        } else {
+            // Handle unsubscription logic
+            println!("Unsubscribed!");
+        }
+    })
 ```
 
 ## Best Practices

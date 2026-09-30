@@ -16,8 +16,27 @@ use gpui_kit::component::radio::{Radio, RadioGroup};
 ```
 
 ## Usage
+### Group
 
-### Basic Radio Button
+```rust
+struct MyView {
+    selected_option: Option<usize>,
+}
+
+impl Render for MyView {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        RadioGroup::horizontal("options")
+            .children(["Option 1", "Option 2", "Option 3"])
+            .selected_index(self.selected_option)
+            .on_change(cx.listener(|view, selected_index: &usize, _, cx| {
+                view.selected_option = Some(*selected_index);
+                cx.notify();
+            }))
+    }
+}
+```
+
+### Standalone
 
 ```rust
 Radio::new("radio-option-1")
@@ -42,26 +61,6 @@ impl Render for MyView {
             .checked(self.radio_checked)
             .on_change(cx.listener(|view, checked, _, cx| {
                 view.radio_checked = *checked;
-                cx.notify();
-            }))
-    }
-}
-```
-
-### Radio Group (Recommended)
-
-```rust
-struct MyView {
-    selected_option: Option<usize>,
-}
-
-impl Render for MyView {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        RadioGroup::horizontal("options")
-            .children(["Option 1", "Option 2", "Option 3"])
-            .selected_index(self.selected_option)
-            .on_change(cx.listener(|view, selected_index: &usize, _, cx| {
-                view.selected_option = Some(*selected_index);
                 cx.notify();
             }))
     }
@@ -111,96 +110,6 @@ Radio::new("radio")
     .tab_index(2)
     .tab_stop(true)
 ```
-
-## Radio Group Usage
-
-### Horizontal Layout
-
-```rust
-RadioGroup::horizontal("horizontal-group")
-    .children(["First", "Second", "Third"])
-    .selected_index(Some(0))
-    .on_change(cx.listener(|view, index, _, cx| {
-        println!("Selected index: {}", index);
-        cx.notify();
-    }))
-```
-
-### Vertical Layout
-
-```rust
-RadioGroup::vertical("vertical-group")
-    .child(Radio::new("option1").label("United States"))
-    .child(Radio::new("option2").label("Canada"))
-    .child(Radio::new("option3").label("Mexico"))
-    .selected_index(Some(1))
-    .disabled(false)
-```
-
-### Styled Radio Group
-
-```rust
-RadioGroup::vertical("styled-group")
-    .w(px(220.))
-    .p_2()
-    .border_1()
-    .border_color(cx.theme().border)
-    .rounded(cx.theme().radius)
-    .child(Radio::new("option1").label("Option 1"))
-    .child(Radio::new("option2").label("Option 2"))
-    .child(Radio::new("option3").label("Option 3"))
-    .selected_index(Some(0))
-```
-
-### Disabled Radio Group
-
-```rust
-RadioGroup::vertical("disabled-group")
-    .children(["Option A", "Option B", "Option C"])
-    .selected_index(Some(1))
-    .disabled(true) // Disables all radio buttons in the group
-```
-
-## API Reference
-
-### Radio
-
-| Method             | Description                                                 |
-| ------------------ | ----------------------------------------------------------- |
-| `new(id)`          | Create a new radio button with the given ID                 |
-| `label(text)`      | Set label text                                              |
-| `checked(bool)`    | Set checked state                                           |
-| `disabled(bool)`   | Set disabled state                                          |
-| `on_change(fn)`     | Requested checked value, receives `&bool` |
-| `tab_stop(bool)`   | Enable/disable tab navigation (default: true)               |
-| `tab_index(isize)` | Set tab order index (default: 0)                            |
-
-### RadioGroup
-
-| Method                          | Description                                                         |
-| ------------------------------- | ------------------------------------------------------------------- |
-| `new(id)` | Create a vertical radio group with no selection |
-| `horizontal(id)`                | Create a new horizontal radio group                                 |
-| `vertical(id)`                  | Create a new vertical radio group                                   |
-| `layout(Axis)`                  | Set layout direction (Vertical or Horizontal)                       |
-| `child(Radio)`                  | Add a single radio button to the group                              |
-| `children(items)`               | Add multiple radio buttons from an iterator                         |
-| `selected_index(Option<usize>)` | Set the selected option by index                                    |
-| `disabled(bool)`                | Disable all radio buttons in the group                              |
-| `on_change(fn)`                 | Requested selected index, receives `&usize` |
-
-### Styling
-
-Both Radio and RadioGroup implement `Styled` trait for custom styling:
-
-Radio also implements `Sizable` trait:
-
-- `xsmall()` - Extra small size
-- `small()` - Small size
-- `medium()` - Medium size (default)
-- `large()` - Large size
-
-## Examples
 
 ### Settings Panel
 
@@ -362,6 +271,55 @@ impl Render for PaymentView {
 }
 ```
 
+## Radio Group Usage
+
+### Horizontal Layout
+
+```rust
+RadioGroup::horizontal("horizontal-group")
+    .children(["First", "Second", "Third"])
+    .selected_index(Some(0))
+    .on_change(cx.listener(|view, index, _, cx| {
+        println!("Selected index: {}", index);
+        cx.notify();
+    }))
+```
+
+### Vertical Layout
+
+```rust
+RadioGroup::vertical("vertical-group")
+    .child(Radio::new("option1").label("United States"))
+    .child(Radio::new("option2").label("Canada"))
+    .child(Radio::new("option3").label("Mexico"))
+    .selected_index(Some(1))
+    .disabled(false)
+```
+
+### Styled Radio Group
+
+```rust
+RadioGroup::vertical("styled-group")
+    .w(px(220.))
+    .p_2()
+    .border_1()
+    .border_color(cx.theme().border)
+    .rounded(cx.theme().radius)
+    .child(Radio::new("option1").label("Option 1"))
+    .child(Radio::new("option2").label("Option 2"))
+    .child(Radio::new("option3").label("Option 3"))
+    .selected_index(Some(0))
+```
+
+### Disabled Radio Group
+
+```rust
+RadioGroup::vertical("disabled-group")
+    .children(["Option A", "Option B", "Option C"])
+    .selected_index(Some(1))
+    .disabled(true) // Disables all radio buttons in the group
+```
+
 ## Best Practices
 
 1. **Use RadioGroup**: Always prefer `RadioGroup` over individual `Radio` components for mutually exclusive choices
@@ -371,3 +329,42 @@ impl Render for PaymentView {
 5. **Limit Options**: Keep the number of radio options reasonable (typically 2-7 options)
 6. **Group Related Options**: Use visual grouping and clear headings for multiple radio groups
 7. **Responsive Design**: Consider using horizontal layout for fewer options and vertical for more options
+
+## API Reference
+
+### Radio
+
+| Method             | Description                                                 |
+| ------------------ | ----------------------------------------------------------- |
+| `new(id)`          | Create a new radio button with the given ID                 |
+| `label(text)`      | Set label text                                              |
+| `checked(bool)`    | Set checked state                                           |
+| `disabled(bool)`   | Set disabled state                                          |
+| `on_change(fn)`     | Requested checked value, receives `&bool` |
+| `tab_stop(bool)`   | Enable/disable tab navigation (default: true)               |
+| `tab_index(isize)` | Set tab order index (default: 0)                            |
+
+### RadioGroup
+
+| Method                          | Description                                                         |
+| ------------------------------- | ------------------------------------------------------------------- |
+| `new(id)` | Create a vertical radio group with no selection |
+| `horizontal(id)`                | Create a new horizontal radio group                                 |
+| `vertical(id)`                  | Create a new vertical radio group                                   |
+| `layout(Axis)`                  | Set layout direction (Vertical or Horizontal)                       |
+| `child(Radio)`                  | Add a single radio button to the group                              |
+| `children(items)`               | Add multiple radio buttons from an iterator                         |
+| `selected_index(Option<usize>)` | Set the selected option by index                                    |
+| `disabled(bool)`                | Disable all radio buttons in the group                              |
+| `on_change(fn)`                 | Requested selected index, receives `&usize` |
+
+### Styling
+
+Both Radio and RadioGroup implement `Styled` trait for custom styling:
+
+Radio also implements `Sizable` trait:
+
+- `xsmall()` - Extra small size
+- `small()` - Small size
+- `medium()` - Medium size (default)
+- `large()` - Large size

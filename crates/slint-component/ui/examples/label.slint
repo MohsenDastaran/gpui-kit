@@ -9,9 +9,16 @@ export component LabelExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Form labels"; variant: GroupBoxVariant.outline;
-        Label { text: "Email"; required: true; }
-        Input { placeholder: "you@example.com"; }
+    GroupBox {
+        title: "Form labels";
+        variant: GroupBoxVariant.outline;
+        Label {
+            text: "Email";
+            required: true;
+        }
+        Input {
+            placeholder: "you@example.com";
+        }
     }
 
 }

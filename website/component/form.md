@@ -29,7 +29,6 @@ Form::new()
 `child` accepts a Field. Put commands in `footer`, which spans all columns and aligns its content to the trailing edge. Attach submission behavior to the supplied Button; Form does not submit automatically. See the [complete application recipe](https://github.com/longbridge/gpui-kit/tree/main/examples/ai_recipes) for retained state, callbacks, and window setup.
 
 ## Usage
-
 ### Basic Form
 
 ```rust
@@ -84,6 +83,210 @@ v_form()
             .label("Bio")
             .col_span(2) // Span across both columns
             .child(Input::new(&bio_input))
+    )
+```
+
+### User Registration Form
+
+```rust
+struct RegistrationForm {
+    first_name: Entity<InputState>,
+    last_name: Entity<InputState>,
+    email: Entity<InputState>,
+    password: Entity<InputState>,
+    confirm_password: Entity<InputState>,
+    terms_accepted: bool,
+}
+
+impl Render for RegistrationForm {
+    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        v_form()
+            .large()
+            .child(
+                field()
+                    .label("Personal Information")
+                    .label_indent(false)
+                    .child(
+                        h_flex()
+                            .gap_3()
+                            .child(
+                                div().flex_1().child(
+                                    Input::new(&self.first_name)
+                                        .placeholder("First name")
+                                )
+                            )
+                            .child(
+                                div().flex_1().child(
+                                    Input::new(&self.last_name)
+                                        .placeholder("Last name")
+                                )
+                            )
+                    )
+            )
+            .child(
+                field()
+                    .label("Email")
+                    .required(true)
+                    .child(Input::new(&self.email))
+            )
+            .child(
+                field()
+                    .label("Password")
+                    .required(true)
+                    .description("Must be at least 8 characters")
+                    .child(Input::new(&self.password))
+            )
+            .child(
+                field()
+                    .label("Confirm Password")
+                    .required(true)
+                    .child(Input::new(&self.confirm_password))
+            )
+            .child(
+                field()
+                    .label_indent(false)
+                    .child(
+                        Checkbox::new("terms")
+                            .label("I agree to the Terms of Service")
+                            .checked(self.terms_accepted)
+                            .on_click(cx.listener(|this, checked, _, cx| {
+                                this.terms_accepted = *checked;
+                                cx.notify();
+                            }))
+                    )
+            )
+            .child(
+                field()
+                    .label_indent(false)
+                    .child(
+                        Button::new("register")
+                            .primary()
+                            .large()
+                            .w_full()
+                            .child("Create Account")
+                    )
+            )
+    }
+}
+```
+
+### Settings Form with Sections
+
+```rust
+v_form()
+    .column(2)
+    .child(
+        field()
+            .label("Profile")
+            .label_indent(false)
+            .col_span(2)
+            .child(Separator::horizontal())
+    )
+    .child(
+        field()
+            .label("Display Name")
+            .child(Input::new(&display_name))
+    )
+    .child(
+        field()
+            .label("Email")
+            .child(Input::new(&email))
+    )
+    .child(
+        field()
+            .label("Bio")
+            .col_span(2)
+            .items_start()
+            .child(Input::new(&bio))
+    )
+    .child(
+        field()
+            .label("Preferences")
+            .label_indent(false)
+            .col_span(2)
+            .child(Separator::horizontal())
+    )
+    .child(
+        field()
+            .label("Theme")
+            .child(Select::new(&theme_state))
+    )
+    .child(
+        field()
+            .label("Language")
+            .child(Select::new(&language_state))
+    )
+    .child(
+        field()
+            .label_indent(false)
+            .child(Switch::new("notifications").label("Enable notifications"))
+    )
+    .child(
+        field()
+            .label_indent(false)
+            .child(Switch::new("marketing").label("Marketing emails"))
+    )
+```
+
+### Contact Form
+
+```rust
+v_form()
+    .child(
+        field()
+            .label("Contact Information")
+            .child(
+                h_flex()
+                    .gap_2()
+                    .child(
+                        Select::new(&prefix_state)
+                            .w(px(80.))
+                    )
+                    .child(
+                        div().flex_1().child(
+                            Input::new(&name_input)
+                                .placeholder("Your name")
+                        )
+                    )
+            )
+    )
+    .child(
+        field()
+            .label("Email")
+            .required(true)
+            .child(Input::new(&email_input))
+    )
+    .child(
+        field()
+            .label("Subject")
+            .child(Select::new(&subject_state))
+    )
+    .child(
+        field()
+            .label("Message")
+            .required(true)
+            .items_start()
+            .description("Please describe your inquiry in detail")
+            .child(Input::new(&message_input))
+    )
+    .child(
+        field()
+            .label_indent(false)
+            .child(
+                h_flex()
+                    .gap_2()
+                    .justify_between()
+                    .child(
+                        Checkbox::new("copy")
+                            .label("Send me a copy")
+                    )
+                    .child(
+                        h_flex()
+                            .gap_2()
+                            .child(Button::new("cancel").child("Cancel"))
+                            .child(Button::new("send").primary().child("Send Message"))
+                    )
+            )
     )
 ```
 
@@ -348,211 +551,5 @@ v_form()
             .label("Bio")
             .when(!is_mobile, |field| field.col_span(2))
             .child(bio_input)
-    )
-```
-
-## Examples
-
-### User Registration Form
-
-```rust
-struct RegistrationForm {
-    first_name: Entity<InputState>,
-    last_name: Entity<InputState>,
-    email: Entity<InputState>,
-    password: Entity<InputState>,
-    confirm_password: Entity<InputState>,
-    terms_accepted: bool,
-}
-
-impl Render for RegistrationForm {
-    fn render(&mut self, _: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        v_form()
-            .large()
-            .child(
-                field()
-                    .label("Personal Information")
-                    .label_indent(false)
-                    .child(
-                        h_flex()
-                            .gap_3()
-                            .child(
-                                div().flex_1().child(
-                                    Input::new(&self.first_name)
-                                        .placeholder("First name")
-                                )
-                            )
-                            .child(
-                                div().flex_1().child(
-                                    Input::new(&self.last_name)
-                                        .placeholder("Last name")
-                                )
-                            )
-                    )
-            )
-            .child(
-                field()
-                    .label("Email")
-                    .required(true)
-                    .child(Input::new(&self.email))
-            )
-            .child(
-                field()
-                    .label("Password")
-                    .required(true)
-                    .description("Must be at least 8 characters")
-                    .child(Input::new(&self.password))
-            )
-            .child(
-                field()
-                    .label("Confirm Password")
-                    .required(true)
-                    .child(Input::new(&self.confirm_password))
-            )
-            .child(
-                field()
-                    .label_indent(false)
-                    .child(
-                        Checkbox::new("terms")
-                            .label("I agree to the Terms of Service")
-                            .checked(self.terms_accepted)
-                            .on_click(cx.listener(|this, checked, _, cx| {
-                                this.terms_accepted = *checked;
-                                cx.notify();
-                            }))
-                    )
-            )
-            .child(
-                field()
-                    .label_indent(false)
-                    .child(
-                        Button::new("register")
-                            .primary()
-                            .large()
-                            .w_full()
-                            .child("Create Account")
-                    )
-            )
-    }
-}
-```
-
-### Settings Form with Sections
-
-```rust
-v_form()
-    .column(2)
-    .child(
-        field()
-            .label("Profile")
-            .label_indent(false)
-            .col_span(2)
-            .child(Separator::horizontal())
-    )
-    .child(
-        field()
-            .label("Display Name")
-            .child(Input::new(&display_name))
-    )
-    .child(
-        field()
-            .label("Email")
-            .child(Input::new(&email))
-    )
-    .child(
-        field()
-            .label("Bio")
-            .col_span(2)
-            .items_start()
-            .child(Input::new(&bio))
-    )
-    .child(
-        field()
-            .label("Preferences")
-            .label_indent(false)
-            .col_span(2)
-            .child(Separator::horizontal())
-    )
-    .child(
-        field()
-            .label("Theme")
-            .child(Select::new(&theme_state))
-    )
-    .child(
-        field()
-            .label("Language")
-            .child(Select::new(&language_state))
-    )
-    .child(
-        field()
-            .label_indent(false)
-            .child(Switch::new("notifications").label("Enable notifications"))
-    )
-    .child(
-        field()
-            .label_indent(false)
-            .child(Switch::new("marketing").label("Marketing emails"))
-    )
-```
-
-### Contact Form
-
-```rust
-v_form()
-    .child(
-        field()
-            .label("Contact Information")
-            .child(
-                h_flex()
-                    .gap_2()
-                    .child(
-                        Select::new(&prefix_state)
-                            .w(px(80.))
-                    )
-                    .child(
-                        div().flex_1().child(
-                            Input::new(&name_input)
-                                .placeholder("Your name")
-                        )
-                    )
-            )
-    )
-    .child(
-        field()
-            .label("Email")
-            .required(true)
-            .child(Input::new(&email_input))
-    )
-    .child(
-        field()
-            .label("Subject")
-            .child(Select::new(&subject_state))
-    )
-    .child(
-        field()
-            .label("Message")
-            .required(true)
-            .items_start()
-            .description("Please describe your inquiry in detail")
-            .child(Input::new(&message_input))
-    )
-    .child(
-        field()
-            .label_indent(false)
-            .child(
-                h_flex()
-                    .gap_2()
-                    .justify_between()
-                    .child(
-                        Checkbox::new("copy")
-                            .label("Send me a copy")
-                    )
-                    .child(
-                        h_flex()
-                            .gap_2()
-                            .child(Button::new("cancel").child("Cancel"))
-                            .child(Button::new("send").primary().child("Send Message"))
-                    )
-            )
     )
 ```

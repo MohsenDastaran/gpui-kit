@@ -14,25 +14,7 @@ use gpui_kit::component::stepper::{Stepper, StepperItem};
 ```
 
 ## Usage
-
-### Basic Stepper
-
-Use `selected_index` method to set current active step by index (0-based), default is `0`.
-
-```rust
-Stepper::new("my-stepper")
-    .selected_index(0)
-    .items([
-        StepperItem::new().child("Step 1"),
-        StepperItem::new().child("Step 2"),
-        StepperItem::new().child("Step 3"),
-    ])
-    .on_click(|step, _, _| {
-        println!("Clicked step: {}", step);
-    })
-```
-
-### With Icons
+### With icons
 
 ```rust
 use gpui_kit::component::IconName;
@@ -55,33 +37,7 @@ Stepper::new("icon-stepper")
     ])
 ```
 
-### Vertical Layout
-
-```rust
-Stepper::new("vertical-stepper")
-    .vertical()
-    .selected_index(2)
-    .items_center()
-    .items([
-        StepperItem::new()
-            .pb_8()
-            .icon(IconName::Building2)
-            .child(v_flex().child("Step 1").child("Description for step 1.")),
-        StepperItem::new()
-            .pb_8()
-            .icon(IconName::Asterisk)
-            .child(v_flex().child("Step 2").child("Description for step 2.")),
-        StepperItem::new()
-            .pb_8()
-            .icon(IconName::Folder)
-            .child(v_flex().child("Step 3").child("Description for step 3.")),
-        StepperItem::new()
-            .icon(IconName::CircleCheck)
-            .child(v_flex().child("Step 4").child("Description for step 4.")),
-    ])
-```
-
-### Text Center
+### Text center
 
 The `text_center` method centers the text within each step item.
 
@@ -111,7 +67,33 @@ Stepper::new("center-stepper")
     ])
 ```
 
-### Different Sizes
+### Vertical
+
+```rust
+Stepper::new("vertical-stepper")
+    .vertical()
+    .selected_index(2)
+    .items_center()
+    .items([
+        StepperItem::new()
+            .pb_8()
+            .icon(IconName::Building2)
+            .child(v_flex().child("Step 1").child("Description for step 1.")),
+        StepperItem::new()
+            .pb_8()
+            .icon(IconName::Asterisk)
+            .child(v_flex().child("Step 2").child("Description for step 2.")),
+        StepperItem::new()
+            .pb_8()
+            .icon(IconName::Folder)
+            .child(v_flex().child("Step 3").child("Description for step 3.")),
+        StepperItem::new()
+            .icon(IconName::CircleCheck)
+            .child(v_flex().child("Step 4").child("Description for step 4.")),
+    ])
+```
+
+### Sizes and disabled
 
 ```rust
 use gpui_kit::component::{Sizable as _, Size};
@@ -127,6 +109,23 @@ Stepper::new("stepper")
 Stepper::new("stepper")
     .large()
     .items([...])
+```
+
+### Basic Stepper
+
+Use `selected_index` method to set current active step by index (0-based), default is `0`.
+
+```rust
+Stepper::new("my-stepper")
+    .selected_index(0)
+    .items([
+        StepperItem::new().child("Step 1"),
+        StepperItem::new().child("Step 2"),
+        StepperItem::new().child("Step 3"),
+    ])
+    .on_click(|step, _, _| {
+        println!("Clicked step: {}", step);
+    })
 ```
 
 ### Disabled State
@@ -155,22 +154,6 @@ Stepper::new("my-stepper")
         cx.notify();
     }))
 ```
-
-## API Reference
-
-- [Stepper]
-- [StepperItem]
-
-### Sizing
-
-Implements [Sizable] trait:
-
-- `xsmall()` - Extra small size
-- `small()` - Small size
-- `medium()` - Medium size (default)
-- `large()` - Large size
-
-## Examples
 
 ### Multi-step Form
 
@@ -210,3 +193,17 @@ Stepper::new("stepper")
 [Stepper]: https://docs.rs/gpui-component/latest/gpui_component/stepper/struct.Stepper.html
 [StepperItem]: https://docs.rs/gpui-component/latest/gpui_component/stepper/struct.StepperItem.html
 [Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
+
+## API Reference
+
+- [Stepper]
+- [StepperItem]
+
+### Sizing
+
+Implements [Sizable] trait:
+
+- `xsmall()` - Extra small size
+- `small()` - Small size
+- `medium()` - Medium size (default)
+- `large()` - Large size

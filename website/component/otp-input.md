@@ -14,6 +14,53 @@ use gpui_kit::component::input::{OtpInput, OtpState};
 ```
 
 ## Usage
+### Verification
+
+```rust
+struct SmsVerification {
+    otp_state: Entity<OtpState>,
+    phone_number: String,
+    is_verifying: bool,
+}
+
+impl SmsVerification {
+    fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
+        let otp_state = cx.new(|cx| OtpState::new(6, window, cx));
+
+        cx.subscribe(&otp_state, |this, state, event: &InputEvent, cx| {
+            if let InputEvent::Change = event {
+                let code = state.read(cx).value();
+                this.verify_sms_code(&code, cx);
+            }
+        });
+
+        Self {
+            otp_state,
+            phone_number: "+1234567890".to_string(),
+            is_verifying: false,
+        }
+    }
+
+    fn verify_sms_code(&mut self, code: &str, cx: &mut Context<Self>) {
+        self.is_verifying = true;
+        // API call to verify SMS code
+        println!("Verifying SMS code: {}", code);
+        cx.notify();
+    }
+}
+
+impl Render for SmsVerification {
+    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
+        v_flex()
+            .gap_4()
+            .child(format!("Enter the 6-digit code sent to {}", self.phone_number))
+            .child(OtpInput::new(&self.otp_state))
+            .when(self.is_verifying, |this| {
+                this.child("Verifying...")
+            })
+    }
+}
+```
 
 ### Basic OTP Input
 
@@ -139,90 +186,6 @@ otp_state.update(cx, |state, cx| {
 
 // Get current value
 let current_value = otp_state.read(cx).value();
-```
-
-## API Reference
-
-### OtpState
-
-| Method                         | Description                                  |
-| ------------------------------ | -------------------------------------------- |
-| `new(length, window, cx)`      | Create a new OTP state with specified length |
-| `default_value(str)`           | Set initial value                            |
-| `masked(bool)`                 | Enable masked display (shows asterisks)      |
-| `set_value(str, window, cx)`   | Set OTP value programmatically               |
-| `value()`                      | Get current OTP value                        |
-| `set_masked(bool, window, cx)` | Toggle masked display                        |
-| `focus(window, cx)`            | Focus the OTP input                          |
-| `focus_handle(cx)`             | Get focus handle                             |
-
-### OtpInput
-
-| Method           | Description                              |
-| ---------------- | ---------------------------------------- |
-| `new(state)`     | Create OTP input with state entity       |
-| `groups(n)`      | Set number of visual groups (default: 2) |
-| `disabled(bool)` | Set disabled state                       |
-| `small()`        | Small size (6x6 px fields)               |
-| `large()`        | Large size (11x11 px fields)             |
-| `with_size(px)`  | Custom field size                        |
-
-### InputEvent
-
-| Event    | Description                                       |
-| -------- | ------------------------------------------------- |
-| `Change` | Emitted when OTP is complete (all digits entered) |
-| `Focus`  | Input received focus                              |
-| `Blur`   | Input lost focus                                  |
-
-## Examples
-
-### SMS Verification
-
-```rust
-struct SmsVerification {
-    otp_state: Entity<OtpState>,
-    phone_number: String,
-    is_verifying: bool,
-}
-
-impl SmsVerification {
-    fn new(window: &mut Window, cx: &mut Context<Self>) -> Self {
-        let otp_state = cx.new(|cx| OtpState::new(6, window, cx));
-
-        cx.subscribe(&otp_state, |this, state, event: &InputEvent, cx| {
-            if let InputEvent::Change = event {
-                let code = state.read(cx).value();
-                this.verify_sms_code(&code, cx);
-            }
-        });
-
-        Self {
-            otp_state,
-            phone_number: "+1234567890".to_string(),
-            is_verifying: false,
-        }
-    }
-
-    fn verify_sms_code(&mut self, code: &str, cx: &mut Context<Self>) {
-        self.is_verifying = true;
-        // API call to verify SMS code
-        println!("Verifying SMS code: {}", code);
-        cx.notify();
-    }
-}
-
-impl Render for SmsVerification {
-    fn render(&mut self, window: &mut Window, cx: &mut Context<Self>) -> impl IntoElement {
-        v_flex()
-            .gap_4()
-            .child(format!("Enter the 6-digit code sent to {}", self.phone_number))
-            .child(OtpInput::new(&self.otp_state))
-            .when(self.is_verifying, |this| {
-                this.child("Verifying...")
-            })
-    }
-}
 ```
 
 ### Two-Factor Authentication
@@ -408,3 +371,37 @@ struct OtpWithResend {
 
 // Implementation would include timer logic for resend functionality
 ```
+
+## API Reference
+
+### OtpState
+
+| Method                         | Description                                  |
+| ------------------------------ | -------------------------------------------- |
+| `new(length, window, cx)`      | Create a new OTP state with specified length |
+| `default_value(str)`           | Set initial value                            |
+| `masked(bool)`                 | Enable masked display (shows asterisks)      |
+| `set_value(str, window, cx)`   | Set OTP value programmatically               |
+| `value()`                      | Get current OTP value                        |
+| `set_masked(bool, window, cx)` | Toggle masked display                        |
+| `focus(window, cx)`            | Focus the OTP input                          |
+| `focus_handle(cx)`             | Get focus handle                             |
+
+### OtpInput
+
+| Method           | Description                              |
+| ---------------- | ---------------------------------------- |
+| `new(state)`     | Create OTP input with state entity       |
+| `groups(n)`      | Set number of visual groups (default: 2) |
+| `disabled(bool)` | Set disabled state                       |
+| `small()`        | Small size (6x6 px fields)               |
+| `large()`        | Large size (11x11 px fields)             |
+| `with_size(px)`  | Custom field size                        |
+
+### InputEvent
+
+| Event    | Description                                       |
+| -------- | ------------------------------------------------- |
+| `Change` | Emitted when OTP is complete (all digits entered) |
+| `Focus`  | Input received focus                              |
+| `Blur`   | Input lost focus                                  |

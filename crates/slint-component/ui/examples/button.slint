@@ -170,28 +170,39 @@ export component ButtonExample inherits VerticalLayout {
                     col: Theme.wrap-col(0, root.wrap-cols);
                     horizontal-stretch: 0;
                     alignment: center;
-                    Button { text: "Extra small"; size: ControlSize.xsmall; }
+                    Button {
+                        text: "Extra small";
+                        size: ControlSize.xsmall;
+                    }
                 }
                 VerticalLayout {
                     row: Theme.wrap-row(1, root.wrap-cols);
                     col: Theme.wrap-col(1, root.wrap-cols);
                     horizontal-stretch: 0;
                     alignment: center;
-                    Button { text: "Small"; size: ControlSize.small; }
+                    Button {
+                        text: "Small";
+                        size: ControlSize.small;
+                    }
                 }
                 VerticalLayout {
                     row: Theme.wrap-row(2, root.wrap-cols);
                     col: Theme.wrap-col(2, root.wrap-cols);
                     horizontal-stretch: 0;
                     alignment: center;
-                    Button { text: "Medium"; }
+                    Button {
+                        text: "Medium";
+                    }
                 }
                 VerticalLayout {
                     row: Theme.wrap-row(3, root.wrap-cols);
                     col: Theme.wrap-col(3, root.wrap-cols);
                     horizontal-stretch: 0;
                     alignment: center;
-                    Button { text: "Large"; size: ControlSize.large; }
+                    Button {
+                        text: "Large";
+                        size: ControlSize.large;
+                    }
                 }
             }
         }
@@ -268,14 +279,43 @@ export component ButtonExample inherits VerticalLayout {
                 spacing: 16px;
                 alignment: center;
                 ButtonGroup {
-                    Button { text: "One"; outline: true; group-end: true; }
-                    Button { text: "Two"; outline: true; group-start: true; group-end: true; }
-                    Button { text: "Three"; outline: true; group-start: true; }
+                    Button {
+                        text: "One";
+                        outline: true;
+                        group-end: true;
+                    }
+                    Button {
+                        text: "Two";
+                        outline: true;
+                        group-start: true;
+                        group-end: true;
+                    }
+                    Button {
+                        text: "Three";
+                        outline: true;
+                        group-start: true;
+                    }
                 }
                 ButtonGroupVertical {
-                    Button { text: "One"; outline: true; group-end: true; group-vertical: true; }
-                    Button { text: "Two"; outline: true; group-start: true; group-end: true; group-vertical: true; }
-                    Button { text: "Three"; outline: true; group-start: true; group-vertical: true; }
+                    Button {
+                        text: "One";
+                        outline: true;
+                        group-end: true;
+                        group-vertical: true;
+                    }
+                    Button {
+                        text: "Two";
+                        outline: true;
+                        group-start: true;
+                        group-end: true;
+                        group-vertical: true;
+                    }
+                    Button {
+                        text: "Three";
+                        outline: true;
+                        group-start: true;
+                        group-vertical: true;
+                    }
                 }
             }
         }
@@ -287,11 +327,25 @@ export component ButtonExample inherits VerticalLayout {
         HorizontalLayout {
             alignment: center;
             spacing: 8px;
-            Button { icon: "search"; variant: ButtonVariant.primary; }
-            Button { icon: "info"; }
-            Button { icon: "x"; variant: ButtonVariant.danger; }
-            Button { icon: "search"; outline: true; }
-            Button { icon: "arrow-left"; variant: ButtonVariant.ghost; }
+            Button {
+                icon: "search";
+                variant: ButtonVariant.primary;
+            }
+            Button {
+                icon: "info";
+            }
+            Button {
+                icon: "x";
+                variant: ButtonVariant.danger;
+            }
+            Button {
+                icon: "search";
+                outline: true;
+            }
+            Button {
+                icon: "arrow-left";
+                variant: ButtonVariant.ghost;
+            }
         }
     }
 }

@@ -17,68 +17,90 @@ export component ShimmerExample inherits VerticalLayout {
         title: "Basic";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 32px;            ShimmerText {
+            spacing: 32px;
+            ShimmerText {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Thinking…"; }
+                text: "Thinking…";
+            }
             ShimmerText {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Generating a response…"; color: Theme.muted-foreground; }
+                text: "Generating a response…";
+                color: Theme.muted-foreground;
+            }
             ShimmerText {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Loading project data…"; font-size: Theme.font-size-md; font-weight: 500; }
-        
+                text: "Loading project data…";
+                font-size: Theme.font-size-md;
+                font-weight: 500;
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
         title: "Timing, spread and color";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 32px;            ShimmerText {
+            spacing: 32px;
+            ShimmerText {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Indexing files…"; duration: 3s; highlight-color: Theme.primary; color: Theme.muted-foreground; spread: 0.45; reverse: true; }
+                text: "Indexing files…";
+                duration: 3s;
+                highlight-color: Theme.primary;
+                color: Theme.muted-foreground;
+                spread: 0.45;
+                reverse: true;
+            }
             ShimmerText {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Loading a narrow label…"; color: Theme.muted-foreground; spread: 0.15; }
+                text: "Loading a narrow label…";
+                color: Theme.muted-foreground;
+                spread: 0.15;
+            }
             ShimmerText {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Loading a broad label…"; color: Theme.muted-foreground; spread: 0.7; }
+                text: "Loading a broad label…";
+                color: Theme.muted-foreground;
+                spread: 0.7;
+            }
             ShimmerText {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
                 horizontal-stretch: 1;
-                 text: "Fixed-width highlight…"; color: Theme.muted-foreground; spread-width: 48px; }
-        
+                text: "Fixed-width highlight…";
+                color: Theme.muted-foreground;
+                spread-width: 48px;
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
         title: "Play once";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 16px;            finalizing := ShimmerText {
+            spacing: 16px;
+            finalizing := ShimmerText {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 1;
@@ -99,20 +121,20 @@ export component ShimmerExample inherits VerticalLayout {
                     finalizing.restart();
                 }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
     GroupBox {
         title: "In context";
         variant: GroupBoxVariant.outline;
         GridLayout {
-            spacing: 12px;            Rectangle {
+            spacing: 12px;
+            Rectangle {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
@@ -120,7 +142,10 @@ export component ShimmerExample inherits VerticalLayout {
                 height: 32px;
                 border-radius: 16px;
                 background: Theme.muted;
-                Icon { name: "bot"; color: Theme.muted-foreground; }
+                Icon {
+                    name: "bot";
+                    color: Theme.muted-foreground;
+                }
             }
             VerticalLayout {
                 row: Theme.wrap-row(1, root.wrap-cols);
@@ -137,15 +162,15 @@ export component ShimmerExample inherits VerticalLayout {
                     font-size: Theme.font-size-sm;
                 }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
         GridLayout {
-            spacing: 12px;            Rectangle {
+            spacing: 12px;
+            Rectangle {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
@@ -159,33 +184,43 @@ export component ShimmerExample inherits VerticalLayout {
                     padding-right: 12px;
                     spacing: 12px;
                     VerticalLayout {
-                row: Theme.wrap-row(0, root.wrap-cols);
-                col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
+                        row: Theme.wrap-row(0, root.wrap-cols);
+                        col: Theme.wrap-col(0, root.wrap-cols);
+                        horizontal-stretch: 0;
                         alignment: center;
-                        Icon { name: "file-text"; color: Theme.muted-foreground; }
+                        Icon {
+                            name: "file-text";
+                            color: Theme.muted-foreground;
+                        }
                     }
                     VerticalLayout {
-                row: Theme.wrap-row(1, root.wrap-cols);
-                col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
+                        row: Theme.wrap-row(1, root.wrap-cols);
+                        col: Theme.wrap-col(1, root.wrap-cols);
+                        horizontal-stretch: 0;
                         alignment: center;
                         spacing: 2px;
-                        if root.generating: ShimmerText { text: "transcript.pdf"; font-weight: 500; }
-                        if !root.generating: Text { text: "transcript.pdf"; color: Theme.foreground; font-size: Theme.font-size-sm; font-weight: 500; }
+                        if root.generating: ShimmerText {
+                            text: "transcript.pdf";
+                            font-weight: 500;
+                        }
+                        if !root.generating: Text {
+                            text: "transcript.pdf";
+                            color: Theme.foreground;
+                            font-size: Theme.font-size-sm;
+                            font-weight: 500;
+                        }
                         Text {
                             text: root.generating ? "Processing document…" : "PDF · 2.4 MB";
                             color: Theme.muted-foreground;
                             font-size: Theme.font-size-xs;
                         }
                     }
-                
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
-            }
-}
+                    Rectangle {
+                        row: 0;
+                        col: root.wrap-cols;
+                        horizontal-stretch: 1;
+                    }
+                }
             }
             VerticalLayout {
                 row: Theme.wrap-row(1, root.wrap-cols);
@@ -199,12 +234,11 @@ export component ShimmerExample inherits VerticalLayout {
                     }
                 }
             }
-        
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 }

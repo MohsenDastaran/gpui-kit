@@ -17,7 +17,6 @@ use gpui_kit::component::sidebar::{
 ```
 
 ## Usage
-
 ### Basic Sidebar
 
 ```rust
@@ -306,23 +305,6 @@ Sidebar::new()
     )
 ```
 
-## Theming
-
-The sidebar uses dedicated theme colors:
-
-```rust
-// Theme colors used by sidebar
-cx.theme().sidebar                    // Background
-cx.theme().sidebar_foreground         // Text color
-cx.theme().sidebar_border            // Border color
-cx.theme().sidebar_accent            // Hover/active background
-cx.theme().sidebar_accent_foreground // Hover/active text
-cx.theme().sidebar_primary           // Primary elements
-cx.theme().sidebar_primary_foreground // Primary text
-```
-
-## Examples
-
 ### File Explorer Sidebar
 
 ```rust
@@ -490,4 +472,19 @@ Sidebar::new()
                     )
             )
     )
+```
+
+## Theming
+
+The sidebar uses dedicated theme colors:
+
+```rust
+// Theme colors used by sidebar
+cx.theme().sidebar                    // Background
+cx.theme().sidebar_foreground         // Text color
+cx.theme().sidebar_border            // Border color
+cx.theme().sidebar_accent            // Hover/active background
+cx.theme().sidebar_accent_foreground // Hover/active text
+cx.theme().sidebar_primary           // Primary elements
+cx.theme().sidebar_primary_foreground // Primary text
 ```

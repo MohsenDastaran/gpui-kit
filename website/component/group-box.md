@@ -14,8 +14,41 @@ use gpui_kit::component::group_box::{GroupBox, GroupBoxVariant, GroupBoxVariants
 ```
 
 ## Usage
+### Account Settings
 
-### Basic GroupBox
+```rust
+GroupBox::new()
+    .outline()
+    .title("Display Settings")
+    .child(
+        v_flex()
+            .gap_3()
+            .child(
+                h_flex()
+                    .justify_between()
+                    .child(Label::new("Theme"))
+                    .child(
+                        RadioGroup::horizontal("theme")
+                            .child(Radio::new("light").label("Light"))
+                            .child(Radio::new("dark").label("Dark"))
+                            .child(Radio::new("auto").label("Auto"))
+                    )
+            )
+            .child(
+                h_flex()
+                    .justify_between()
+                    .child(Label::new("Font Size"))
+                    .child(
+                        Select::new("font-size")
+                            .option("small", "Small")
+                            .option("medium", "Medium")
+                            .option("large", "Large")
+                    )
+            )
+    )
+```
+
+### Preferences
 
 ```rust
 GroupBox::new()
@@ -173,8 +206,6 @@ GroupBox::new()
     )
 ```
 
-## Examples
-
 ### Form Section
 
 ```rust
@@ -195,40 +226,6 @@ GroupBox::new()
                 h_flex()
                     .justify_end()
                     .child(Button::new("update").primary().label("Update Profile"))
-            )
-    )
-```
-
-### Settings Panel
-
-```rust
-GroupBox::new()
-    .outline()
-    .title("Display Settings")
-    .child(
-        v_flex()
-            .gap_3()
-            .child(
-                h_flex()
-                    .justify_between()
-                    .child(Label::new("Theme"))
-                    .child(
-                        RadioGroup::horizontal("theme")
-                            .child(Radio::new("light").label("Light"))
-                            .child(Radio::new("dark").label("Dark"))
-                            .child(Radio::new("auto").label("Auto"))
-                    )
-            )
-            .child(
-                h_flex()
-                    .justify_between()
-                    .child(Label::new("Font Size"))
-                    .child(
-                        Select::new("font-size")
-                            .option("small", "Small")
-                            .option("medium", "Medium")
-                            .option("large", "Large")
-                    )
             )
     )
 ```

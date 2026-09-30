@@ -14,7 +14,6 @@ use gpui_kit::component::tree::{tree, TreeState, TreeItem, TreeEntry};
 ```
 
 ## Usage
-
 ### Basic Tree
 
 ```rust
@@ -186,67 +185,6 @@ tree_state.update(cx, |state, cx| {
 });
 ```
 
-## API Reference
-
-### TreeState
-
-| Method                         | Description                      |
-|--------------------------------|----------------------------------|
-| `new(cx)`                      | Create a new tree state          |
-| `items(items)`                 | Set initial tree items           |
-| `set_items(items, cx)`         | Update tree items and notify     |
-| `selected_index()`             | Get currently selected index     |
-| `set_selected_index(ix, cx)`   | Set selected index               |
-| `set_selected_item(item, cx)`  | Set selected by tree item        |
-| `selected_item(item, cx)`      | Get currently selected tree item |
-| `selected_entry()`             | Get currently selected entry     |
-| `scroll_to_item(ix, strategy)` | Scroll to specific item          |
-
-### TreeItem
-
-| Method            | Description                            |
-| ----------------- | -------------------------------------- |
-| `new(id, label)`  | Create new tree item with ID and label |
-| `child(item)`     | Add single child item                  |
-| `children(items)` | Add multiple child items               |
-| `expanded(bool)`  | Set expanded state                     |
-| `disabled(bool)`  | Set disabled state                     |
-| `is_folder()`     | Check if item has children             |
-| `is_expanded()`   | Check if item is expanded              |
-| `is_disabled()`   | Check if item is disabled              |
-
-### TreeEntry
-
-| Method          | Description                 |
-| --------------- | --------------------------- |
-| `item()`        | Get the source TreeItem     |
-| `depth()`       | Get item depth in tree      |
-| `is_folder()`   | Check if entry has children |
-| `is_expanded()` | Check if entry is expanded  |
-| `is_disabled()` | Check if entry is disabled  |
-
-### tree() Function
-
-| Parameter     | Description                           |
-| ------------- | ------------------------------------- |
-| `state`       | `Entity<TreeState>` for managing tree |
-| `render_item` | Closure for rendering each item       |
-
-#### Render Item Closure
-
-```rust
-Fn(usize, &TreeEntry, bool, &mut Window, &mut App) -> ListItem
-```
-
-- `usize`: Item index in flattened tree
-- `&TreeEntry`: Tree entry with item and metadata
-- `bool`: Whether item is currently selected
-- `&mut Window`: Current window context
-- `&mut App`: Application context
-- Returns: `ListItem` for rendering
-
-## Examples
-
 ### Lazy Loading Tree
 
 ```rust
@@ -397,3 +335,62 @@ tree(&tree_state)
         // Handle custom actions
     }))
 ```
+
+## API Reference
+
+### TreeState
+
+| Method                         | Description                      |
+|--------------------------------|----------------------------------|
+| `new(cx)`                      | Create a new tree state          |
+| `items(items)`                 | Set initial tree items           |
+| `set_items(items, cx)`         | Update tree items and notify     |
+| `selected_index()`             | Get currently selected index     |
+| `set_selected_index(ix, cx)`   | Set selected index               |
+| `set_selected_item(item, cx)`  | Set selected by tree item        |
+| `selected_item(item, cx)`      | Get currently selected tree item |
+| `selected_entry()`             | Get currently selected entry     |
+| `scroll_to_item(ix, strategy)` | Scroll to specific item          |
+
+### TreeItem
+
+| Method            | Description                            |
+| ----------------- | -------------------------------------- |
+| `new(id, label)`  | Create new tree item with ID and label |
+| `child(item)`     | Add single child item                  |
+| `children(items)` | Add multiple child items               |
+| `expanded(bool)`  | Set expanded state                     |
+| `disabled(bool)`  | Set disabled state                     |
+| `is_folder()`     | Check if item has children             |
+| `is_expanded()`   | Check if item is expanded              |
+| `is_disabled()`   | Check if item is disabled              |
+
+### TreeEntry
+
+| Method          | Description                 |
+| --------------- | --------------------------- |
+| `item()`        | Get the source TreeItem     |
+| `depth()`       | Get item depth in tree      |
+| `is_folder()`   | Check if entry has children |
+| `is_expanded()` | Check if entry is expanded  |
+| `is_disabled()` | Check if entry is disabled  |
+
+### tree() Function
+
+| Parameter     | Description                           |
+| ------------- | ------------------------------------- |
+| `state`       | `Entity<TreeState>` for managing tree |
+| `render_item` | Closure for rendering each item       |
+
+#### Render Item Closure
+
+```rust
+Fn(usize, &TreeEntry, bool, &mut Window, &mut App) -> ListItem
+```
+
+- `usize`: Item index in flattened tree
+- `&TreeEntry`: Tree entry with item and metadata
+- `bool`: Whether item is currently selected
+- `&mut Window`: Current window context
+- `&mut App`: Application context
+- Returns: `ListItem` for rendering

@@ -14,21 +14,13 @@ use gpui_kit::component::alert::Alert;
 ```
 
 ## Usage
-
-### Basic Alert
+### Default
 
 ```rust
 Alert::new("alert-id", "This is a basic alert message.")
 ```
 
-### Alert with Title
-
-```rust
-Alert::new("alert-with-title", "Your changes have been saved successfully.")
-    .title("Success!")
-```
-
-### Alert Variants
+### Variants
 
 ```rust
 // Info alert (blue)
@@ -46,6 +38,41 @@ Alert::warning("warning-alert", "Please review your settings before proceeding."
 // Error alert (red)
 Alert::error("error-alert", "An error occurred while processing your request.")
     .title("Error")
+```
+
+### Banner
+
+Banner alerts take full width and don't display titles:
+
+```rust
+Alert::info("banner-alert", "This is a banner alert that spans the full width.")
+    .banner()
+
+Alert::success("banner-success", "Operation completed successfully!")
+    .banner()
+
+Alert::warning("banner-warning", "System maintenance scheduled for tonight.")
+    .banner()
+
+Alert::error("banner-error", "Service temporarily unavailable.")
+    .banner()
+```
+
+### Custom icon
+
+```rust
+use gpui_kit::component::IconName;
+
+Alert::new("custom-icon", "Meeting scheduled for tomorrow at 3 PM.")
+    .title("Calendar Reminder")
+    .icon(IconName::Calendar)
+```
+
+### Alert with Title
+
+```rust
+Alert::new("alert-with-title", "Your changes have been saved successfully.")
+    .title("Success!")
 ```
 
 ### Alert Sizes
@@ -81,34 +108,6 @@ Alert::info("closable-alert", "This alert can be dismissed.")
     })
 ```
 
-### Banner Mode
-
-Banner alerts take full width and don't display titles:
-
-```rust
-Alert::info("banner-alert", "This is a banner alert that spans the full width.")
-    .banner()
-
-Alert::success("banner-success", "Operation completed successfully!")
-    .banner()
-
-Alert::warning("banner-warning", "System maintenance scheduled for tonight.")
-    .banner()
-
-Alert::error("banner-error", "Service temporarily unavailable.")
-    .banner()
-```
-
-### Custom Icons
-
-```rust
-use gpui_kit::component::IconName;
-
-Alert::new("custom-icon", "Meeting scheduled for tomorrow at 3 PM.")
-    .title("Calendar Reminder")
-    .icon(IconName::Calendar)
-```
-
 ### With Markdown Content
 
 We can use `TextView` to render formatted (Markdown or HTML) text within the alert,
@@ -136,12 +135,6 @@ Alert::info("conditional-alert", "This alert may be hidden.")
     .title("Conditional")
     .visible(should_show_alert) // boolean condition
 ```
-
-## API Reference
-
-- [Alert]
-
-## Examples
 
 ### Form Validation Errors
 
@@ -211,3 +204,7 @@ Alert::warning(
 ```
 
 [Alert]: https://docs.rs/gpui-component/latest/gpui_component/alert/struct.Alert.html
+
+## API Reference
+
+- [Alert]

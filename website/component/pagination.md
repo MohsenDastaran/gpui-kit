@@ -14,19 +14,7 @@ use gpui_kit::component::pagination::Pagination;
 ```
 
 ## Usage
-
-### Basic Pagination
-
-```rust
-Pagination::new("my-pagination")
-    .current_page(5)
-    .total_pages(10)
-    .on_click(|page, _, cx| {
-        println!("Navigated to page: {}", page);
-    })
-```
-
-### With Visible Pages
+### Pages
 
 By default, the pagination shows up to 5 visible page buttons. You can customize this with `visible_pages()`:
 
@@ -37,6 +25,17 @@ Pagination::new("my-pagination")
     .visible_pages(10)
     .on_click(|page, _, cx| {
         // Handle page change
+    })
+```
+
+### Basic Pagination
+
+```rust
+Pagination::new("my-pagination")
+    .current_page(5)
+    .total_pages(10)
+    .on_click(|page, _, cx| {
+        println!("Navigated to page: {}", page);
     })
 ```
 
@@ -107,31 +106,6 @@ Pagination::new("my-pagination")
     })
 ```
 
-## API Reference
-
-- [Pagination]
-
-### Sizing
-
-Implements [Sizable] trait:
-
-- `xsmall()` - Extra small size
-- `small()` - Small size
-- `medium()` - Medium size (default)
-- `large()` - Large size
-- `with_size(size)` - Set custom size
-
-### Methods
-
-- `current_page(page: usize)` - Set the current page number (1-based). The value will be clamped between 1 and total_pages.
-- `total_pages(pages: usize)` - Set the total number of pages.
-- `visible_pages(max: usize)` - Set the maximum number of visible page buttons (default: 5).
-- `compact()` - Enable compact style (only shows prev/next buttons with icons).
-- `disabled(bool)` - Set the disabled state.
-- `on_click(handler)` - Set the handler for page change events.
-
-## Examples
-
 ### With State Management
 
 ```rust
@@ -168,3 +142,26 @@ Pagination::new("large-pagination")
 
 [Pagination]: https://docs.rs/gpui-component/latest/gpui_component/pagination/struct.Pagination.html
 [Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
+
+## API Reference
+
+- [Pagination]
+
+### Sizing
+
+Implements [Sizable] trait:
+
+- `xsmall()` - Extra small size
+- `small()` - Small size
+- `medium()` - Medium size (default)
+- `large()` - Large size
+- `with_size(size)` - Set custom size
+
+### Methods
+
+- `current_page(page: usize)` - Set the current page number (1-based). The value will be clamped between 1 and total_pages.
+- `total_pages(pages: usize)` - Set the total number of pages.
+- `visible_pages(max: usize)` - Set the maximum number of visible page buttons (default: 5).
+- `compact()` - Enable compact style (only shows prev/next buttons with icons).
+- `disabled(bool)` - Set the disabled state.
+- `on_click(handler)` - Set the handler for page change events.

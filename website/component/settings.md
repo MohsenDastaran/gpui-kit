@@ -17,7 +17,6 @@ use gpui_kit::component::setting::{Settings, SettingPage, SettingGroup, SettingI
 ```
 
 ## Usage
-
 ### Build a settings
 
 Here we have components that can be used to build a settings page.
@@ -116,6 +115,102 @@ SettingGroup::new()
     .variant(GroupBoxVariant::Normal)
     .items(vec![...])
 ```
+
+### Complete Settings Example
+
+```rust
+use gpui_kit::{App, SharedString};
+use gpui_kit::component::{
+    Settings, SettingPage, SettingGroup, SettingItem, SettingField,
+    setting::NumberFieldOptions,
+    group_box::GroupBoxVariant,
+    Size,
+};
+
+Settings::new("app-settings")
+    .with_size(Size::Medium)
+    .with_group_variant(GroupBoxVariant::Outline)
+    .pages(vec![
+        SettingPage::new("General")
+            .resettable(true)
+            .default_open(true)
+            .groups(vec![
+                SettingGroup::new()
+                    .title("Appearance")
+                    .items(vec![
+                        SettingItem::new(
+                            "Dark Mode",
+                            SettingField::switch(
+                                |cx: &App| cx.theme().mode.is_dark(),
+                                |val: bool, cx: &mut App| {
+                                    // Handle theme change
+                                },
+                            )
+                        )
+                        .description("Switch between light and dark themes."),
+                    ]),
+                SettingGroup::new()
+                    .title("Font")
+                    .items(vec![
+                        SettingItem::new(
+                            "Font Family",
+                            SettingField::dropdown(
+                                vec![
+                                    ("Arial".into(), "Arial".into()),
+                                    ("Helvetica".into(), "Helvetica".into()),
+                                ],
+                                |cx: &App| "Arial".into(),
+                                |val: SharedString, cx: &mut App| {
+                                    // Handle font change
+                                },
+                            )
+                        ),
+                        SettingItem::new(
+                            "Font Size",
+                            SettingField::number_input(
+                                NumberFieldOptions {
+                                    min: 8.0,
+                                    max: 72.0,
+                                    ..Default::default()
+                                },
+                                |cx: &App| 14.0,
+                                |val: f64, cx: &mut App| {
+                                    // Handle size change
+                                },
+                            )
+                        ),
+                    ]),
+            ]),
+        SettingPage::new("Software Update")
+            .resettable(true)
+            .group(
+                SettingGroup::new()
+                    .title("Updates")
+                    .items(vec![
+                        SettingItem::new(
+                            "Auto Update",
+                            SettingField::switch(
+                                |cx: &App| true,
+                                |val: bool, cx: &mut App| {
+                                    // Handle auto update
+                                },
+                            )
+                        )
+                        .description("Automatically download and install updates."),
+                    ])
+            ),
+    ])
+```
+
+[Settings]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.Settings.html
+[SettingPage]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.SettingPage.html
+[SettingGroup]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.SettingGroup.html
+[SettingItem]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.SettingItem.html
+[SettingField]: https://docs.rs/gpui-component/latest/gpui_component/setting/enum.SettingField.html
+[SettingFieldElement]: https://docs.rs/gpui-component/latest/gpui_component/setting/trait.SettingFieldElement.html
+[NumberFieldOptions]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.NumberFieldOptions.html
+[GroupBox]: ./group-box.md
+[Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
 
 ## Setting Page
 
@@ -517,101 +612,3 @@ Implements [Sizable] trait:
 - `medium()` - Medium size (default)
 - `large()` - Large size
 - `with_size(Size)` - Set specific size
-
-## Examples
-
-### Complete Settings Example
-
-```rust
-use gpui_kit::{App, SharedString};
-use gpui_kit::component::{
-    Settings, SettingPage, SettingGroup, SettingItem, SettingField,
-    setting::NumberFieldOptions,
-    group_box::GroupBoxVariant,
-    Size,
-};
-
-Settings::new("app-settings")
-    .with_size(Size::Medium)
-    .with_group_variant(GroupBoxVariant::Outline)
-    .pages(vec![
-        SettingPage::new("General")
-            .resettable(true)
-            .default_open(true)
-            .groups(vec![
-                SettingGroup::new()
-                    .title("Appearance")
-                    .items(vec![
-                        SettingItem::new(
-                            "Dark Mode",
-                            SettingField::switch(
-                                |cx: &App| cx.theme().mode.is_dark(),
-                                |val: bool, cx: &mut App| {
-                                    // Handle theme change
-                                },
-                            )
-                        )
-                        .description("Switch between light and dark themes."),
-                    ]),
-                SettingGroup::new()
-                    .title("Font")
-                    .items(vec![
-                        SettingItem::new(
-                            "Font Family",
-                            SettingField::dropdown(
-                                vec![
-                                    ("Arial".into(), "Arial".into()),
-                                    ("Helvetica".into(), "Helvetica".into()),
-                                ],
-                                |cx: &App| "Arial".into(),
-                                |val: SharedString, cx: &mut App| {
-                                    // Handle font change
-                                },
-                            )
-                        ),
-                        SettingItem::new(
-                            "Font Size",
-                            SettingField::number_input(
-                                NumberFieldOptions {
-                                    min: 8.0,
-                                    max: 72.0,
-                                    ..Default::default()
-                                },
-                                |cx: &App| 14.0,
-                                |val: f64, cx: &mut App| {
-                                    // Handle size change
-                                },
-                            )
-                        ),
-                    ]),
-            ]),
-        SettingPage::new("Software Update")
-            .resettable(true)
-            .group(
-                SettingGroup::new()
-                    .title("Updates")
-                    .items(vec![
-                        SettingItem::new(
-                            "Auto Update",
-                            SettingField::switch(
-                                |cx: &App| true,
-                                |val: bool, cx: &mut App| {
-                                    // Handle auto update
-                                },
-                            )
-                        )
-                        .description("Automatically download and install updates."),
-                    ])
-            ),
-    ])
-```
-
-[Settings]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.Settings.html
-[SettingPage]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.SettingPage.html
-[SettingGroup]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.SettingGroup.html
-[SettingItem]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.SettingItem.html
-[SettingField]: https://docs.rs/gpui-component/latest/gpui_component/setting/enum.SettingField.html
-[SettingFieldElement]: https://docs.rs/gpui-component/latest/gpui_component/setting/trait.SettingFieldElement.html
-[NumberFieldOptions]: https://docs.rs/gpui-component/latest/gpui_component/setting/struct.NumberFieldOptions.html
-[GroupBox]: ./group-box.md
-[Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html

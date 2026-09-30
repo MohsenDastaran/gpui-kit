@@ -8,15 +8,27 @@ export component KbdExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Shortcuts"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Shortcuts";
+        variant: GroupBoxVariant.outline;
         KbdSequence {
-            Kbd { text: "⌘"; }
-            Kbd { text: "K"; }
+            Kbd {
+                text: "⌘";
+            }
+            Kbd {
+                text: "K";
+            }
         }
         KbdSequence {
-            Kbd { text: "Ctrl"; }
-            Kbd { text: "Shift"; }
-            Kbd { text: "P"; }
+            Kbd {
+                text: "Ctrl";
+            }
+            Kbd {
+                text: "Shift";
+            }
+            Kbd {
+                text: "P";
+            }
         }
     }
 

@@ -18,8 +18,7 @@ use gpui_kit::component::input::{Input, InputState};
 ```
 
 ## Usage
-
-### Basic Input
+### Basic
 
 ```rust
 let input = cx.new(|cx| InputState::new(window, cx));
@@ -27,7 +26,59 @@ let input = cx.new(|cx| InputState::new(window, cx));
 Input::new(&input)
 ```
 
-### With Placeholder
+### Prefix, suffix and clear button
+
+```rust
+use gpui_kit::component::{Icon, IconName};
+
+// With prefix icon
+Input::new(&input)
+    .prefix(Icon::new(IconName::Search).small())
+
+// With suffix button
+Input::new(&input)
+    .suffix(
+        Button::new("info")
+            .ghost()
+            .icon(IconName::Info)
+            .xsmall()
+    )
+
+// With both
+Input::new(&input)
+    .prefix(Icon::new(IconName::Search).small())
+    .suffix(Button::new("btn").ghost().icon(IconName::Info).xsmall())
+```
+
+### Password
+
+```rust
+let input = cx.new(|cx|
+    InputState::new(window, cx)
+        .masked(true)
+        .default_value("password123")
+);
+
+Input::new(&input)
+    .content_type(InputContentType::Password)
+    .mask_toggle() // Shows toggle button to reveal password
+```
+
+While the value is masked, the input keeps it out of the clipboard and out of
+the selection: Copy and Cut do nothing (and are disabled in the context menu),
+a word-wise delete takes everything before the caret, and a double click
+selects the whole value instead of one word. Paste and Select All keep working,
+and revealing the value with `mask_toggle` restores all of them.
+
+### Sizes
+
+```rust
+Input::new(&input).large()
+Input::new(&input) // medium (default)
+Input::new(&input).small()
+```
+
+### States
 
 ```rust
 let input = cx.new(|cx|
@@ -54,58 +105,6 @@ Input::new(&input)
 ```rust
 Input::new(&input)
     .cleanable(true) // Show clear button when input has value
-```
-
-### With Prefix and Suffix
-
-```rust
-use gpui_kit::component::{Icon, IconName};
-
-// With prefix icon
-Input::new(&input)
-    .prefix(Icon::new(IconName::Search).small())
-
-// With suffix button
-Input::new(&input)
-    .suffix(
-        Button::new("info")
-            .ghost()
-            .icon(IconName::Info)
-            .xsmall()
-    )
-
-// With both
-Input::new(&input)
-    .prefix(Icon::new(IconName::Search).small())
-    .suffix(Button::new("btn").ghost().icon(IconName::Info).xsmall())
-```
-
-### Password Input (Masked)
-
-```rust
-let input = cx.new(|cx|
-    InputState::new(window, cx)
-        .masked(true)
-        .default_value("password123")
-);
-
-Input::new(&input)
-    .content_type(InputContentType::Password)
-    .mask_toggle() // Shows toggle button to reveal password
-```
-
-While the value is masked, the input keeps it out of the clipboard and out of
-the selection: Copy and Cut do nothing (and are disabled in the context menu),
-a word-wise delete takes everything before the caret, and a double click
-selects the whole value instead of one word. Paste and Select All keep working,
-and revealing the value with `mask_toggle` restores all of them.
-
-### Input Sizes
-
-```rust
-Input::new(&input).large()
-Input::new(&input) // medium (default)
-Input::new(&input).small()
 ```
 
 ### Disabled Input
@@ -288,8 +287,6 @@ arrive as `ClipboardEntry::ExternalPaths` through the same hook.
 Known limit: on web `read_from_clipboard()` is `None` (text arrives through
 the platform input handler); image paste there needs async clipboard access
 and permission, and is out of scope.
-
-## Examples
 
 ### Search Input
 

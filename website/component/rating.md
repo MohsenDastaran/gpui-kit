@@ -14,8 +14,7 @@ use gpui_kit::component::rating::Rating;
 ```
 
 ## Usage
-
-### Basic Rating
+### Rate this
 
 ```rust
 Rating::new("my-rating")
@@ -105,22 +104,6 @@ Rating::new("rating")
     })
 ```
 
-## API Reference
-
-- [Rating]
-
-### Methods
-
-- `new(id: impl Into<ElementId>)` - Create a new Rating component
-- `with_size(size: impl Into<Size>)` - Set the star size (implements [Sizable])
-- `value(value: usize)` - Set the initial rating value (0..=max)
-- `max(max: usize)` - Set the maximum number of stars (default: 5)
-- `color(color: impl Into<Hsla>)` - Set the active color (default: theme yellow)
-- `disabled(disabled: bool)` - Disable interaction (implements [Disableable])
-- `on_click(handler: Fn(&usize, &mut Window, &mut App))` - Set click handler
-
-## Examples
-
 ### Read-only Display
 
 ```rust
@@ -169,3 +152,17 @@ Rating::new("rating")
 [Rating]: https://docs.rs/gpui-component/latest/gpui_component/rating/struct.Rating.html
 [Sizable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Sizable.html
 [Disableable]: https://docs.rs/gpui-component/latest/gpui_component/trait.Disableable.html
+
+## API Reference
+
+- [Rating]
+
+### Methods
+
+- `new(id: impl Into<ElementId>)` - Create a new Rating component
+- `with_size(size: impl Into<Size>)` - Set the star size (implements [Sizable])
+- `value(value: usize)` - Set the initial rating value (0..=max)
+- `max(max: usize)` - Set the maximum number of stars (default: 5)
+- `color(color: impl Into<Hsla>)` - Set the active color (default: theme yellow)
+- `disabled(disabled: bool)` - Disable interaction (implements [Disableable])
+- `on_click(handler: Fn(&usize, &mut Window, &mut App))` - Set click handler

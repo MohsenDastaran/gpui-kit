@@ -10,41 +10,60 @@ export component SwitchExample inherits VerticalLayout {
     spacing: 24px;
     alignment: start;
 
-    GroupBox { title: "Basic"; variant: GroupBoxVariant.outline;
-        Switch { label: "Airplane mode"; }
-        Switch { label: "Wi-Fi"; checked: true; }
-        Switch { label: "Disabled"; enabled: false; }
+    GroupBox {
+        title: "Basic";
+        variant: GroupBoxVariant.outline;
+        Switch {
+            label: "Airplane mode";
+        }
+        Switch {
+            label: "Wi-Fi";
+            checked: true;
+        }
+        Switch {
+            label: "Disabled";
+            enabled: false;
+        }
     }
-    GroupBox { title: "Sizes"; variant: GroupBoxVariant.outline;
+    GroupBox {
+        title: "Sizes";
+        variant: GroupBoxVariant.outline;
         GridLayout {
-            horizontal-stretch: 1; spacing: 16px;
+            horizontal-stretch: 1;
+            spacing: 16px;
             Switch {
                 row: Theme.wrap-row(0, root.wrap-cols);
                 col: Theme.wrap-col(0, root.wrap-cols);
                 horizontal-stretch: 0;
-                 size: ControlSize.xsmall; checked: true; }
+                size: ControlSize.xsmall;
+                checked: true;
+            }
             Switch {
                 row: Theme.wrap-row(1, root.wrap-cols);
                 col: Theme.wrap-col(1, root.wrap-cols);
                 horizontal-stretch: 0;
-                 size: ControlSize.small; checked: true; }
+                size: ControlSize.small;
+                checked: true;
+            }
             Switch {
                 row: Theme.wrap-row(2, root.wrap-cols);
                 col: Theme.wrap-col(2, root.wrap-cols);
                 horizontal-stretch: 0;
-                 checked: true; }
+                checked: true;
+            }
             Switch {
                 row: Theme.wrap-row(3, root.wrap-cols);
                 col: Theme.wrap-col(3, root.wrap-cols);
                 horizontal-stretch: 0;
-                 size: ControlSize.large; checked: true; }
-        
+                size: ControlSize.large;
+                checked: true;
+            }
             Rectangle {
                 row: 0;
                 col: root.wrap-cols;
                 horizontal-stretch: 1;
             }
-}
+        }
     }
 
 }

@@ -5,13 +5,16 @@ import { fileURLToPath } from 'node:url';
 import { glob, type Loader } from 'astro/loaders';
 
 // Component pages are rendered once and cached by the markdown digest. The
-// Slint samples live outside those files, so a new usage file would stay
-// invisible until the markdown itself changed. This loader drops that cache
-// when anything under ui/usage changes, then renders the pages again.
+// Slint samples live in ui/examples, so a change there would stay invisible
+// until the markdown itself changed. This loader drops that cache when
+// anything under ui/examples changes, then renders the pages again.
 
-const usageRoot = resolve(fileURLToPath(new URL('.', import.meta.url)), '../../../crates/slint-component/ui/usage');
+const examplesRoot = resolve(
+  fileURLToPath(new URL('.', import.meta.url)),
+  '../../../crates/slint-component/ui/examples',
+);
 
-function usageStamp() {
+function examplesStamp() {
   const hash = createHash('sha1');
   const walk = (dir: string) => {
     if (!existsSync(dir)) return;
@@ -19,17 +22,17 @@ function usageStamp() {
       const path = join(dir, entry.name);
       if (entry.isDirectory()) walk(path);
       else if (entry.name.endsWith('.slint')) {
-        hash.update(relative(usageRoot, path));
+        hash.update(relative(examplesRoot, path));
         hash.update(readFileSync(path));
       }
     }
   };
-  walk(usageRoot);
+  walk(examplesRoot);
   return hash.digest('hex');
 }
 
-function isUsageFile(path: string) {
-  return path.endsWith('.slint') && path.includes(`${sep}usage${sep}`);
+function isExampleFile(path: string) {
+  return path.endsWith('.slint') && path.includes(`${sep}examples${sep}`);
 }
 
 export function componentMarkdownLoader(base: string): Loader {
@@ -39,32 +42,32 @@ export function componentMarkdownLoader(base: string): Loader {
   return {
     name: `component-markdown (${base})`,
     async load(context) {
-      const next = usageStamp();
-      if (context.meta.get('slint-usage') !== next) {
+      const next = examplesStamp();
+      if (context.meta.get('slint-examples') !== next) {
         context.store.clear();
-        context.meta.set('slint-usage', next);
+        context.meta.set('slint-examples', next);
       }
       await inner.load(context);
 
       const watcher = context.watcher;
       if (!watcher) return;
-      watcher.add(usageRoot);
+      watcher.add(examplesRoot);
       const reload = () => {
         clearTimeout(timer);
         timer = setTimeout(async () => {
-          const updated = usageStamp();
-          if (context.meta.get('slint-usage') === updated) return;
+          const updated = examplesStamp();
+          if (context.meta.get('slint-examples') === updated) return;
           context.store.clear();
-          context.meta.set('slint-usage', updated);
+          context.meta.set('slint-examples', updated);
           await inner.load(context);
         }, 200);
       };
-      const onUsage = (changedPath: string) => {
-        if (isUsageFile(changedPath)) reload();
+      const onExample = (changedPath: string) => {
+        if (isExampleFile(changedPath)) reload();
       };
-      watcher.on('add', onUsage);
-      watcher.on('change', onUsage);
-      watcher.on('unlink', onUsage);
+      watcher.on('add', onExample);
+      watcher.on('change', onExample);
+      watcher.on('unlink', onExample);
     },
   };
 }

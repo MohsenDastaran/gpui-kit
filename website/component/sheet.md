@@ -15,7 +15,6 @@ use gpui_kit::component::Placement;
 ```
 
 ## Usage
-
 ### Where sheets render
 
 The window's [Root](./root.md) automatically mounts and renders sheets. Open the window with `gpui_kit::open_window`, or wrap the application view in `Root::new`. Application views do not render overlay layers themselves.
@@ -212,51 +211,6 @@ Button::new("close")
 window.close_sheet(cx);
 ```
 
-## API Reference
-
-### Window Extensions
-
-| Method                             | Description                               |
-| ---------------------------------- | ----------------------------------------- |
-| `open_sheet(cx, fn)`               | Open sheet with default placement (Right) |
-| `open_sheet_at(placement, cx, fn)` | Open sheet at specific placement          |
-| `close_sheet(cx)`                  | Close current sheet                       |
-
-### Sheet Builder
-
-| Method                   | Description                             |
-| ------------------------ | --------------------------------------- |
-| `title(str)`             | Set sheet title                         |
-| `child(el)`              | Add content to sheet body               |
-| `footer(el)`             | Set footer content                      |
-| `size(px)`               | Set sheet size (width or height)        |
-| `margin_top(px)`         | Set top margin (for title bars)         |
-| `resizable(bool)`        | Allow resizing (default: true)          |
-| `overlay(bool)`          | Show overlay background (default: true) |
-| `overlay_closable(bool)` | Click overlay to close (default: true)  |
-| `on_close(fn)`           | Close event callback                    |
-
-### Placement Options
-
-| Value               | Description                         |
-| ------------------- | ----------------------------------- |
-| `Placement::Left`   | Slides in from left edge            |
-| `Placement::Right`  | Slides in from right edge (default) |
-| `Placement::Top`    | Slides in from top edge             |
-| `Placement::Bottom` | Slides in from bottom edge          |
-
-### Styling Methods
-
-| Method                | Description              |
-| --------------------- | ------------------------ |
-| `bg(color)`           | Set background color     |
-| `text_color(color)`   | Set text color           |
-| `border_color(color)` | Set border color         |
-| `px_*()/py_*()`       | Custom padding           |
-| `gap_*()`             | Spacing between children |
-
-## Examples
-
 ### Settings Panel
 
 ```rust
@@ -338,3 +292,46 @@ window.open_sheet_at(Placement::Bottom, cx, |sheet, _, _| {
 5. **Content Organization**: Use proper spacing and grouping for sheet content
 6. **Responsive Design**: Consider sheet behavior on smaller screens
 7. **Performance**: Lazy load sheet content when possible for better performance
+
+## API Reference
+
+### Window Extensions
+
+| Method                             | Description                               |
+| ---------------------------------- | ----------------------------------------- |
+| `open_sheet(cx, fn)`               | Open sheet with default placement (Right) |
+| `open_sheet_at(placement, cx, fn)` | Open sheet at specific placement          |
+| `close_sheet(cx)`                  | Close current sheet                       |
+
+### Sheet Builder
+
+| Method                   | Description                             |
+| ------------------------ | --------------------------------------- |
+| `title(str)`             | Set sheet title                         |
+| `child(el)`              | Add content to sheet body               |
+| `footer(el)`             | Set footer content                      |
+| `size(px)`               | Set sheet size (width or height)        |
+| `margin_top(px)`         | Set top margin (for title bars)         |
+| `resizable(bool)`        | Allow resizing (default: true)          |
+| `overlay(bool)`          | Show overlay background (default: true) |
+| `overlay_closable(bool)` | Click overlay to close (default: true)  |
+| `on_close(fn)`           | Close event callback                    |
+
+### Placement Options
+
+| Value               | Description                         |
+| ------------------- | ----------------------------------- |
+| `Placement::Left`   | Slides in from left edge            |
+| `Placement::Right`  | Slides in from right edge (default) |
+| `Placement::Top`    | Slides in from top edge             |
+| `Placement::Bottom` | Slides in from bottom edge          |
+
+### Styling Methods
+
+| Method                | Description              |
+| --------------------- | ------------------------ |
+| `bg(color)`           | Set background color     |
+| `text_color(color)`   | Set text color           |
+| `border_color(color)` | Set border color         |
+| `px_*()/py_*()`       | Custom padding           |
+| `gap_*()`             | Spacing between children |
