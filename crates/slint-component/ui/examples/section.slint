@@ -1,11 +1,11 @@
 import { Theme } from "../theme.slint";
 import { GroupBox as Box, GroupBoxVariant } from "../group-box.slint";
-import { SourceButton } from "bridge.slint";
+import { SourceHeading } from "bridge.slint";
 
 export { GroupBoxVariant }
 
-// The same section the examples already use, with a code button beside the
-// title. The button is the only control that asks the page to show this sample.
+// The same section the examples already use, with the title and a code icon
+// on one row. Either one asks the page to show this sample.
 export component GroupBox inherits VerticalLayout {
     in property <string> title;
     in property <GroupBoxVariant> variant: GroupBoxVariant.normal;
@@ -13,25 +13,8 @@ export component GroupBox inherits VerticalLayout {
     horizontal-stretch: 1;
     spacing: variant == GroupBoxVariant.normal ? 16px : 12px;
 
-    if root.title != "": HorizontalLayout {
-        spacing: 8px;
-        alignment: center;
-
-        Text {
-            text: root.title;
-            color: Theme.muted-foreground;
-            font-size: Theme.font-size-sm;
-            font-weight: 500;
-            wrap: word-wrap;
-            vertical-stretch: 0;
-        }
-
-        Rectangle { horizontal-stretch: 1; }
-
-        SourceButton {
-            title: root.title;
-            vertical-stretch: 0;
-        }
+    if root.title != "": SourceHeading {
+        title: root.title;
     }
 
     Box {

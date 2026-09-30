@@ -1,5 +1,6 @@
-// Gallery-only. A code button on each example tells the embedding page which
-// sample to show. Installed components do not include this file.
+// Gallery-only. The example title and its code icon share one row. Either one
+// tells the embedding page which sample to show. Installed components do not
+// include this file.
 
 import { Theme } from "../theme.slint";
 import { Icon } from "../icon.slint";
@@ -9,17 +10,16 @@ export global ExampleBridge {
     callback show(int, string);
 }
 
-export component SourceButton inherits Rectangle {
+export component SourceHeading inherits HorizontalLayout {
     in property <string> title;
+    in property <color> color: Theme.muted-foreground;
+    in property <length> font-size: Theme.font-size-sm;
+    in property <int> font-weight: 500;
+
     property <int> index: -1;
 
-    width: 24px;
-    height: 24px;
-    border-radius: Theme.radius-sm;
-    background: touch.has-hover ? Theme.accent : transparent;
-    accessible-role: button;
-    accessible-label: "View source";
-    accessible-action-default => { root.open(); }
+    spacing: 4px;
+    vertical-stretch: 0;
 
     init => {
         root.index = ExampleBridge.next-id;
@@ -33,17 +33,50 @@ export component SourceButton inherits Rectangle {
         ExampleBridge.show(root.index, root.title);
     }
 
-    touch := TouchArea {
-        width: 100%;
-        height: 100%;
-        clicked => { root.open(); }
+    VerticalLayout {
+        alignment: center;
+        horizontal-stretch: 1;
 
-        Icon {
-            x: (parent.width - self.width) / 2;
-            y: (parent.height - self.height) / 2;
-            name: "code-xml";
-            size: 14px;
-            color: Theme.muted-foreground;
+        title-hit := TouchArea {
+            clicked => { root.open(); }
+
+            Text {
+                text: root.title;
+                color: root.color;
+                font-size: root.font-size;
+                font-weight: root.font-weight;
+                wrap: word-wrap;
+                horizontal-stretch: 1;
+            }
+        }
+    }
+
+    VerticalLayout {
+        alignment: center;
+
+        icon := Rectangle {
+            width: 24px;
+            height: 24px;
+            vertical-stretch: 0;
+            border-radius: Theme.radius-sm;
+            background: icon-hit.has-hover ? Theme.accent : transparent;
+            accessible-role: button;
+            accessible-label: "View source";
+            accessible-action-default => { root.open(); }
+
+            icon-hit := TouchArea {
+                width: 100%;
+                height: 100%;
+                clicked => { root.open(); }
+
+                Icon {
+                    x: (parent.width - self.width) / 2;
+                    y: (parent.height - self.height) / 2;
+                    name: "code-xml";
+                    size: 14px;
+                    color: Theme.muted-foreground;
+                }
+            }
         }
     }
 }

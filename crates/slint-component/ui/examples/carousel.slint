@@ -1,5 +1,5 @@
 import { Theme } from "../theme.slint";
-import { SourceButton } from "bridge.slint";
+import { SourceHeading } from "bridge.slint";
 import { Button } from "../button.slint";
 import { Carousel } from "../carousel.slint";
 
@@ -16,17 +16,11 @@ component ExampleSection inherits Rectangle {
         padding: 16px;
         spacing: 12px;
 
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: center;
-            Text {
-                text: root.title;
-                color: Theme.foreground;
-                font-weight: 600;
-                wrap: word-wrap;
-                horizontal-stretch: 1;
-            }
-            SourceButton { title: root.title; vertical-stretch: 0; }
+        SourceHeading {
+            title: root.title;
+            color: Theme.foreground;
+            font-size: Theme.font-size-md;
+            font-weight: 600;
         }
 
         if root.body != "": Text {

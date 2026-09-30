@@ -1,5 +1,5 @@
 import { Theme } from "../theme.slint";
-import { SourceButton } from "bridge.slint";
+import { SourceHeading } from "bridge.slint";
 import {
     LineChart, AreaChart, BarChart, PieChart, RadarChart, CandlestickChart, SankeyChart,
     ChartLegend, LineInterpolation, BarAlign,
@@ -20,17 +20,11 @@ component ChartCard inherits Rectangle {
     VerticalLayout {
         padding: 16px;
         spacing: 10px;
-        HorizontalLayout {
-            spacing: 8px;
-            alignment: center;
-            Text {
-                text: root.title;
-                color: Theme.foreground;
-                font-weight: 600;
-                wrap: word-wrap;
-                horizontal-stretch: 1;
-            }
-            SourceButton { title: root.title; vertical-stretch: 0; }
+        SourceHeading {
+            title: root.title;
+            color: Theme.foreground;
+            font-size: Theme.font-size-md;
+            font-weight: 600;
         }
         if root.period != "": Text { text: root.period; color: Theme.muted-foreground; font-size: Theme.font-size-sm; }
         @children

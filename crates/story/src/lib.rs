@@ -385,7 +385,7 @@ impl RenderOnce for StorySection {
             .title(
                 h_flex()
                     .justify_between()
-                    .items_start()
+                    .items_center()
                     .w_full()
                     .gap_4()
                     .child(
@@ -393,7 +393,44 @@ impl RenderOnce for StorySection {
                             .min_w_0()
                             .flex_1()
                             .gap_1()
-                            .child(div().font_medium().child(self.title))
+                            .child(
+                                h_flex()
+                                    .items_center()
+                                    .w_full()
+                                    .gap_1()
+                                    .child(
+                                        div()
+                                            .id(SharedString::from(format!(
+                                                "example-title-{index}"
+                                            )))
+                                            .min_w_0()
+                                            .flex_1()
+                                            .font_medium()
+                                            .when(example_source::enabled(), |title| {
+                                                let source_title = source_title.clone();
+                                                title.on_click(move |_, _, _| {
+                                                    example_source::show(index, &source_title);
+                                                })
+                                            })
+                                            .child(self.title),
+                                    )
+                                    .when(example_source::enabled(), |row| {
+                                        let source_title = source_title.clone();
+                                        row.child(
+                                            Button::new(SharedString::from(format!(
+                                                "example-source-{index}"
+                                            )))
+                                            .icon(gpui_kit::assets::IconName::CodeXml)
+                                            .ghost()
+                                            .xsmall()
+                                            .tooltip("View source")
+                                            .accessibility_label("View source")
+                                            .on_click(move |_, _, _| {
+                                                example_source::show(index, &source_title);
+                                            }),
+                                        )
+                                    }),
+                            )
                             .when_some(self.description, |this, description| {
                                 this.child(
                                     div()
@@ -403,20 +440,7 @@ impl RenderOnce for StorySection {
                                 )
                             }),
                     )
-                    .children(self.sub_title)
-                    .when(example_source::enabled(), |row| {
-                        row.child(
-                            Button::new(SharedString::from(format!("example-source-{index}")))
-                                .icon(gpui_kit::assets::IconName::CodeXml)
-                                .ghost()
-                                .xsmall()
-                                .tooltip("View source")
-                                .accessibility_label("View source")
-                                .on_click(move |_, _, _| {
-                                    example_source::show(index, &source_title);
-                                }),
-                        )
-                    }),
+                    .children(self.sub_title),
             )
             .content_style(
                 StyleRefinement::default()
