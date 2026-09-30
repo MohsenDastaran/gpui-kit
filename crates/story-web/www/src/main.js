@@ -44,37 +44,60 @@ function watchPlatformInput() {
 }
 
 // The gallery is embedded same-origin in the documentation site, so it can read
-// the host page's appearance directly. That keeps the very first frame correct;
-// asking the host to post it to us would paint a light frame first.
-function hostPrefersDark() {
-  if (!embedded) return undefined;
+// the host page's theme directly. That keeps the very first frame correct;
+// asking the host to post it to us would paint the default theme first.
+function hostTheme() {
+  if (!embedded) return { name: undefined, dark: undefined };
   try {
-    return window.parent.document.documentElement.classList.contains('dark');
+    const root = window.parent.document.documentElement;
+    return {
+      name: root.dataset.themeName || undefined,
+      dark: root.classList.contains('dark'),
+    };
   } catch {
     // Cross-origin embedding: fall back to the viewer's own preference.
-    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return {
+      name: undefined,
+      dark: window.matchMedia('(prefers-color-scheme: dark)').matches,
+    };
   }
 }
 
-// Follow the host page when the reader toggles its theme.
-function watchHostTheme(wasm) {
+function themeKey(theme) {
+  return `${theme.name ?? ''}\0${theme.dark}`;
+}
+
+// Follow the host page as soon as it changes theme. `themechange` runs in the
+// same turn as the palette click. The observer covers the system appearance
+// switch, which only flips the `dark` class.
+function watchHostTheme(wasm, appliedKey) {
   if (!embedded) return;
   let root;
+  let parentDocument;
   try {
-    root = window.parent.document.documentElement;
+    parentDocument = window.parent.document;
+    root = parentDocument.documentElement;
   } catch {
     return;
   }
 
-  let current = root.classList.contains('dark');
-  new MutationObserver(() => {
-    const next = root.classList.contains('dark');
-    if (next !== current) {
-      current = next;
-      document.documentElement.classList.toggle('dark', next);
-      wasm.set_theme(next);
-    }
-  }).observe(root, { attributes: true, attributeFilter: ['class'] });
+  let applied = appliedKey;
+  const apply = () => {
+    const next = hostTheme();
+    const key = themeKey(next);
+    if (key === applied) return;
+    applied = key;
+    document.documentElement.classList.toggle('dark', Boolean(next.dark));
+    wasm.set_theme(next.name ?? null, Boolean(next.dark));
+  };
+
+  parentDocument.addEventListener('themechange', apply);
+  new MutationObserver(apply).observe(root, {
+    attributes: true,
+    attributeFilter: ['class', 'data-theme-name'],
+  });
+  // A change during WASM startup happened before this listener existed.
+  apply();
 }
 
 async function init() {
@@ -90,8 +113,9 @@ async function init() {
     // A documentation page can deep-link to the matching Rust story while the
     // standalone gallery keeps its normal overview.
     const story = new URLSearchParams(window.location.search).get('story');
-    await wasm.run(story || undefined, hostPrefersDark());
-    watchHostTheme(wasm);
+    const theme = hostTheme();
+    await wasm.run(story || undefined, theme.dark, theme.name);
+    watchHostTheme(wasm, themeKey(theme));
 
     // Hide loading indicator
     loadingEl?.remove();
