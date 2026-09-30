@@ -151,9 +151,15 @@ const groups = [
     });
   });
 
-  dialog?.addEventListener('click', (event) => {
-    if (event.target === dialog) dialog.close();
-  });
+  window.addEventListener('pointerdown', (event) => {
+    if (!dialog?.open) return;
+    const bounds = dialog.getBoundingClientRect();
+    const inside = event.clientX >= bounds.left && event.clientX <= bounds.right
+      && event.clientY >= bounds.top && event.clientY <= bounds.bottom;
+    if (inside) return;
+    event.preventDefault();
+    dialog.close();
+  }, true);
   dialog?.addEventListener('close', () => {
     const original = options.find((option) => option.dataset.themeId === committedId);
     if (original) apply(original);
