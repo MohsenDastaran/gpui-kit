@@ -2,6 +2,7 @@
 import { Check, Copy } from "lucide-vue-next";
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import { toggleLogos } from "../lib/toggle-logos.js";
+import catalog from "../lib/registry-slugs.json" with { type: "json" };
 import FlowText from "./FlowText.vue";
 
 const MANAGERS = ["npx", "pnpm", "bun"] as const;
@@ -33,10 +34,34 @@ const runner = computed(() =>
       : "npx",
 );
 
+const namesFor = (name: string) =>
+  (catalog as Record<string, string[]>)[name] ?? [];
+
+/** A registry entry copies files into the app. GPUI Kit itself is the crate. */
+const packaged = computed(() => namesFor(framework.value).includes(slug.value));
+const crateInstall = computed(
+  () => framework.value === "gpui" && !packaged.value,
+);
+
 const command = computed(() => {
   if (!slug.value) return "";
-  return `${runner.value} ${PACKAGE} add ${framework.value} ${slug.value}`;
+  if (packaged.value) {
+    return `${runner.value} ${PACKAGE} add ${framework.value} ${slug.value}`;
+  }
+  if (crateInstall.value) return "cargo add gpui-kit";
+  return "";
 });
+
+const unavailableLabel = computed(() =>
+  props.lang === "zh-CN"
+    ? "此框架没有可安装的组件文件。"
+    : "No files to install for this framework.",
+);
+const crateLabel = computed(() =>
+  props.lang === "zh-CN"
+    ? "包含在 gpui-kit crate 中。"
+    : "Ships in the gpui-kit crate.",
+);
 
 const copyLabel = computed(() =>
   props.lang === "zh-CN" ? "复制命令" : "Copy command",
@@ -68,7 +93,11 @@ function mountFrameworkLogos() {
   document
     .querySelectorAll<HTMLButtonElement>("[data-framework-option]")
     .forEach((button) => {
-      if (button.querySelector("svg") || button.closest("[data-framework-select]")) return;
+      if (
+        button.querySelector("svg") ||
+        button.closest("[data-framework-select]")
+      )
+        return;
       const name = button.dataset.frameworkOption;
       const logo = name
         ? toggleLogos[name as keyof typeof toggleLogos]
@@ -191,6 +220,7 @@ async function copy() {
     <span class="sr-only" role="status">{{ status }}</span>
     <Teleport v-if="slug" to=".install-command-host">
       <div
+        v-if="packaged"
         class="install-command__switch framework-switch"
         role="radiogroup"
         :aria-label="managerLabel"
@@ -224,14 +254,26 @@ async function copy() {
         </button>
       </div>
       <div class="install-command__line">
-        <code>
-          <FlowText class="install-command__run" :text="runner" />
-          <span class="install-command__package">{{ PACKAGE }}</span>
-          <span>add</span>
-          <FlowText class="install-command__arg" :text="framework" />
-          <span class="install-command__arg">{{ slug }}</span>
-        </code>
+        <div class="install-command__body">
+          <p v-if="!packaged && !crateInstall" class="install-command__note">
+            {{ unavailableLabel }}
+          </p>
+          <code v-if="packaged">
+            <FlowText class="install-command__run" :text="runner" />
+            <span class="install-command__package">{{ PACKAGE }}</span>
+            <span>add</span>
+            <FlowText class="install-command__arg" :text="framework" />
+            <span class="install-command__arg">{{ slug }}</span>
+          </code>
+          <code v-else-if="crateInstall">
+            <span class="install-command__run">cargo</span>
+            <span>add</span>
+            <span class="install-command__package">gpui-kit</span>
+            <span class="install-command__comment"># {{ crateLabel }}</span>
+          </code>
+        </div>
         <button
+          v-if="command"
           type="button"
           class="install-command__copy"
           :aria-label="copied ? copiedLabel : copyLabel"

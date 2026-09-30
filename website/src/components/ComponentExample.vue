@@ -387,6 +387,7 @@ function installCommand() {
   const line = document.querySelector(".install-command__line code");
   if (!line) return "";
   const parts = [...line.children]
+    .filter((part) => !part.classList.contains("install-command__comment"))
     .map((part) => (part.textContent ?? "").trim())
     .filter(Boolean);
   return parts.join(" ");
@@ -419,13 +420,20 @@ function buildPrompt(samples: ExampleSample[], name: string) {
     `Page: ${window.location.href.split("#")[0]}`,
   ];
   const command = installCommand();
-  const file = installedFile(name);
   if (command) {
     lines.push("", "## Install", command);
-    if (file) {
+    if (command.includes("uni-kit")) {
+      const file = installedFile(name);
+      if (file) {
+        lines.push(
+          "",
+          `Run this only if it has not already been run. Check whether \`${file}\` exists. If that file is there, skip the command.`,
+        );
+      }
+    } else {
       lines.push(
         "",
-        `Run this only if it has not already been run. Check whether \`${file}\` exists. If that file is there, skip the command.`,
+        "This component ships in the gpui-kit crate. Run the command only if Cargo.toml does not already depend on gpui-kit.",
       );
     }
   }
@@ -538,7 +546,9 @@ async function copyPrompt(id: string) {
 async function syncPrompts() {
   const ids = [
     ...new Set(
-      collectSamples(framework.value).map((sample) => sample.headingId),
+      collectSamples(framework.value)
+        .filter((sample) => !/^import$/i.test(sample.title))
+        .map((sample) => sample.headingId),
     ),
   ];
   for (const id of ids) {

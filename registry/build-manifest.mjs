@@ -71,6 +71,16 @@ fs.writeFileSync(
   path.join(root, 'registry/components.json'),
   `${JSON.stringify(registry, null, 2)}\n`,
 );
+const slugs = Object.fromEntries(
+  Object.entries(registry).map(([name, framework]) => [
+    name,
+    Object.keys(framework.components).sort(),
+  ]),
+);
+fs.writeFileSync(
+  path.join(root, 'website/src/lib/registry-slugs.json'),
+  `${JSON.stringify(slugs, null, 2)}\n`,
+);
 console.log(
   `slint components: ${Object.keys(slint.components).length}, icons: ${icons.length}`,
 );
