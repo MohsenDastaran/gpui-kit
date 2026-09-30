@@ -4409,6 +4409,7 @@ name = "slint-component"
 version = "0.6.4"
 dependencies = [
  "console_error_panic_hook",
+ "js-sys",
  "slint",
  "slint-build",
  "wasm-bindgen",

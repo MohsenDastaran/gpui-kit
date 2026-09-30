@@ -22,11 +22,18 @@ slint = "1.17"
 [target.'cfg(target_arch = "wasm32")'.dependencies]
 console_error_panic_hook = "0.1"
 wasm-bindgen = "=0.2.121"
+js-sys = "0.3"
 web-sys = { version = "0.3", features = [
+    "CssStyleDeclaration",
+    "Document",
+    "DomTokenList",
+    "Element",
+    "HtmlElement",
     "Location",
     "MediaQueryList",
+    "MutationObserver",
+    "MutationObserverInit",
     "Storage",
-    "StorageEvent",
     "Window",
 ] }
 

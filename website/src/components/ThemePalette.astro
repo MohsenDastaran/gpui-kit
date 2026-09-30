@@ -151,6 +151,9 @@ const groups = [
     });
   });
 
+  dialog?.addEventListener('click', (event) => {
+    if (event.target === dialog) dialog.close();
+  });
   dialog?.addEventListener('close', () => {
     const original = options.find((option) => option.dataset.themeId === committedId);
     if (original) apply(original);

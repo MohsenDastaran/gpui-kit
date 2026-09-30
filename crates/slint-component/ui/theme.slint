@@ -1,6 +1,7 @@
 // Design tokens for the Slint components, mapped from `tokens/tokens.json`.
 // Copy this file with any component; every component reads it and nothing
-// else. Switch palettes with `Theme.dark = true;`.
+// else. Switch the built-in palettes with `Theme.dark = true;`. The website
+// gallery sets `palette` and the `palette-*` colors from the page theme.
 
 export enum ControlSize { xsmall, small, medium, large }
 
@@ -14,37 +15,67 @@ export global Theme {
     // their own width, which would loop through the layout solver.
     in-out property <length> viewport: 800px;
 
+    // The website gallery fills these from the page's computed theme tokens.
+    // `palette` stays false for the built-in light and dark colors below.
+    in-out property <bool> palette: false;
+    in-out property <color> palette-background: #ffffff;
+    in-out property <color> palette-foreground: #0a0a0a;
+    in-out property <color> palette-surface: #ffffff;
+    in-out property <color> palette-primary: #171717;
+    in-out property <color> palette-primary-foreground: #fafafa;
+    in-out property <color> palette-secondary: #e5e5e5;
+    in-out property <color> palette-secondary-foreground: #171717;
+    in-out property <color> palette-muted: #f5f5f5;
+    in-out property <color> palette-muted-foreground: #737373;
+    in-out property <color> palette-accent: #f5f5f5;
+    in-out property <color> palette-accent-foreground: #171717;
+    in-out property <color> palette-destructive: #ef4444;
+    in-out property <color> palette-border: #e5e5e5;
+    in-out property <color> palette-input: #e5e5e5;
+    in-out property <color> palette-ring: #a3a3a3;
+    in-out property <color> palette-selection: #55a0fc;
+    in-out property <color> palette-info: #06b6d4;
+    in-out property <color> palette-success: #22c55e;
+    in-out property <color> palette-warning: #eab308;
+    in-out property <color> palette-chart-1: #e76e50;
+    in-out property <color> palette-chart-2: #2a9d90;
+    in-out property <color> palette-chart-3: #274754;
+    in-out property <color> palette-chart-4: #e8c468;
+    in-out property <color> palette-chart-5: #f4a462;
+    in-out property <color> palette-popover: #ffffff;
+    in-out property <color> palette-sidebar: #fafafa;
+
     // colors.light / colors.dark
-    out property <color> background: dark ? #0a0a0a : #ffffff;
-    out property <color> foreground: dark ? #fafafa : #0a0a0a;
-    out property <color> surface: dark ? #0a0a0a : #ffffff;
-    out property <color> primary: dark ? #fafafa : #171717;
-    out property <color> primary-foreground: dark ? #171717 : #fafafa;
-    out property <color> secondary: dark ? #262626 : #e5e5e5;
-    out property <color> secondary-foreground: dark ? #fafafa : #171717;
-    out property <color> muted: dark ? #262626 : #f5f5f5;
-    out property <color> muted-foreground: dark ? #a3a3a3 : #737373;
-    out property <color> accent: dark ? #262626 : #f5f5f5;
-    out property <color> accent-foreground: dark ? #fafafa : #171717;
-    out property <color> destructive: dark ? #f87171 : #ef4444;
+    out property <color> background: palette ? palette-background : (dark ? #0a0a0a : #ffffff);
+    out property <color> foreground: palette ? palette-foreground : (dark ? #fafafa : #0a0a0a);
+    out property <color> surface: palette ? palette-surface : (dark ? #0a0a0a : #ffffff);
+    out property <color> primary: palette ? palette-primary : (dark ? #fafafa : #171717);
+    out property <color> primary-foreground: palette ? palette-primary-foreground : (dark ? #171717 : #fafafa);
+    out property <color> secondary: palette ? palette-secondary : (dark ? #262626 : #e5e5e5);
+    out property <color> secondary-foreground: palette ? palette-secondary-foreground : (dark ? #fafafa : #171717);
+    out property <color> muted: palette ? palette-muted : (dark ? #262626 : #f5f5f5);
+    out property <color> muted-foreground: palette ? palette-muted-foreground : (dark ? #a3a3a3 : #737373);
+    out property <color> accent: palette ? palette-accent : (dark ? #262626 : #f5f5f5);
+    out property <color> accent-foreground: palette ? palette-accent-foreground : (dark ? #fafafa : #171717);
+    out property <color> destructive: palette ? palette-destructive : (dark ? #f87171 : #ef4444);
     out property <color> destructive-foreground: dark ? #dc2626 : #fafafa;
-    out property <color> border: dark ? #262626 : #e5e5e5;
-    out property <color> input: dark ? #2f2f2f : #e5e5e5;
-    out property <color> ring: dark ? #737373 : #a3a3a3;
-    out property <color> selection: dark ? #1d4ed8 : #55a0fc;
+    out property <color> border: palette ? palette-border : (dark ? #262626 : #e5e5e5);
+    out property <color> input: palette ? palette-input : (dark ? #2f2f2f : #e5e5e5);
+    out property <color> ring: palette ? palette-ring : (dark ? #737373 : #a3a3a3);
+    out property <color> selection: palette ? palette-selection : (dark ? #1d4ed8 : #55a0fc);
 
     // Status colors from GPUI Component's default theme.
-    out property <color> info: dark ? #22d3ee : #06b6d4;
-    out property <color> success: dark ? #4ade80 : #22c55e;
-    out property <color> warning: dark ? #facc15 : #eab308;
+    out property <color> info: palette ? palette-info : (dark ? #22d3ee : #06b6d4);
+    out property <color> success: palette ? palette-success : (dark ? #4ade80 : #22c55e);
+    out property <color> warning: palette ? palette-warning : (dark ? #facc15 : #eab308);
     out property <color> danger: destructive;
 
     // Chart series, from GPUI Component's default theme.
-    out property <color> chart-1: dark ? #2662d9 : #e76e50;
-    out property <color> chart-2: dark ? #2eb88a : #2a9d90;
-    out property <color> chart-3: dark ? #e88c30 : #274754;
-    out property <color> chart-4: dark ? #af57db : #e8c468;
-    out property <color> chart-5: dark ? #e23670 : #f4a462;
+    out property <color> chart-1: palette ? palette-chart-1 : (dark ? #2662d9 : #e76e50);
+    out property <color> chart-2: palette ? palette-chart-2 : (dark ? #2eb88a : #2a9d90);
+    out property <color> chart-3: palette ? palette-chart-3 : (dark ? #e88c30 : #274754);
+    out property <color> chart-4: palette ? palette-chart-4 : (dark ? #af57db : #e8c468);
+    out property <color> chart-5: palette ? palette-chart-5 : (dark ? #e23670 : #f4a462);
 
     // The five series colors, in legend order.
     public pure function chart-tone(index: int) -> color {
@@ -55,8 +86,8 @@ export global Theme {
         return chart-1;
     }
 
-    out property <color> popover: dark ? #171717 : #ffffff;
-    out property <color> sidebar: dark ? #111111 : #fafafa;
+    out property <color> popover: palette ? palette-popover : (dark ? #171717 : #ffffff);
+    out property <color> sidebar: palette ? palette-sidebar : (dark ? #111111 : #fafafa);
     out property <color> overlay: dark ? #000000a0 : #0000004d;
     out property <color> shadow: dark ? #00000080 : #0000001f;
 

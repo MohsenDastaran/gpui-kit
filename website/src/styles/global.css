@@ -503,12 +503,9 @@ html.dark .astro-code span {
   background: #0e0e0e;
 }
 
-.component-example--component iframe.component-example__frame--slint {
-  background: white;
-}
-
+.component-example--component iframe.component-example__frame--slint,
 .dark .component-example--component iframe.component-example__frame--slint {
-  background: #0a0a0a;
+  background: var(--background);
 }
 
 .component-example__frames {
