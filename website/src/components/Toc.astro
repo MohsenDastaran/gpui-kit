@@ -18,18 +18,16 @@ const items = headings.filter((h) => h.depth === 2 || h.depth === 3);
 const label = lang === 'zh-CN' ? '本页内容' : 'On this page';
 ---
 
-{items.length > 1 && (
-  <nav class="toc" aria-label={label}>
-    <p class="toc__label">{label}</p>
-    <ul>
-      {items.map((h) => (
-        <li class:list={['toc__item', { 'toc__item--sub': h.depth === 3 }]}>
-          <a href={`#${h.slug}`}>{h.text}</a>
-        </li>
-      ))}
-    </ul>
-  </nav>
-)}
+<nav class="toc" aria-label={label} hidden={items.length < 2}>
+  <p class="toc__label">{label}</p>
+  <ul>
+    {items.map((h) => (
+      <li class:list={['toc__item', { 'toc__item--sub': h.depth === 3 }]}>
+        <a href={`#${h.slug}`}>{h.text}</a>
+      </li>
+    ))}
+  </ul>
+</nav>
 
 <script>
   // The API Reference is one heading in the source and two references in the
@@ -77,15 +75,72 @@ const label = lang === 'zh-CN' ? '本页内容' : 'On this page';
   syncFrameworkToc();
   document.addEventListener('framework-change', syncFrameworkToc);
 
+  // Component pages lead with the install bar and the live example. Neither is
+  // a markdown heading, so they are pinned here, above the generated outline.
+  const zh = document.documentElement.lang.toLowerCase().startsWith('zh');
+  const pins = [
+    { id: 'framework-bar', text: zh ? '安装' : 'Installation' },
+    { id: 'live-example', text: zh ? '在线示例' : 'Live Example' },
+  ];
+
+  function pinOutline() {
+    const nav = document.querySelector<HTMLElement>('.toc');
+    const list = nav?.querySelector('ul');
+    const bar = document.querySelector<HTMLElement>('.doc-content .framework-bar');
+    if (!nav || !list || !bar) return;
+    if (!bar.id) bar.id = 'framework-bar';
+    const example = document.querySelector<HTMLElement>('.component-example');
+    if (example && !example.id) example.id = 'live-example';
+
+    for (const pin of pins) {
+      if (pin.id === 'live-example' && !example) continue;
+      if (!document.getElementById(pin.id)) continue;
+      if (list.querySelector(`a[href="#${CSS.escape(pin.id)}"]`)) continue;
+      const item = document.createElement('li');
+      item.className = 'toc__item toc__item--pin';
+      const link = document.createElement('a');
+      link.href = `#${pin.id}`;
+      link.textContent = pin.text;
+      item.append(link);
+      const previous = pin.id === 'live-example'
+        ? list.querySelector('a[href="#framework-bar"]')?.closest('li')
+        : null;
+      if (previous) previous.after(item);
+      else list.prepend(item);
+    }
+    nav.hidden = false;
+  }
+
+  pinOutline();
+
+  // The example is mounted after this script, into a point just under the bar.
+  const content = document.querySelector('.doc-content');
+  if (content && !document.querySelector('.component-example')) {
+    const arrival = new MutationObserver(() => {
+      if (!document.querySelector('.component-example')) return;
+      arrival.disconnect();
+      pinOutline();
+      syncFrameworkToc();
+      trackOutline();
+    });
+    arrival.observe(content, { childList: true, subtree: true });
+  }
+
   // Highlights the section the reader is in. `rootMargin` pulls the observation
   // band up to just under the bar so a heading counts as current once it
   // reaches the top of the reading area, not when it enters the viewport.
-  const links = new Map<string, HTMLAnchorElement>();
-  document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]').forEach((a) => {
-    links.set(decodeURIComponent(a.hash.slice(1)), a);
-  });
+  let outlineObserver: IntersectionObserver | undefined;
+  function trackOutline() {
+    outlineObserver?.disconnect();
+    document.querySelectorAll('.toc a.is-current').forEach((link) => {
+      link.classList.remove('is-current');
+    });
+    const links = new Map<string, HTMLAnchorElement>();
+    document.querySelectorAll<HTMLAnchorElement>('.toc a[href^="#"]').forEach((a) => {
+      links.set(decodeURIComponent(a.hash.slice(1)), a);
+    });
+    if (links.size === 0) return;
 
-  if (links.size > 0) {
     const targets = [...links.keys()]
       .map((id) => document.getElementById(id))
       .filter((el): el is HTMLElement => el !== null);
@@ -101,7 +156,7 @@ const label = lang === 'zh-CN' ? '本页内容' : 'On this page';
     };
 
     const seen = new Set<string>();
-    const observer = new IntersectionObserver(
+    outlineObserver = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting) seen.add(entry.target.id);
@@ -129,6 +184,8 @@ const label = lang === 'zh-CN' ? '本页内容' : 'On this page';
       { rootMargin: '-88px 0px -55% 0px', threshold: 0 },
     );
 
-    targets.forEach((el) => observer.observe(el));
+    targets.forEach((el) => outlineObserver?.observe(el));
   }
+
+  trackOutline();
 </script>

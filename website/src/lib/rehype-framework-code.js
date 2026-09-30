@@ -46,6 +46,7 @@ function selector(copy, slug) {
     'div',
     {
       className: ['framework-bar'],
+      id: 'framework-bar',
       dataPagefindIgnore: '',
       ...Object.fromEntries(
         FRAMEWORKS.map((framework) => [

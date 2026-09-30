@@ -361,6 +361,7 @@ onBeforeUnmount(() => {
 <template>
   <Teleport v-if="target && src && frontmatter.example !== false" :to="target">
     <section
+      id="live-example"
       ref="exampleRoot"
       class="component-example"
       :class="`component-example--${kind}`"

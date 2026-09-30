@@ -677,7 +677,8 @@ html.dark .astro-code span {
   }
 
   /* The bar is sticky, so an anchored heading would land underneath it. */
-  :where(h1, h2, h3, h4, h5, h6)[id] {
+  :where(h1, h2, h3, h4, h5, h6)[id],
+  :where(#framework-bar, #live-example) {
     scroll-margin-top: calc(var(--nav-height) + 1.25rem);
   }
 
@@ -1524,6 +1525,12 @@ html[lang^="ja"] .sidebar-subgroup-title {
   padding: 0;
   border-left: 1px solid var(--border);
   list-style: none;
+}
+
+/* Installation and Live Example sit above the heading list. The gap is the
+   seam between that pair and the rest of the outline. */
+.toc__item--pin + .toc__item:not(.toc__item--pin) {
+  margin-top: 0.65rem;
 }
 
 .toc__item a {
