@@ -452,15 +452,70 @@ html.dark .astro-code span {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.75rem;
   font: 0.68rem/1 var(--font-mono);
   letter-spacing: 0.045em;
   text-transform: uppercase;
+}
+
+.component-example__heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
 }
 
 .component-example__meta {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+/* Sits on the right of an example title. The title may be a small kicker or a
+   document heading, so the control sets its own type instead of inheriting. */
+.example-prompt {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.3rem;
+  height: 1.5rem;
+  padding: 0 0.5rem 0 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--background);
+  color: var(--foreground);
+  font: 500 0.75rem/1 var(--font-sans);
+  letter-spacing: -0.011em;
+  text-transform: none;
+  cursor: pointer;
+  transition:
+    background 140ms ease,
+    border-color 140ms ease;
+}
+
+.example-prompt:hover {
+  border-color: var(--border-hover);
+  background: var(--secondary);
+}
+
+.example-prompt[data-copied] {
+  border-color: color-mix(in srgb, var(--success) 45%, var(--border));
+  background: color-mix(in srgb, var(--success) 10%, var(--background));
+}
+
+html[lang^="zh"] .example-prompt,
+html[lang^="ja"] .example-prompt {
+  letter-spacing: normal;
+}
+
+.doc-content :is(h2, h3, h4).has-example-prompt {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.doc-content .has-example-prompt > .example-prompt {
+  margin-left: auto;
 }
 
 .doc-content :is(h3, h4, h5, h6).is-example-source {
