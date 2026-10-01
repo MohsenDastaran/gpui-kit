@@ -10,6 +10,7 @@ import {
 } from "vue";
 import { Check, RotateCw, Sparkles } from "lucide-vue-next";
 import WindowZoomButton from "./WindowZoomButton.vue";
+import { findExampleHeading } from "../lib/example-target.js";
 
 const props = defineProps<{
   frontmatter: {
@@ -566,40 +567,38 @@ async function syncPrompts() {
 const exampleRoot = shallowRef<HTMLElement | null>(null);
 let marked: HTMLElement[] = [];
 
-function words(value: string): string[] {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean);
-}
-
-function usageBlocks(): { heading: HTMLElement; code: HTMLElement }[] {
+function usageHeadings(): HTMLElement[] {
   const root = document.querySelector(".doc-content");
   const usage = root?.querySelector<HTMLElement>("#usage");
   if (!root || !usage) return [];
-  const blocks: { heading: HTMLElement; code: HTMLElement }[] = [];
-  let heading: HTMLElement | null = null;
+  const headings: HTMLElement[] = [];
   let seen = false;
-  for (const node of root.querySelectorAll<HTMLElement>(
-    "h2, h3, h4, h5, h6, .framework-code, pre",
-  )) {
+  for (const node of root.querySelectorAll<HTMLElement>("h2, h3, h4, h5, h6")) {
     if (node === usage) {
       seen = true;
-      heading = null;
       continue;
     }
     if (!seen) continue;
     if (node.tagName === "H2") break;
-    if (/^H[3-6]$/.test(node.tagName)) {
-      heading = node;
-      continue;
-    }
-    if (node.tagName === "PRE" && node.closest(".framework-code")) continue;
-    blocks.push({ heading: heading ?? usage, code: node });
+    headings.push(node);
   }
-  return blocks;
+  return headings;
+}
+
+function codeAfter(heading: HTMLElement): HTMLElement | null {
+  let node = heading.nextElementSibling;
+  while (node && !/^H[2-6]$/.test(node.tagName)) {
+    if (
+      node.classList.contains("framework-code") ||
+      node.tagName === "PRE"
+    ) {
+      return node;
+    }
+    const nested = node.querySelector<HTMLElement>(".framework-code, pre");
+    if (nested) return nested;
+    node = node.nextElementSibling;
+  }
+  return null;
 }
 
 function markSource(heading: HTMLElement, code: HTMLElement) {
@@ -620,30 +619,18 @@ function scrollToSource(destination: HTMLElement) {
   }
 }
 
-function showExample(title: string, index: number | null) {
-  const blocks = usageBlocks();
-  const wanted = words(title);
-  let match: (typeof blocks)[number] | undefined;
-  if (wanted.length > 0) {
-    const ranked = blocks
-      .map((block) => {
-        const heading = words(block.heading.textContent ?? "");
-        const exact = heading.join(" ") === wanted.join(" ");
-        const covered =
-          !exact && wanted.every((word) => heading.includes(word));
-        const score = exact ? 2 : covered ? 1 : 0;
-        return { block, score, size: heading.length };
-      })
-      .filter((item) => item.score > 0)
-      .sort((a, b) => b.score - a.score || a.size - b.size);
-    match = ranked[0]?.block;
-  }
-  if (!match && index !== null && index >= 0 && index < blocks.length) {
-    match = blocks[index];
-  }
-  if (!match) return;
-  markSource(match.heading, match.code);
-  scrollToSource(match.heading);
+function showExample(title: string) {
+  const headings = usageHeadings();
+  const described = headings.map((heading) => ({
+    text: plainHeading(heading),
+    titles: heading.dataset.galleryTitle,
+  }));
+  const match = findExampleHeading(described, title);
+  const heading = match ? headings[described.indexOf(match)] : undefined;
+  if (!heading) return;
+  const code = codeAfter(heading);
+  markSource(heading, code ?? heading);
+  scrollToSource(heading);
 }
 
 function onExampleMessage(event: MessageEvent) {

@@ -477,6 +477,21 @@ function importBlock(ui, slug, copy) {
 
 const code = (value) => ({ type: 'code', lang: 'slint', meta: null, value });
 
+// The gallery posts the GroupBox title. The heading that received that sample
+// keeps the title, so the page can scroll to the sample instead of to whichever
+// code block happens to share the card's index.
+function tagExample(node, title) {
+  const data = (node.data ??= {});
+  const props = (data.hProperties ??= {});
+  const key = 'data-gallery-title';
+  const current = String(props[key] ?? '')
+    .split('|')
+    .filter(Boolean);
+  if (current.some((item) => sameTitle(item, title))) return;
+  current.push(title);
+  props[key] = current.join('|');
+}
+
 export function formatExampleFile(path) {
   const src = readFileSync(path, 'utf8');
   const boxes = extractGroupBoxes(src);
@@ -516,11 +531,22 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
     const copy = COPY.en;
 
     let heading = '';
+    let headingNode = null;
+    let inUsage = false;
     const rust = [];
+    const usageHeadings = [];
     visit(tree, (node, index, parent) => {
-      if (node.type === 'heading') heading = headingText(node);
+      if (node.type === 'heading') {
+        heading = headingText(node);
+        headingNode = node;
+        if (node.depth === 2) inUsage = heading === 'Usage';
+        else if (node.depth < 2) inUsage = false;
+        if (inUsage && node.depth >= 3 && parent && index !== undefined) {
+          usageHeadings.push({ node, parent, heading, depth: node.depth });
+        }
+      }
       if (node.type === 'code' && node.lang !== 'slint' && parent && index !== undefined) {
-        rust.push({ node, parent, heading });
+        rust.push({ node, parent, heading, headingNode });
       }
     });
     const [imports, usage] = rust;
@@ -532,8 +558,38 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
 
     const boxes = usageBoxes(ui, slug);
     if (boxes.length > 0) {
-      const assigned = assignSnippets(rust.slice(1), boxes, ALIASES[slug] ?? {});
-      assigned.forEach((value, index) => after(rust[index + 1], code(value)));
+      const aliases = ALIASES[slug] ?? {};
+      const assigned = assignSnippets(rust.slice(1), boxes, aliases);
+      const used = new Set();
+      assigned.forEach((value, index) => {
+        const sample = rust[index + 1];
+        after(sample, code(value));
+        const title = aliases[sample.heading] ?? sample.heading;
+        const box = boxes.findIndex((item) => sameTitle(title, item.title));
+        if (box >= 0) used.add(box);
+        if (sample.headingNode) tagExample(sample.headingNode, title);
+      });
+      const inserts = [];
+      boxes.forEach((box, index) => {
+        if (used.has(index)) return;
+        const section = usageHeadings.find((item) => sameTitle(item.heading, box.title));
+        if (!section) return;
+        const children = section.parent.children;
+        const start = children.indexOf(section.node);
+        if (start < 0) return;
+        let at = start + 1;
+        while (at < children.length) {
+          const child = children[at];
+          if (child.type === 'heading' && child.depth <= section.depth) break;
+          at += 1;
+        }
+        inserts.push({ parent: section.parent, at, value: box.value, node: section.node, title: box.title });
+      });
+      inserts.sort((a, b) => b.at - a.at);
+      for (const item of inserts) {
+        item.parent.children.splice(item.at, 0, code(item.value));
+        tagExample(item.node, item.title);
+      }
       return;
     }
 
