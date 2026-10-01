@@ -126,6 +126,8 @@ function countSlint(slug: string): number {
   if (boxes > 0) return boxes;
   const cards = source.match(/\bChartCard\s*\{/g)?.length ?? 0;
   if (cards > 0) return cards;
+  const sections = source.match(/\bExampleSection\s*\{/g)?.length ?? 0;
+  if (sections > 0) return sections;
   return /\bexport\s+component\b/.test(source) ? 1 : 0;
 }
 

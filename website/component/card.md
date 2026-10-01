@@ -19,6 +19,8 @@ use gpui_kit::component::card::{
 
 ## Usage
 
+### Default
+
 ```rust
 Card::new()
     .child(
@@ -31,6 +33,26 @@ Card::new()
         CardFooter::new()
             .child(Button::new("cancel").label("Cancel"))
             .child(Button::new("invite").primary().label("Invite")),
+    )
+```
+
+### Stacked
+
+```rust
+h_flex()
+    .gap_4()
+    .items_start()
+    .child(
+        Card::new()
+            .flex_1()
+            .child(CardHeader::new().child(CardTitle::new().child("Usage")))
+            .child(CardContent::new().child("4.2 GB of 10 GB used.")),
+    )
+    .child(
+        Card::new()
+            .flex_1()
+            .child(CardHeader::new().child(CardTitle::new().child("Plan")))
+            .child(CardContent::new().child("Team · billed monthly.")),
     )
 ```
 

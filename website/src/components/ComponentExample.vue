@@ -567,19 +567,16 @@ async function syncPrompts() {
 const exampleRoot = shallowRef<HTMLElement | null>(null);
 let marked: HTMLElement[] = [];
 
-function usageHeadings(): HTMLElement[] {
+// Every documented sample sits between the first section and the API
+// reference: Usage subsections, Attachment-style h2s, and Chart-type h4s.
+function exampleHeadings(): HTMLElement[] {
   const root = document.querySelector(".doc-content");
-  const usage = root?.querySelector<HTMLElement>("#usage");
-  if (!root || !usage) return [];
+  if (!root) return [];
   const headings: HTMLElement[] = [];
-  let seen = false;
-  for (const node of root.querySelectorAll<HTMLElement>("h2, h3, h4, h5, h6")) {
-    if (node === usage) {
-      seen = true;
-      continue;
-    }
-    if (!seen) continue;
-    if (node.tagName === "H2") break;
+  for (const node of root.querySelectorAll<HTMLElement>("h2, h3, h4")) {
+    const text = plainHeading(node);
+    if (/^api reference\b/i.test(text)) break;
+    if (/^import$/i.test(text)) continue;
     headings.push(node);
   }
   return headings;
@@ -620,7 +617,7 @@ function scrollToSource(destination: HTMLElement) {
 }
 
 function showExample(title: string) {
-  const headings = usageHeadings();
+  const headings = exampleHeadings();
   const described = headings.map((heading) => ({
     text: plainHeading(heading),
     titles: heading.dataset.galleryTitle,

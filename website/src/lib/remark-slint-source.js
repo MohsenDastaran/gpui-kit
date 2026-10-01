@@ -1,6 +1,7 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { visit } from 'unist-util-visit';
+import { gallerySourceTitle } from './example-target.js';
 
 // Component pages show a Slint version beside each GPUI sample.
 // The import panel is the import that works after `uni-kit add`: files live in
@@ -69,9 +70,9 @@ function matchBrace(src, openAt) {
   return -1;
 }
 
-function extractGroupBoxes(src) {
+function extractBlocks(src, name) {
   const boxes = [];
-  const pattern = /GroupBox\s*\{/g;
+  const pattern = new RegExp(`\\b${name}\\s*\\{`, 'g');
   let match;
   while ((match = pattern.exec(src))) {
     const openAt = match.index + match[0].length - 1;
@@ -85,6 +86,10 @@ function extractGroupBoxes(src) {
     pattern.lastIndex = closeAt + 1;
   }
   return boxes;
+}
+
+function extractGroupBoxes(src) {
+  return extractBlocks(src, 'GroupBox');
 }
 
 function isStretchRectangle(block) {
@@ -101,7 +106,13 @@ function isStretchRectangle(block) {
 
 function stripGalleryLayout(inner) {
   let src = inner.replace(/^\s*title:\s*"[^"]*";\s*/m, '');
+  src = src.replace(/^\s*source-title:\s*"[^"]*";\s*/m, '');
   src = src.replace(/^\s*variant:\s*GroupBoxVariant\.\w+;\s*/m, '');
+  src = src.replace(/^\s*subtitle:\s*"[^"]*";\s*/m, '');
+  src = src.replace(/^\s*period:\s*"[^"]*";\s*/m, '');
+  src = src.replace(/^\s*headline:\s*"[^"]*";\s*/m, '');
+  src = src.replace(/^\s*note:\s*"[^"]*";\s*/m, '');
+  src = src.replace(/^\s*body:\s*"[^"]*";\s*/m, '');
 
   const pieces = [];
   let i = 0;
@@ -298,14 +309,45 @@ function sameTitle(heading, title) {
 export function usageBoxes(ui, slug) {
   const path = join(ui, 'examples', `${slug}.slint`);
   if (!existsSync(path)) return [];
-  return extractGroupBoxes(readFileSync(path, 'utf8'))
-    .map((box) => {
-      const title = box.inner.match(/^\s*title:\s*"([^"]+)"\s*;/m)?.[1] ?? '';
-      if (!title) return null;
-      const value = prettyPrintSlint(stripGalleryLayout(box.inner));
-      return value ? { title, value } : null;
-    })
+  const src = readFileSync(path, 'utf8');
+  const group = extractGroupBoxes(src)
+    .map((box) => titledBox(box.inner, stripGalleryLayout))
     .filter(Boolean);
+  if (group.length > 0) return group;
+  const charts = extractBlocks(src, 'ChartCard')
+    .map((box) => chartBox(box.inner))
+    .filter(Boolean);
+  if (charts.length > 0) return charts;
+  return extractBlocks(src, 'ExampleSection')
+    .map((box) => titledBox(box.inner, stripGalleryLayout))
+    .filter(Boolean);
+}
+
+function propertyString(inner, name) {
+  return inner.match(new RegExp(`^\\s*${name}:\\s*"([^"]+)"\\s*;`, 'm'))?.[1] ?? '';
+}
+
+function titledBox(inner, strip) {
+  const title = propertyString(inner, 'title');
+  if (!title) return null;
+  const source = propertyString(inner, 'source-title') || title;
+  const value = prettyPrintSlint(strip(inner));
+  return value ? { title: source, value } : null;
+}
+
+function chartBox(inner) {
+  const title = propertyString(inner, 'title');
+  if (!title) return null;
+  const source =
+    propertyString(inner, 'source-title') ||
+    gallerySourceTitle(
+      title,
+      propertyString(inner, 'period'),
+      propertyString(inner, 'note'),
+      propertyString(inner, 'subtitle'),
+    );
+  const value = prettyPrintSlint(stripGalleryLayout(inner));
+  return value ? { title: source, value } : null;
 }
 
 function usageSnippets(ui, slug) {
@@ -331,6 +373,16 @@ const ALIASES = {
     'Prevent Dialog from Closing': 'Prevent close',
     'Session Timeout': 'Custom footer',
     'Update Available': 'Custom content',
+  },
+  // Attachment documents each behavior as its own section, not under Usage.
+  attachment: {
+    'Anatomy and basic usage': 'File metadata',
+    'Media and image previews': 'Thumbnail',
+    'Lifecycle states': 'Upload states',
+    'Status inheritance and overrides': 'Status inheritance',
+    'Sizes and axes': 'Sizes',
+    Groups: 'Group',
+    'Custom styling and theme tokens': 'Custom style',
   },
   avatar: {
     'Team Display': 'Group',
@@ -455,9 +507,85 @@ const ALIASES = {
   },
 };
 
+// Gallery cards that share a documented section. The card scrolls there; the
+// section's own sample is already the one inserted beside its code.
+const SHARED = {
+  accordion: {
+    Default: 'Single',
+    'Custom style': 'Icons and custom content',
+  },
+  'alert-dialog': {
+    'Imperative API': 'Delete file',
+    Keyboard: 'Prevent close',
+    'Confirm mode': 'Confirm',
+  },
+  attachment: {
+    Composer: 'Anatomy and basic usage',
+    Lifecycle: 'Lifecycle states',
+    'Preview card': 'Media and image previews',
+    Sizes: 'Sizes and axes',
+    'Custom style': 'Custom styling and theme tokens',
+    'Optional slots': 'Anatomy and basic usage',
+    'Image overlays': 'Media and image previews',
+    Orientation: 'Sizes and axes',
+    'Long filenames': 'Sizes and axes',
+    'Attachment trigger': 'Content and actions',
+  },
+  badge: {
+    Nested: 'Complex Nested Badges',
+  },
+  bubble: {
+    Reactions: 'Reactions and interactive content',
+    Group: 'Groups',
+    'Links and buttons': 'Reactions and interactive content',
+    'Collapsible content': 'Rich content and long messages',
+    Tooltip: 'Reactions and interactive content',
+    Popover: 'Reactions and interactive content',
+    'Rich content': 'Rich content and long messages',
+    'Custom style': 'Custom styling and theme tokens',
+  },
+  button: {
+    Icons: 'Icons and states',
+    Progress: 'Icons and states',
+    Dropdown: 'Icon only',
+    'Horizontal group': 'Button group',
+    'Vertical group': 'Button group',
+    'Selection group': 'Toggle Button Group',
+    'Icon-only': 'Icon only',
+    'Custom size': 'Sizeable',
+    'Custom color': 'Custom Variant',
+  },
+  calendar: {
+    'Single month': 'Calendar',
+    'Multiple months': 'Two columns',
+    'Disabled dates': 'Disabled Weekends',
+  },
+  carousel: {
+    Basic: 'Usage',
+    Vertical: 'Orientation',
+    Controlled: 'Controlled selection',
+  },
+  chart: {
+    LineChart: 'LineChart',
+    AreaChart: 'AreaChart',
+    BarChart: 'BarChart',
+    PieChart: 'PieChart',
+    RadarChart: 'RadarChart',
+    CandlestickChart: 'CandlestickChart',
+    SankeyChart: 'SankeyChart',
+  },
+};
+
 // A titled GroupBox is attached to every Usage sample with that title, or with
 // a heading aliased to it. One gallery sample can fill several doc blocks that
 // show the same behavior.
+export function expectedGalleryTitles(ui, root, slug) {
+  const titles = new Set(usageBoxes(ui, slug).map((box) => box.title));
+  for (const title of gpuiSectionTitles(root, slug)) titles.add(title);
+  for (const title of Object.keys(SHARED[slug] ?? {})) titles.add(title);
+  return [...titles];
+}
+
 export function assignSnippets(samples, boxes, aliases = {}) {
   const assigned = new Map();
   samples.forEach((sample, index) => {
@@ -521,6 +649,182 @@ export function formatAllExamples(root = process.cwd()) {
   return changed;
 }
 
+function sectionForTitle(sections, slug, title) {
+  const mapped = SHARED[slug]?.[title];
+  const want = mapped ?? title;
+  return sections.find((item) => sameTitle(item.heading, want));
+}
+
+function insertPoint(section) {
+  const children = section.parent.children;
+  const start = children.indexOf(section.node);
+  let rust = -1;
+  let end = start + 1;
+  while (end < children.length) {
+    const child = children[end];
+    if (child.type === 'heading' && child.depth <= section.depth) break;
+    if (child.type === 'code' && child.lang !== 'slint') rust = end;
+    end += 1;
+  }
+  return rust >= 0 ? rust + 1 : end;
+}
+
+function sectionHasSlint(section) {
+  const children = section.parent.children;
+  const start = children.indexOf(section.node);
+  for (let i = start + 1; i < children.length; i += 1) {
+    const child = children[i];
+    if (child.type === 'heading' && child.depth <= section.depth) break;
+    if (child.type === 'code' && child.lang === 'slint') return true;
+  }
+  return false;
+}
+
+export function gpuiSectionTitles(root, slug) {
+  const stories = resolve(root, '..', 'crates', 'story', 'src', 'stories');
+  const stem = slug.replaceAll('-', '_');
+  const files = [];
+  const file = join(stories, `${stem}_story.rs`);
+  const dir = join(stories, `${stem}_story`);
+  if (existsSync(file)) files.push(file);
+  if (existsSync(dir)) {
+    for (const name of readdirSync(dir)) {
+      if (name.endsWith('.rs')) files.push(join(dir, name));
+    }
+  }
+  const titles = [];
+  for (const path of files) {
+    const src = readFileSync(path, 'utf8');
+    for (const match of src.matchAll(/(?:^|[^.\w])section\s*\(\s*"([^"]+)"/g)) {
+      titles.push(match[1]);
+    }
+    if (slug === 'chart') {
+      for (const match of src.matchAll(/Card::new\s*\(\s*"([^"]+)"/g)) {
+        titles.push(match[1]);
+      }
+    }
+  }
+  return titles;
+}
+
+function dedent(text) {
+  const lines = String(text ?? '').replace(/^\n/, '').trimEnd().split('\n');
+  const widths = lines.filter((line) => line.trim()).map((line) => line.match(/^ */)[0].length);
+  const cut = widths.length ? Math.min(...widths) : 0;
+  return lines.map((line) => (line.trim() ? line.slice(cut) : '')).join('\n').trim();
+}
+
+function balancedParen(src, openAt) {
+  let depth = 0;
+  for (let i = openAt; i < src.length; i += 1) {
+    const char = src[i];
+    // Lifetimes (`'static`) are not strings. Only double quotes wrap text.
+    if (char === '"') {
+      i = skipString(src, i) - 1;
+      continue;
+    }
+    if (char === '/' && src[i + 1] === '/') {
+      while (i < src.length && src[i] !== '\n') i += 1;
+      continue;
+    }
+    if (char === '(') depth += 1;
+    else if (char === ')') {
+      depth -= 1;
+      if (depth === 0) return i;
+    }
+  }
+  return -1;
+}
+
+function chartExpression(src, from) {
+  const at = src.indexOf('.chart(', from);
+  if (at < 0 || at - from > 4000) return '';
+  const open = src.indexOf('(', at);
+  const close = balancedParen(src, open);
+  if (close < 0) return '';
+  return dedent(src.slice(open + 1, close));
+}
+
+function extractGpuiCharts(root) {
+  const path = join(resolve(root, '..', 'crates', 'story', 'src', 'stories', 'chart_story'), 'chart_story.rs');
+  if (!existsSync(path)) return [];
+  const src = readFileSync(path, 'utf8');
+  const samples = [];
+  for (const match of src.matchAll(/\.subtitle\(\s*"([^"]+)"\s*\)/g)) {
+    const before = src.slice(Math.max(0, match.index - 600), match.index);
+    const types = [...before.matchAll(/Card::new\(\s*"([^"]+)"/g)];
+    const title = types.at(-1)?.[1];
+    const rust = chartExpression(src, match.index);
+    if (title && rust) samples.push({ title, subtitle: match[1], rust });
+  }
+  const candleAt = src.indexOf('fn candlestick(');
+  const candle = candleAt < 0 ? '' : chartExpression(src, candleAt);
+  if (candle) {
+    for (const match of src.matchAll(/candlestick\(\s*data,\s*"([^"]+)"/g)) {
+      samples.push({ title: 'CandlestickChart', subtitle: match[1], rust: candle });
+    }
+  }
+  const sankeyAt = src.indexOf('let chart = SankeyChart::new');
+  const sankeyEnd = sankeyAt < 0 ? -1 : src.indexOf('let revenue =', sankeyAt);
+  const sankey = sankeyAt < 0 || sankeyEnd < 0 ? '' : dedent(src.slice(sankeyAt, sankeyEnd));
+  if (sankey) {
+    const fixture = join(resolve(root, '..', 'crates', 'story', 'src', 'fixtures'), 'tsla-income-statement.json');
+    let periods = ['FY 2025', 'FY 2024'];
+    if (existsSync(fixture)) {
+      try {
+        const list = JSON.parse(readFileSync(fixture, 'utf8')).list;
+        if (Array.isArray(list)) {
+          periods = list.map((item) => item.period).filter(Boolean);
+        }
+      } catch {
+        periods = ['FY 2025', 'FY 2024'];
+      }
+    }
+    for (const subtitle of periods) samples.push({ title: 'SankeyChart', subtitle, rust: sankey });
+  }
+  return samples;
+}
+
+function insertRunningCharts(sections, ui, root, tagExample) {
+  const gpui = extractGpuiCharts(root);
+  const byKey = new Map(gpui.map((item) => [`${item.title} — ${item.subtitle}`, item]));
+  const seen = new Set();
+  const cards = [];
+  for (const box of usageBoxes(ui, 'chart')) {
+    seen.add(box.title);
+    cards.push({ title: box.title, slint: box.value, rust: byKey.get(box.title)?.rust ?? '' });
+  }
+  for (const item of gpui) {
+    const title = `${item.title} — ${item.subtitle}`;
+    if (seen.has(title)) continue;
+    cards.push({ title, slint: '', rust: item.rust });
+  }
+  const groups = new Map();
+  for (const card of cards) {
+    const type = card.title.split(' — ')[0];
+    if (!groups.has(type)) groups.set(type, []);
+    groups.get(type).push(card);
+  }
+  const heading = (value) => ({ type: 'heading', depth: 4, children: [{ type: 'text', value }] });
+  const rust = (value) => ({ type: 'code', lang: 'rust', meta: null, value });
+  for (const [type, group] of groups) {
+    const section = sections.find((item) => item.depth === 3 && sameTitle(item.heading, type));
+    if (!section) continue;
+    const children = section.parent.children;
+    let at = children.indexOf(section.node) + 1;
+    while (at < children.length && children[at].type !== 'heading') at += 1;
+    const nodes = [];
+    for (const card of group) {
+      const node = heading(card.title);
+      nodes.push(node);
+      if (card.rust) nodes.push(rust(card.rust));
+      if (card.slint) nodes.push(code(card.slint));
+      tagExample(node, card.title);
+    }
+    children.splice(at, 0, ...nodes);
+  }
+}
+
 export function remarkSlintSource({ root = process.cwd() } = {}) {
   const ui = slintRoot(root);
 
@@ -535,12 +839,16 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
     let inUsage = false;
     const rust = [];
     const usageHeadings = [];
+    const sections = [];
     visit(tree, (node, index, parent) => {
       if (node.type === 'heading') {
         heading = headingText(node);
         headingNode = node;
         if (node.depth === 2) inUsage = heading === 'Usage';
         else if (node.depth < 2) inUsage = false;
+        if (parent && index !== undefined && node.depth >= 2 && node.depth <= 4) {
+          sections.push({ node, parent, heading, depth: node.depth });
+        }
         if (inUsage && node.depth >= 3 && parent && index !== undefined) {
           usageHeadings.push({ node, parent, heading, depth: node.depth });
         }
@@ -556,6 +864,23 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
       parent.children.splice(parent.children.indexOf(node) + 1, 0, ...nodes);
     after(imports, code(importBlock(ui, slug, copy)));
 
+    const tagGalleryTitles = () => {
+      for (const [title, heading] of Object.entries(SHARED[slug] ?? {})) {
+        const section = sections.find((item) => sameTitle(item.heading, heading));
+        if (section) tagExample(section.node, title);
+      }
+      for (const title of gpuiSectionTitles(root, slug)) {
+        const section = sectionForTitle(sections, slug, title);
+        if (section) tagExample(section.node, title);
+      }
+    };
+
+    if (slug === 'chart') {
+      insertRunningCharts(sections, ui, root, tagExample);
+      tagGalleryTitles();
+      return;
+    }
+
     const boxes = usageBoxes(ui, slug);
     if (boxes.length > 0) {
       const aliases = ALIASES[slug] ?? {};
@@ -570,19 +895,19 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
         if (sample.headingNode) tagExample(sample.headingNode, title);
       });
       const inserts = [];
+      const claimed = new Set();
       boxes.forEach((box, index) => {
         if (used.has(index)) return;
-        const section = usageHeadings.find((item) => sameTitle(item.heading, box.title));
+        const section =
+          usageHeadings.find((item) => sameTitle(item.heading, box.title)) ??
+          sectionForTitle(sections, slug, box.title);
         if (!section) return;
-        const children = section.parent.children;
-        const start = children.indexOf(section.node);
-        if (start < 0) return;
-        let at = start + 1;
-        while (at < children.length) {
-          const child = children[at];
-          if (child.type === 'heading' && child.depth <= section.depth) break;
-          at += 1;
+        if (sectionHasSlint(section) || claimed.has(section.node)) {
+          tagExample(section.node, box.title);
+          return;
         }
+        claimed.add(section.node);
+        const at = insertPoint(section);
         inserts.push({ parent: section.parent, at, value: box.value, node: section.node, title: box.title });
       });
       inserts.sort((a, b) => b.at - a.at);
@@ -590,6 +915,7 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
         item.parent.children.splice(item.at, 0, code(item.value));
         tagExample(item.node, item.title);
       }
+      tagGalleryTitles();
       return;
     }
 
@@ -597,5 +923,6 @@ export function remarkSlintSource({ root = process.cwd() } = {}) {
       .replaceAll('from "../', 'from "')
       .trimEnd();
     after(usage, code(prettyPrintSlint(example)));
+    tagGalleryTitles();
   };
 }

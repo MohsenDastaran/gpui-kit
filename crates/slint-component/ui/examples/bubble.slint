@@ -321,6 +321,23 @@ export component BubbleExample inherits VerticalLayout {
     }
 
     GroupBox {
+        title: "Rich content";
+        VerticalLayout {
+            spacing: 12px;
+            alignment: start;
+            Bubble {
+                show-avatar: false;
+                text: "design-notes.pdf\n2.4 MB · PDF";
+            }
+            Bubble {
+                show-avatar: false;
+                variant: BubbleVariant.secondary;
+                text: "A longer message wraps naturally within the bubble's available width.";
+            }
+        }
+    }
+
+    GroupBox {
         title: "Custom style";
         Bubble {
             show-avatar: false;

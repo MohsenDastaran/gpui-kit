@@ -120,6 +120,94 @@ For each one:
 
 ---
 
+## Source icons scroll to the sample
+
+Each gallery card’s code icon (GPUI and Slint) scrolls the docs page to that example’s copyable sample. A card with no section gets a short heading and a fence.
+
+The sample is the gallery example that is already running, not a separately written usage file. The page shows that source, so the block is code that works, and every gallery card has a sample in the usage section. When several cards share a type, the card keeps the type as its title and adds a subtitle so each one scrolls to its own sample.
+
+**Done when:** every catalog component below is ticked. `theme` has no sample.
+
+- [x] Accordion
+- [x] Alert
+- [x] Alert Dialog
+- [x] Attachment
+- [x] Avatar
+- [x] Badge
+- [x] Bubble
+- [x] Button
+- [x] Calendar
+- [x] Card
+- [x] Carousel
+- [x] Chart
+- [ ] Checkbox
+- [ ] Clipboard
+- [ ] Collapsible
+- [ ] Color picker
+- [ ] Combobox
+- [ ] Command
+- [ ] Data table
+- [ ] Date picker
+- [ ] Description list
+- [ ] Dialog
+- [ ] Dock
+- [ ] Dropdown button
+- [ ] Editor
+- [ ] Empty
+- [ ] Focus trap
+- [ ] Form
+- [ ] Group box
+- [ ] Hover card
+- [ ] Icon
+- [ ] Image
+- [ ] Input
+- [ ] Input group
+- [ ] Kbd
+- [ ] Label
+- [ ] List
+- [ ] Marker
+- [ ] Menu
+- [ ] Message
+- [ ] Message scroller
+- [ ] Notification
+- [ ] Number input
+- [ ] OTP input
+- [ ] Pagination
+- [ ] Plot
+- [ ] Popover
+- [ ] Progress
+- [ ] Questionnaire
+- [ ] Radio
+- [ ] Rating
+- [ ] Resizable
+- [ ] Root
+- [ ] Scrollable
+- [ ] Select
+- [ ] Settings
+- [ ] Sheet
+- [ ] Shimmer
+- [ ] Sidebar
+- [ ] Skeleton
+- [ ] Slider
+- [ ] Spinner
+- [ ] Status bar
+- [ ] Stepper
+- [ ] Switch
+- [ ] Table
+- [ ] Tabs
+- [ ] Tag
+- [ ] Text view
+- [ ] Textarea
+- [ ] Time field
+- [ ] Title bar
+- [ ] Toggle
+- [ ] Toolbar
+- [ ] Tooltip
+- [ ] Tree
+- [ ] Virtual list
+
+---
+
 ## 7. Add blocks (Login, Dashboard, Settings)
 
 Build these in both frameworks:

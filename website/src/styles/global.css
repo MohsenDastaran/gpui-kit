@@ -518,7 +518,7 @@ html[lang^="ja"] .example-prompt {
   margin-left: auto;
 }
 
-.doc-content :is(h3, h4, h5, h6).is-example-source {
+.doc-content :is(h2, h3, h4, h5, h6).is-example-source {
   color: var(--data-2);
   font-weight: 750;
 }

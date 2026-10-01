@@ -12,11 +12,15 @@ export global ExampleBridge {
 
 export component SourceHeading inherits HorizontalLayout {
     in property <string> title;
+    // Posted when the visible title is reused by another card. Empty means
+    // the visible title is the source title.
+    in property <string> source-title: "";
     in property <color> color: Theme.muted-foreground;
     in property <length> font-size: Theme.font-size-sm;
     in property <int> font-weight: 500;
 
     property <int> index: -1;
+    property <string> posted: source-title != "" ? source-title : title;
 
     spacing: 4px;
     vertical-stretch: 0;
@@ -27,10 +31,10 @@ export component SourceHeading inherits HorizontalLayout {
     }
 
     function open() {
-        if root.title == "" || root.index < 0 {
+        if root.posted == "" || root.index < 0 {
             return;
         }
-        ExampleBridge.show(root.index, root.title);
+        ExampleBridge.show(root.index, root.posted);
     }
 
     VerticalLayout {

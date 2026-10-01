@@ -21,6 +21,18 @@ export function galleryTitlesOf(value) {
 }
 
 /**
+ * @param {string} title
+ * @param {string} [_period]
+ * @param {string} [_note]
+ * @param {string} [subtitle]
+ */
+export function gallerySourceTitle(title, _period, _note, subtitle) {
+  const name = String(title ?? '').trim();
+  const extra = String(subtitle ?? '').trim();
+  return extra ? `${name} — ${extra}` : name;
+}
+
+/**
  * @param {{ text: string, titles?: string }[]} headings
  * @param {string} title
  */

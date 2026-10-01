@@ -322,6 +322,78 @@ export component ButtonExample inherits VerticalLayout {
     }
 
     GroupBox {
+        title: "Progress";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            alignment: center;
+            spacing: 8px;
+            Button {
+                text: "Installing";
+                variant: ButtonVariant.primary;
+                loading: true;
+            }
+            Button {
+                text: "Installing";
+                loading: true;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Dropdown";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            alignment: center;
+            spacing: 8px;
+            Button {
+                text: "Primary";
+                variant: ButtonVariant.primary;
+                suffix-icon: "chevron-down";
+            }
+            Button {
+                text: "Default";
+                suffix-icon: "chevron-down";
+            }
+            Button {
+                text: "Ghost";
+                variant: ButtonVariant.ghost;
+                suffix-icon: "chevron-down";
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Custom size";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            alignment: center;
+            Button {
+                icon: "heart";
+                variant: ButtonVariant.ghost;
+                size: ControlSize.xsmall;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Custom color";
+        variant: GroupBoxVariant.outline;
+        HorizontalLayout {
+            alignment: center;
+            spacing: 8px;
+            Button {
+                text: "Custom Button";
+                variant: ButtonVariant.success;
+            }
+            Button {
+                text: "Outline Button";
+                variant: ButtonVariant.success;
+                outline: true;
+            }
+        }
+    }
+
+    GroupBox {
         title: "Icon only";
         variant: GroupBoxVariant.outline;
         HorizontalLayout {

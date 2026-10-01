@@ -8,9 +8,12 @@ import {
 
 component ChartCard inherits Rectangle {
     in property <string> title;
+    in property <string> subtitle;
     in property <string> period;
     in property <string> headline;
     in property <string> note;
+    in property <string> source-title: "";
+    property <string> posted: subtitle == "" ? title : title + " — " + subtitle;
 
     horizontal-stretch: 1;
     border-width: 1px;
@@ -22,10 +25,12 @@ component ChartCard inherits Rectangle {
         spacing: 10px;
         SourceHeading {
             title: root.title;
+            source-title: root.source-title == "" ? root.posted : root.source-title;
             color: Theme.foreground;
             font-size: Theme.font-size-md;
             font-weight: 600;
         }
+        if root.subtitle != "": Text { text: root.subtitle; color: Theme.muted-foreground; font-size: Theme.font-size-sm; }
         if root.period != "": Text { text: root.period; color: Theme.muted-foreground; font-size: Theme.font-size-sm; }
         @children
         if root.headline != "": Text { text: root.headline; color: Theme.foreground; font-size: Theme.font-size-sm; wrap: word-wrap; }
@@ -187,6 +192,14 @@ export component ChartExample inherits VerticalLayout {
         { label: "Jul", a: 52, b: 66 }, { label: "Aug", a: 55, b: 74 }, { label: "Sep", a: 53, b: 69 },
         { label: "Oct", a: 58, b: 81 }, { label: "Nov", a: 56, b: 76 }, { label: "Dec", a: 61, b: 88 },
     ];
+    property <[ChartPoint]> intraday: [
+        { label: "9:30", value: 102 },
+        { label: "10:30", value: 104 },
+        { label: "11:30", value: 101 },
+        { label: "12:30", value: 108 },
+        { label: "13:30", value: 112 },
+        { label: "14:30", value: 110 },
+    ];
     property <[CandlePoint]> candles: [
         { label: "Mar 3", open: 102, high: 108, low: 100, close: 106 },
         { label: "Mar 4", open: 106, high: 110, low: 103, close: 104 },
@@ -229,91 +242,104 @@ export component ChartExample inherits VerticalLayout {
     ];
 
     ChartCard {
-        title: "Visitors";
+        title: "LineChart";
+        subtitle: "Curved";
+        period: "2025";
+        headline: "Trending up by 15.8% this month";
+        note: "Natural cubic spline through twelve months";
+        LineChart { points: months; stroke: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "LineChart";
+        subtitle: "Linear";
+        period: "2025";
+        headline: "Trending up by 12.5% this month";
+        note: "Straight segments between months";
+        LineChart { points: conversion; interpolation: LineInterpolation.linear; stroke: Theme.chart-2; }
+    }
+    ChartCard {
+        title: "LineChart";
+        subtitle: "Step after";
+        period: "2025";
+        headline: "Trending up by 8.8% this month";
+        note: "Step after: the value holds until the next month";
+        LineChart { points: months; interpolation: LineInterpolation.step; stroke: Theme.chart-3; }
+    }
+    ChartCard {
+        title: "LineChart";
+        subtitle: "Dots";
+        period: "Per month, 2025";
+        headline: "Trending up by 19.2% this month";
+        note: "A dot on every month";
+        LineChart { points: deploys; dots: true; stroke: Theme.chart-2; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "AreaChart";
+        subtitle: "Stacked";
         period: "April – June 2025";
         headline: "Trending up by 12.4% this week";
         note: "1.2k visitors over the last three months";
         AreaChart { series: visitors; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
         ChartLegend { points: [{ label: "Desktop", value: 0 }, { label: "Mobile", value: 0 }]; }
     }
-
-    Rule { }
-
     ChartCard {
-        title: "Traffic Sources";
-        period: "June 2025";
-        headline: "Direct brings 38% of traffic";
-        note: "5.4k visitors across five channels";
-        PieChart { points: traffic; }
-        ChartLegend { points: traffic; }
+        title: "AreaChart";
+        subtitle: "Flat fill";
+        period: "2025";
+        headline: "Trending up by 15.8% this month";
+        note: "Filled to the baseline";
+        AreaChart { points: months; fill: Theme.chart-2; }
     }
     ChartCard {
-        title: "Browser Share";
-        period: "June 2025";
-        headline: "Chrome leads by 24 points";
-        note: "Share of sessions by browser family";
-        PieChart { points: browsers; donut: true; }
-        ChartLegend { points: browsers; }
+        title: "AreaChart";
+        subtitle: "Linear";
+        period: "2025";
+        headline: "Trending up by 11.5% this month";
+        note: "Linear interpolation";
+        AreaChart { points: sessions; interpolation: LineInterpolation.linear; fill: Theme.chart-2; }
     }
     ChartCard {
-        title: "Plan Mix";
-        period: "June 2025";
-        headline: "58% of accounts are on a paid plan";
-        note: "9.4k accounts in total";
-        PieChart { points: plans; donut: true; pad-angle: 0.02; }
-        ChartLegend { points: plans; }
+        title: "AreaChart";
+        subtitle: "Step after";
+        period: "Terabytes, 2025";
+        headline: "Trending up by 9.1% this month";
+        note: "Step after, filled";
+        AreaChart { points: storage; interpolation: LineInterpolation.step; fill: Theme.chart-3; }
     }
     ChartCard {
-        title: "Revenue by Region";
-        period: "Q2 2025";
-        headline: "$77 of $100 comes from the two largest regions";
-        note: "Recognized revenue, in US dollars";
-        PieChart { points: regions; donut: true; show-labels: true; inner-radius: 22; outer-radius: 38; }
-    }
-
-    Rule { }
-
-    ChartCard {
-        title: "Product Score";
-        period: "Alpha, Q2 review";
-        headline: "Scores 80 on average";
-        note: "Six review dimensions, scored out of 100";
-        RadarChart { points: scores; }
+        title: "AreaChart";
+        subtitle: "Gradient";
+        period: "2025";
+        headline: "Trending up by 36.1% year over year";
+        note: "Gradient fills fade to the baseline";
+        AreaChart { series: year-over-year; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
+        ChartLegend { points: [{ label: "2024", value: 0 }, { label: "2025", value: 0 }]; }
     }
     ChartCard {
-        title: "Alpha vs Beta";
-        period: "Q2 review";
-        headline: "Alpha leads by 6 points overall";
-        note: "Alpha wins on usability, Beta on reliability";
-        RadarChart { points: scores; multiple: true; }
-        ChartLegend { points: [{ label: "Alpha", value: 0 }, { label: "Beta", value: 0 }]; }
-    }
-    ChartCard {
-        title: "Review Grades";
-        period: "Alpha, Q2 review";
-        headline: "Two dimensions graded A";
-        note: "A from 85, B from 70, C below";
-        RadarChart { points: scores; dots: true; }
-    }
-    ChartCard {
-        title: "Beta Profile";
-        period: "Q2 review";
-        headline: "Strongest on reliability and support";
-        note: "Outline only, five grid rings";
-        RadarChart { points: scores; lines-only: true; grid-levels: 5; stroke: Theme.chart-4; }
+        title: "AreaChart";
+        subtitle: "In progress";
+        period: "Today, in progress";
+        headline: "The session is still open";
+        note: "A pinned y axis, and room for the minutes still to come";
+        AreaChart { points: intraday; interpolation: LineInterpolation.linear; fill: Theme.chart-2; max-value: 130; }
     }
 
     Rule { }
 
     ChartCard {
-        title: "Monthly Revenue";
+        title: "BarChart";
+        subtitle: "Rounded";
         period: "2025";
         headline: "Trending up by 15.8% this month";
         note: "$776 recognized this year";
         BarChart { points: months; rounded: true; fill: Theme.chart-2; }
     }
     ChartCard {
-        title: "Revenue by Region";
+        title: "BarChart";
+        subtitle: "Mixed shades";
         period: "Q2 2025";
         headline: "N. America ahead of Europe by 19";
         note: "One shade per region";
@@ -321,7 +347,8 @@ export component ChartExample inherits VerticalLayout {
         ChartLegend { points: regions; }
     }
     ChartCard {
-        title: "Visitors by Device";
+        title: "BarChart";
+        subtitle: "Stacked";
         period: "First week of April";
         headline: "612 visitors in eight days";
         note: "Stacked by device, a custom Plot";
@@ -329,42 +356,48 @@ export component ChartExample inherits VerticalLayout {
         ChartLegend { points: [{ label: "Desktop", value: 0 }, { label: "Mobile", value: 0 }, { label: "Tablet", value: 0 }, { label: "Watch", value: 0 }]; }
     }
     ChartCard {
-        title: "Signups";
+        title: "BarChart";
+        subtitle: "Fully rounded";
         period: "2025";
         headline: "Trending up by 12.1% this month";
         note: "2.1k new accounts this year; fully rounded bars";
         BarChart { points: signups; rounded: true; show-labels: true; fill: Theme.chart-2; }
     }
     ChartCard {
-        title: "Orders";
+        title: "BarChart";
+        subtitle: "Bottom aligned";
         period: "2025";
         headline: "Trending up by 15.1% this month";
         note: "Bottom aligned: bars grow up from the axis";
         BarChart { points: orders; alignment: BarAlign.bottom; show-labels: true; }
     }
     ChartCard {
-        title: "Refunds";
+        title: "BarChart";
+        subtitle: "Top aligned";
         period: "2025";
         headline: "Trending down by 28.6% this month";
         note: "Top aligned: bars hang from the axis";
         BarChart { points: refunds; alignment: BarAlign.top; show-labels: true; fill: Theme.chart-3; }
     }
     ChartCard {
-        title: "Top Products";
+        title: "BarChart";
+        subtitle: "Left aligned";
         period: "Units sold, Q2 2025";
         headline: "Alpha outsells the next product by 1.1k";
         note: "Left aligned: labels beside horizontal bars";
         BarChart { points: products; alignment: BarAlign.left; show-labels: true; }
     }
     ChartCard {
-        title: "Page Views";
+        title: "BarChart";
+        subtitle: "Right aligned";
         period: "June 2025";
         headline: "/home is the most visited page";
         note: "Right aligned: bars grow leftward";
         BarChart { points: pages; alignment: BarAlign.right; show-labels: true; fill: Theme.chart-4; }
     }
     ChartCard {
-        title: "Net Cash Flow";
+        title: "BarChart";
+        subtitle: "Negative";
         period: "2025";
         headline: "$77 net for the year";
         note: "Revenue less expenses; the axis sits at zero";
@@ -378,42 +411,48 @@ export component ChartExample inherits VerticalLayout {
         }
     }
     ChartCard {
-        title: "Downloads";
+        title: "BarChart";
+        subtitle: "Gradient";
         period: "2025";
         headline: "Trending up by 10.8% this month";
         note: "Shaded across the width, not along the length";
         BarChart { points: downloads; gradient: true; show-labels: true; }
     }
     ChartCard {
-        title: "Refunds";
+        title: "BarChart";
+        subtitle: "Gradient, top aligned";
         period: "2025";
         headline: "Trending down by 28.6% this month";
         note: "The shading stays with the bar as it hangs";
         BarChart { points: refunds; alignment: BarAlign.top; gradient: true; fill: Theme.chart-4; show-labels: true; }
     }
     ChartCard {
-        title: "Page Views";
+        title: "BarChart";
+        subtitle: "Gradient, horizontal";
         period: "June 2025";
         headline: "22k views across the top five pages";
         note: "Horizontal bars shade top to bottom";
         BarChart { points: pages; alignment: BarAlign.left; gradient: true; show-labels: true; }
     }
     ChartCard {
-        title: "Top Products";
+        title: "BarChart";
+        subtitle: "Gradient, right aligned";
         period: "Units sold, Q2 2025";
         headline: "12.7k units across the catalogue";
         note: "The same shading on right-aligned bars";
         BarChart { points: products; alignment: BarAlign.right; gradient: true; fill: Theme.chart-4; show-labels: true; }
     }
     ChartCard {
-        title: "Sessions";
+        title: "BarChart";
+        subtitle: "Gradient, rounded";
         period: "2025";
         headline: "Trending up by 11.5% this month";
         note: "Fully rounded bars keep their shading";
         BarChart { points: sessions; rounded: true; gradient: true; fill: Theme.chart-3; show-labels: true; }
     }
     ChartCard {
-        title: "Orders";
+        title: "BarChart";
+        subtitle: "Diagonal gradient";
         period: "2025";
         headline: "Trending up by 15.1% this month";
         note: "A chart-wide diagonal shade";
@@ -423,107 +462,132 @@ export component ChartExample inherits VerticalLayout {
     Rule { }
 
     ChartCard {
-        title: "Monthly Recurring Revenue";
-        period: "2025";
-        headline: "Trending up by 15.8% this month";
-        note: "Natural cubic spline through twelve months";
-        LineChart { points: months; stroke: Theme.chart-2; }
+        title: "PieChart";
+        subtitle: "Basic";
+        period: "June 2025";
+        headline: "Direct brings 38% of traffic";
+        note: "5.4k visitors across five channels";
+        PieChart { points: traffic; }
+        ChartLegend { points: traffic; }
     }
     ChartCard {
-        title: "Conversion Rate";
-        period: "2025";
-        headline: "Trending up by 12.5% this month";
-        note: "Straight segments between months";
-        LineChart { points: conversion; interpolation: LineInterpolation.linear; stroke: Theme.chart-2; }
+        title: "PieChart";
+        subtitle: "Donut";
+        period: "June 2025";
+        headline: "Chrome leads by 24 points";
+        note: "Share of sessions by browser family";
+        PieChart { points: browsers; donut: true; }
+        ChartLegend { points: browsers; }
     }
     ChartCard {
-        title: "Active Subscriptions";
-        period: "2025";
-        headline: "Trending up by 8.8% this month";
-        note: "Step after: the value holds until the next month";
-        LineChart { points: months; interpolation: LineInterpolation.step; stroke: Theme.chart-3; }
+        title: "PieChart";
+        subtitle: "Gap";
+        period: "June 2025";
+        headline: "58% of accounts are on a paid plan";
+        note: "9.4k accounts in total";
+        PieChart { points: plans; donut: true; pad-angle: 0.02; }
+        ChartLegend { points: plans; }
     }
     ChartCard {
-        title: "Deploys";
-        period: "Per month, 2025";
-        headline: "Trending up by 19.2% this month";
-        note: "A dot on every month";
-        LineChart { points: deploys; dots: true; stroke: Theme.chart-2; }
-    }
-
-    Rule { }
-
-    ChartCard {
-        title: "Active Users";
-        period: "2025";
-        headline: "Trending up by 15.8% this month";
-        note: "Filled to the baseline";
-        AreaChart { points: months; fill: Theme.chart-2; }
-    }
-    ChartCard {
-        title: "Sessions";
-        period: "2025";
-        headline: "Trending up by 11.5% this month";
-        note: "Linear interpolation";
-        AreaChart { points: sessions; interpolation: LineInterpolation.linear; fill: Theme.chart-2; }
-    }
-    ChartCard {
-        title: "Storage Used";
-        period: "Terabytes, 2025";
-        headline: "Trending up by 9.1% this month";
-        note: "Step after, filled";
-        AreaChart { points: storage; interpolation: LineInterpolation.step; fill: Theme.chart-3; }
-    }
-    ChartCard {
-        title: "Revenue vs Last Year";
-        period: "2025";
-        headline: "Trending up by 36.1% year over year";
-        note: "Gradient fills fade to the baseline";
-        AreaChart { series: year-over-year; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
-        ChartLegend { points: [{ label: "2024", value: 0 }, { label: "2025", value: 0 }]; }
+        title: "PieChart";
+        subtitle: "Labels";
+        period: "Q2 2025";
+        headline: "$77 of $100 comes from the two largest regions";
+        note: "Recognized revenue, in US dollars";
+        PieChart { points: regions; donut: true; show-labels: true; inner-radius: 22; outer-radius: 38; }
     }
 
     Rule { }
 
     ChartCard {
-        title: "ACME Daily";
+        title: "RadarChart";
+        subtitle: "Basic";
+        period: "Alpha, Q2 review";
+        headline: "Scores 80 on average";
+        note: "Six review dimensions, scored out of 100";
+        RadarChart { points: scores; }
+    }
+    ChartCard {
+        title: "RadarChart";
+        subtitle: "Two series";
+        period: "Q2 review";
+        headline: "Alpha leads by 6 points overall";
+        note: "Alpha wins on usability, Beta on reliability";
+        RadarChart { points: scores; multiple: true; }
+        ChartLegend { points: [{ label: "Alpha", value: 0 }, { label: "Beta", value: 0 }]; }
+    }
+    ChartCard {
+        title: "RadarChart";
+        subtitle: "Dots";
+        period: "Alpha, Q2 review";
+        headline: "Two dimensions graded A";
+        note: "A from 85, B from 70, C below";
+        RadarChart { points: scores; dots: true; }
+    }
+    ChartCard {
+        title: "RadarChart";
+        subtitle: "Outline";
+        period: "Q2 review";
+        headline: "Strongest on reliability and support";
+        note: "Outline only, five grid rings";
+        RadarChart { points: scores; lines-only: true; grid-levels: 5; stroke: Theme.chart-4; }
+    }
+
+    Rule { }
+
+    ChartCard {
+        title: "CandlestickChart";
+        subtitle: "Daily";
         period: "Mar 3 – Mar 18 2025 · Daily";
         headline: "Trending up by 22.5% over 12 sessions";
         note: "Open, high, low, close";
         CandlestickChart { points: candles; min-price: 90; max-price: 130; tick-margin: 2; }
     }
     ChartCard {
-        title: "ACME Daily";
+        title: "CandlestickChart";
+        subtitle: "Narrow bodies";
         period: "Mar 3 – Mar 18 2025 · Narrow bodies";
         headline: "Trending up by 22.5% over 12 sessions";
         note: "Open, high, low, close";
         CandlestickChart { points: candles; body-width: 0.5; min-price: 90; max-price: 130; tick-margin: 2; }
     }
     ChartCard {
-        title: "ACME Daily";
+        title: "CandlestickChart";
+        subtitle: "Wide bodies";
         period: "Mar 3 – Mar 18 2025 · Wide bodies";
         headline: "Trending up by 22.5% over 12 sessions";
         note: "Open, high, low, close";
         CandlestickChart { points: candles; body-width: 1.0; min-price: 90; max-price: 130; tick-margin: 2; }
     }
     ChartCard {
-        title: "ACME Daily";
+        title: "CandlestickChart";
+        subtitle: "Wider ticks";
         period: "Mar 3 – Mar 18 2025 · Wider ticks";
         headline: "Trending up by 22.5% over 12 sessions";
         note: "Open, high, low, close";
         CandlestickChart { points: candles; min-price: 90; max-price: 130; tick-margin: 3; }
     }
+    ChartCard {
+        title: "CandlestickChart";
+        subtitle: "Every tenth label";
+        period: "Mar 3 – Mar 18 2025 · Every tenth label";
+        headline: "Trending up by 22.5% over 12 sessions";
+        note: "Open, high, low, close";
+        CandlestickChart { points: candles; min-price: 90; max-price: 130; tick-margin: 10; }
+    }
 
     Rule { }
 
     ChartCard {
-        title: "TSLA Income Statement";
+        title: "SankeyChart";
+        subtitle: "FY 2025";
         period: "FY 2025";
         note: "Simplified flow from revenue to operating income";
         SankeyChart { nodes: fy25-nodes; links: fy25-links; }
     }
     ChartCard {
-        title: "TSLA Income Statement";
+        title: "SankeyChart";
+        subtitle: "FY 2024";
         period: "FY 2024";
         note: "Simplified flow from revenue to operating income";
         SankeyChart { nodes: fy24-nodes; links: fy24-links; }

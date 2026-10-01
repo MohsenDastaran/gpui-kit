@@ -28,6 +28,34 @@ use gpui_kit::component::WindowExt;
 
 Like Dialog, you need to set up your application's root view to render the dialog layer. See [Dialog documentation](./dialog.md#setup-application-root-view) for details.
 
+```rust
+AlertDialog::new(cx)
+    .trigger(Button::new("info-alert").outline().label("Discard Draft"))
+    .on_ok(|_, window, cx| {
+        window.push_notification("Draft discarded", cx);
+        true
+    })
+    .content(|content, _, cx| {
+        content
+            .child(
+                DialogHeader::new()
+                    .child(DialogTitle::new().child("Discard unsaved changes?"))
+                    .child(DialogDescription::new().child(
+                        "Your edits since the last save will be permanently lost.",
+                    )),
+            )
+            .child(
+                DialogFooter::new()
+                    .child(DialogClose::new().child(
+                        Button::new("cancel").outline().label("Cancel"),
+                    ))
+                    .child(DialogAction::new().child(
+                        Button::new("ok").label("Discard").danger(),
+                    )),
+            )
+    })
+```
+
 ### Delete file
 
 Using imperative API:
