@@ -137,22 +137,19 @@ interface ShowcaseApp {
     featured: boolean; publishedAt: string | null; stars: number | null; starsUpdatedAt: string | null;
 }
 
-const props = defineProps<{ lang: 'en' | 'zh-CN'; apps: ShowcaseApp[] }>();
+const props = defineProps<{ apps: ShowcaseApp[] }>();
 const apps = props.apps;
 const starFormatter = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
 const formatDate = (date: string) => date.slice(0, 10).replaceAll("-", "/");
 const formatStars = (stars: number) => starFormatter.format(stars);
-const detailUrl = (id: string) => `${props.lang === "zh-CN" ? "/zh-CN" : ""}/apps/${id}`;
+const detailUrl = (id: string) => `/apps/${id}`;
 
-const isZh = computed(() => props.lang === 'zh-CN');
-const locale = computed(() => (isZh.value ? "zh" : "en"));
-
-const CATEGORY_LABELS: Record<string, { en: string; zh: string }> = {
-    all: { en: "All", zh: "全部" },
-    dev: { en: "Developer Tools", zh: "开发工具" },
-    terminal: { en: "Terminal & Network", zh: "终端与网络" },
-    system: { en: "System & Desktop", zh: "系统与桌面" },
-    work: { en: "Productivity & Media", zh: "效率与媒体" },
+const CATEGORY_LABELS: Record<string, string> = {
+    all: "All",
+    dev: "Developer Tools",
+    terminal: "Terminal & Network",
+    system: "System & Desktop",
+    work: "Productivity & Media",
 };
 
 const active = ref("all");
@@ -168,7 +165,7 @@ const clearFilters = () => { query.value = ""; active.value = "all"; };
 const categories = computed(() =>
     Object.entries(CATEGORY_LABELS).map(([id, label]) => ({
         id,
-        label: label[locale.value as 'en' | 'zh'],
+        label,
         count: id === "all" ? apps.length : apps.filter((a) => a.category === id).length,
     })),
 );
@@ -188,11 +185,7 @@ function setPage(section: string, page: number) {
     else allPage.value = page;
 }
 
-const copy = computed(() =>
-    isZh.value
-        ? { featuredPagination: "精选应用分页", allPagination: "全部应用分页", previousPage: "上一页", nextPage: "下一页", pageLabel: (page: number) => `第 ${page} 页`, pageStatus: (page: number, total: number) => `第 ${page} / ${total} 页`, selectionLabel: "应用收录与精选规则", emptyHint: "试试其他关键词或分类。", starsUpdated: "Stars 更新于", featured: "Featured · 精选应用", featuredLead: "由维护者挑选，展示完整、优质的应用案例。", community: "全部应用", communityLead: "探索社区应用，找到适合你的工具。GitHub Stars 每周及案例 PR 合并后更新。", searchLabel: "搜索应用", searchPlaceholder: "名称、作者、平台…", sortLabel: "应用排序", newest: "最新发布", mostStars: "GitHub Stars 最多", published: "发布于", results: (count: number) => `找到 ${count} 个应用`, empty: "没有找到匹配的应用。", clearFilters: "清除筛选", kicker: "应用案例", title: "用 GPUI Kit 做出来的真实应用。", lead: "探索基于 GPUI Kit 构建的桌面应用，从交易终端、开发工具到日常效率软件。", selectionPolicy: "向 Showcase 仓库提交 PR，审核合并后，应用都会列在 App Stories 中，但不保证进入 Featured。", rankingPolicy: "Featured 由维护者结合项目历史、实现情况、完整度与品质挑选。我们会根据各应用后续更新和整体情况微调名单，尽量展示更完整、有代表性的应用。全部应用可按发布时间或 GitHub Stars 排序，也可搜索。", signalCount: `${apps.length} 个应用`, signalLicense: "开源与商业产品", filterLabel: "按类别筛选", commercial: "商业产品", building: "开发中", visit: "官网", sourceLink: "源码", ctaTitle: "你也用 GPUI Kit 做了应用？", ctaLead: "请在 Showcase 仓库提交 PR，包含应用清单和清晰、完整、整洁的窗口截图。审核合并后自动列在本页，Featured 由维护者另行挑选。", ctaAction: "提交你的应用" }
-        : { featuredPagination: "Featured apps pagination", allPagination: "All apps pagination", previousPage: "Previous page", nextPage: "Next page", pageLabel: (page: number) => `Page ${page}`, pageStatus: (page: number, total: number) => `Page ${page} of ${total}`, selectionLabel: "How apps are selected", emptyHint: "Try another keyword or category.", starsUpdated: "Stars updated", featured: "Featured", featuredLead: "Complete, carefully crafted apps selected by the maintainers.", community: "All apps", communityLead: "Explore apps from the community. GitHub Stars refresh weekly and after Showcase PRs merge.", searchLabel: "Search apps", searchPlaceholder: "Name, author, platform…", sortLabel: "Sort apps", newest: "Newest published", mostStars: "Most GitHub Stars", published: "Published", results: (count: number) => `${count} ${count === 1 ? "app" : "apps"} found`, empty: "No apps match your search.", clearFilters: "Clear filters", kicker: "App Stories", title: "Real apps, shipped with GPUI Kit.", lead: "Explore desktop apps built with GPUI Kit, from trading terminals and developer tools to everyday productivity software.", selectionPolicy: "Every app accepted through a merged PR in the Showcase repository is listed in App Stories. A listing does not guarantee a place in Featured.", rankingPolicy: "Maintainers select Featured apps based on project history, implementation, completeness and quality, and revisit the selection as apps evolve to highlight complete, representative examples. Browse all apps by publication date or GitHub Stars, or search the collection.", signalCount: `${apps.length} apps`, signalLicense: "Open source and commercial", filterLabel: "Filter by category", commercial: "Commercial", building: "In development", visit: "Website", sourceLink: "Source", ctaTitle: "Built something with GPUI Kit?", ctaLead: "Open a PR in the Showcase repository with your app manifest and clear, complete, tidy window screenshots. Every merged app PR is published here automatically; maintainers select Featured apps separately.", ctaAction: "Submit your app" },
-);
+const copy = computed(() => ({ featuredPagination: "Featured apps pagination", allPagination: "All apps pagination", previousPage: "Previous page", nextPage: "Next page", pageLabel: (page: number) => `Page ${page}`, pageStatus: (page: number, total: number) => `Page ${page} of ${total}`, selectionLabel: "How apps are selected", emptyHint: "Try another keyword or category.", starsUpdated: "Stars updated", featured: "Featured", featuredLead: "Complete, carefully crafted apps selected by the maintainers.", community: "All apps", communityLead: "Explore apps from the community. GitHub Stars refresh weekly and after Showcase PRs merge.", searchLabel: "Search apps", searchPlaceholder: "Name, author, platform…", sortLabel: "Sort apps", newest: "Newest published", mostStars: "Most GitHub Stars", published: "Published", results: (count: number) => `${count} ${count === 1 ? "app" : "apps"} found`, empty: "No apps match your search.", clearFilters: "Clear filters", kicker: "App Stories", title: "Real apps, shipped with GPUI Kit.", lead: "Explore desktop apps built with GPUI Kit, from trading terminals and developer tools to everyday productivity software.", selectionPolicy: "Every app accepted through a merged PR in the Showcase repository is listed in App Stories. A listing does not guarantee a place in Featured.", rankingPolicy: "Maintainers select Featured apps based on project history, implementation, completeness and quality, and revisit the selection as apps evolve to highlight complete, representative examples. Browse all apps by publication date or GitHub Stars, or search the collection.", signalCount: `${apps.length} apps`, signalLicense: "Open source and commercial", filterLabel: "Filter by category", commercial: "Commercial", building: "In development", visit: "Website", sourceLink: "Source", ctaTitle: "Built something with GPUI Kit?", ctaLead: "Open a PR in the Showcase repository with your app manifest and clear, complete, tidy window screenshots. Every merged app PR is published here automatically; maintainers select Featured apps separately.", ctaAction: "Submit your app" }));
 </script>
 
 <style scoped>

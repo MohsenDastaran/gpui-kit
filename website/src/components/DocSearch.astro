@@ -1,20 +1,15 @@
 ---
 import '@pagefind/default-ui/css/ui.css';
 
-export interface Props {
-  lang?: 'en' | 'zh-CN';
-}
-
-const { lang = 'en' } = Astro.props;
-const isZh = lang === 'zh-CN';
-
-const copy = isZh
-  ? { label: '搜索', title: '搜索文档',
-      emptyTitle: '搜索文档', emptyBody: '查找组件、指南、API 与示例。',
-      navigate: '选择', enter: '打开', esc: '关闭' }
-  : { label: 'Search', title: 'Search documentation',
-      emptyTitle: 'Search documentation', emptyBody: 'Find components, guides, API references and examples.',
-      navigate: 'Navigate', enter: 'Open', esc: 'Close' };
+const copy = {
+  label: 'Search',
+  title: 'Search documentation',
+  emptyTitle: 'Search documentation',
+  emptyBody: 'Find components, guides, API references and examples.',
+  navigate: 'Navigate',
+  enter: 'Open',
+  esc: 'Close',
+};
 ---
 
 <div class="docsearch">

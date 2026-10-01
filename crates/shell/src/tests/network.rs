@@ -561,7 +561,7 @@ fn websocket_sends_ordinary_and_custom_protocol_headers(cx: &mut TestAppContext)
         let mut request = [0; 4096];
         let count = stream.read(&mut request).expect("handshake request");
         let request = String::from_utf8_lossy(&request[..count]).to_ascii_lowercase();
-        assert!(request.contains("accept-language: zh-cn\r\n"), "{request}");
+        assert!(request.contains("accept-language: fr\r\n"), "{request}");
         assert!(
             request.contains("user-agent: protocol-client/1\r\n"),
             "{request}"
@@ -577,7 +577,7 @@ fn websocket_sends_ordinary_and_custom_protocol_headers(cx: &mut TestAppContext)
         .replace(
             "__HEADERS__",
             r#"{
-              "Accept-Language": "zh-CN",
+              "Accept-Language": "fr",
               "User-Agent": "protocol-client/1",
               "X-Protocol-Region": "us"
             }"#,

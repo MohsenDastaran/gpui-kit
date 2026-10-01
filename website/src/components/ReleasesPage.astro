@@ -1,41 +1,21 @@
 ---
 import { loadReleases } from '../lib/releases';
 
-export interface Props {
-  lang?: 'en' | 'zh-CN';
-}
-
-const { lang = 'en' } = Astro.props;
-const isZh = lang === 'zh-CN';
-
 const REPO = 'longbridge/gpui-kit';
 const releases = await loadReleases();
 
-const copy = isZh
-  ? {
-      kicker: '版本发布',
-      title: '发布说明',
-      lead: 'GPUI Kit 每个已发布版本，以及它在 GitHub Release 中的说明，最新版本在最前。说明保留 GitHub 上的英文原文。',
-      latest: '最新版本',
-      count: `${releases.length} 个版本`,
-      github: '在 GitHub 上查看全部版本',
-      latestBadge: '最新',
-      prerelease: '预发布',
-      empty: '构建时未能读取发布说明。',
-      emptyLink: '前往 GitHub 查看版本发布。',
-    }
-  : {
-      kicker: 'Releases',
-      title: 'Release notes',
-      lead: 'Every published version of GPUI Kit, with the notes from its GitHub release. The newest version comes first.',
-      latest: 'Latest',
-      count: `${releases.length} releases`,
-      github: 'All releases on GitHub',
-      latestBadge: 'Latest',
-      prerelease: 'Pre-release',
-      empty: 'The release notes could not be loaded when this page was built.',
-      emptyLink: 'See the releases on GitHub.',
-    };
+const copy = {
+  kicker: 'Releases',
+  title: 'Release notes',
+  lead: 'Every published version of GPUI Kit, with the notes from its GitHub release. The newest version comes first.',
+  latest: 'Latest',
+  count: `${releases.length} releases`,
+  github: 'All releases on GitHub',
+  latestBadge: 'Latest',
+  prerelease: 'Pre-release',
+  empty: 'The release notes could not be loaded when this page was built.',
+  emptyLink: 'See the releases on GitHub.',
+};
 
 const releasesUrl = `https://github.com/${REPO}/releases`;
 ---

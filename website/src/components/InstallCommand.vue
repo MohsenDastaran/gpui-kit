@@ -11,10 +11,6 @@ type Manager = (typeof MANAGERS)[number];
 const STORAGE_KEY = "selected-package-manager";
 const PACKAGE = "@dastaran/uni-kit@latest";
 
-const props = defineProps<{
-  lang?: "en" | "zh-CN";
-}>();
-
 const slug = ref("");
 const manager = ref<Manager>("npx");
 const framework = ref("gpui");
@@ -52,26 +48,11 @@ const command = computed(() => {
   return "";
 });
 
-const unavailableLabel = computed(() =>
-  props.lang === "zh-CN"
-    ? "此框架没有可安装的组件文件。"
-    : "No files to install for this framework.",
-);
-const crateLabel = computed(() =>
-  props.lang === "zh-CN"
-    ? "包含在 gpui-kit crate 中。"
-    : "Ships in the gpui-kit crate.",
-);
-
-const copyLabel = computed(() =>
-  props.lang === "zh-CN" ? "复制命令" : "Copy command",
-);
-const copiedLabel = computed(() =>
-  props.lang === "zh-CN" ? "已复制" : "Copied",
-);
-const managerLabel = computed(() =>
-  props.lang === "zh-CN" ? "包管理器" : "Package manager",
-);
+const unavailableLabel = "No files to install for this framework.";
+const crateLabel = "Ships in the gpui-kit crate.";
+const copyLabel = "Copy command";
+const copiedLabel = "Copied";
+const managerLabel = "Package manager";
 
 function readManager(): Manager {
   const stored = localStorage.getItem(STORAGE_KEY);

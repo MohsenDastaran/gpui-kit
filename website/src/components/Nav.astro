@@ -4,14 +4,12 @@ import FrameworkSelect from './FrameworkSelect.astro';
 import ThemePalette from './ThemePalette.astro';
 
 export interface Props {
-  lang?: 'en' | 'zh-CN';
   currentPath?: string;
   starCount?: number;
 }
 
-const { lang = 'en', currentPath = '', starCount = 0 } = Astro.props;
+const { currentPath = '', starCount = 0 } = Astro.props;
 const base = import.meta.env.BASE_URL;
-const isZh = lang === 'zh-CN';
 
 function url(path: string) {
   return `${base}${path}`.replace(/\/+/g, '/');
@@ -35,7 +33,7 @@ const resourceLinks = [
   { text: 'Discussion', href: 'https://github.com/longbridge/gpui-kit/discussions' },
 ];
 
-const resourcesLabel = isZh ? '资源' : 'Resources';
+const resourcesLabel = 'Resources';
 ---
 
 <nav class="site-nav" aria-label="Primary">
@@ -79,7 +77,7 @@ const resourcesLabel = isZh ? '资源' : 'Resources';
 
     <div class="site-nav__actions">
       <!-- Pagefind search -->
-      <DocSearch lang={lang} />
+      <DocSearch />
 
       <!-- GitHub star -->
       <a
@@ -96,15 +94,15 @@ const resourcesLabel = isZh ? '资源' : 'Resources';
         <span class="github-star-btn__label">{starLabel}</span>
       </a>
 
-      <FrameworkSelect lang={lang} />
+      <FrameworkSelect />
 
-      <ThemePalette lang={lang} />
+      <ThemePalette />
 
       <!-- Mobile menu toggle -->
       <button
         id="nav-burger"
         class="site-nav__burger"
-        aria-label={isZh ? '打开菜单' : 'Open menu'}
+        aria-label="Open menu"
         aria-expanded="false"
         aria-controls="site-nav-links"
         type="button"

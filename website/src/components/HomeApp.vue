@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from "vue";
+import { onBeforeUnmount, ref } from "vue";
 import {
     ArrowRight,
     Blocks,
@@ -21,11 +21,7 @@ import {
 const props = defineProps<{
     starCount: number;
     base: string;
-    lang: 'en' | 'zh-CN';
 }>();
-
-const isZh = computed(() => props.lang === 'zh-CN');
-const localePrefix = computed(() => isZh.value ? 'zh-CN' : '');
 
 function url(path: string) {
     const b = props.base.replace(/\/$/, '');
@@ -35,13 +31,13 @@ function url(path: string) {
 const stars = props.starCount;
 const starLabel = stars >= 1000 ? `${(stars / 1000).toFixed(1)}k` : `${stars}`;
 
-const gettingStartedHref = computed(() => isZh.value ? url('zh-CN/docs/getting-started') : url('docs/getting-started'));
-const componentsHref = computed(() => isZh.value ? url('zh-CN/component') : url('component'));
-const baseHref = computed(() => url('base'));
-const shellHref = computed(() => isZh.value ? url('zh-CN/shell') : url('shell'));
-const contributorsHref = computed(() => isZh.value ? url('zh-CN/contributors') : url('contributors'));
-const skillsHref = computed(() => isZh.value ? url('zh-CN/skills') : url('skills'));
-const llmsHref = computed(() => url('llms-full.txt'));
+const gettingStartedHref = url('docs/getting-started');
+const componentsHref = url('component');
+const baseHref = url('base');
+const shellHref = url('shell');
+const contributorsHref = url('contributors');
+const skillsHref = url('skills');
+const llmsHref = url('llms-full.txt');
 
 // Indent depth and token widths (rem) per line
 const editorLines = [
@@ -87,61 +83,7 @@ const copyInstall = async () => {
 
 onBeforeUnmount(() => clearTimeout(copyTimer));
 
-const copy = computed(() =>
-    isZh.value
-        ? {
-              copyLabel: "复制安装命令",
-              eyebrow: "经过 Longbridge 生产验证",
-              title: "构建出色的高性能桌面应用。",
-              lead: "一个综合性的 Rust 桌面开发框架，集完整 UI 系统、数据表格、Dock 布局、图表与代码编辑器于一体，并可用 JavaScript 扩展；从第一天起用于构建 Longbridge Pro。",
-              componentsAction: "浏览组件",
-              baseAction: "探索 gpui-base",
-              signalStars: "GitHub stars",
-              signalLicense: "Apache-2.0 许可",
-              signalPlatforms: "macOS / Windows / Linux",
-              capsKicker: "核心能力",
-              capsTitle: "为信息密集型软件而生。",
-              capsDescription: "复杂桌面应用真正需要的系统能力，都已整合在框架之中。",
-              caps: [
-                  { icon: "perf", title: "120 FPS 渲染", description: "每一帧都由 GPU 绘制，高密度界面依然稳定流畅，不掉帧。", apis: ["RenderOnce", "GPU"] },
-                  { icon: "table", title: "复杂数据表格", description: "虚拟滚动、列固定、列宽调整、排序与单元格选择，可承载数十万行。", apis: ["Table", "DataTable"] },
-                  { icon: "list", title: "高性能虚拟列表", description: "只渲染可见区域，超长列表滚动依然保持流畅。", apis: ["VirtualList", "List"] },
-                  { icon: "editor", title: "完整代码编辑器", description: "Rope 存储，20 万行仍保持稳定性能；内置 Tree-sitter 高亮与 LSP 诊断、补全、悬浮提示。", apis: ["Rope", "Tree-Sitter", "LSP", "Highlighter"] },
-                  { icon: "dock", title: "Dock 自由布局", description: "面板停靠、拖拽重排与缩放，并可序列化保存。", apis: ["DockArea", "DockLayout", "TabGroup"] },
-                  { icon: "theme", title: "多主题支持", description: "基于语义化 token 的明暗与多主题切换，而非无尽的样式字段。", apis: ["Theme", "ThemeColor", "ActiveTheme"] },
-              ],
-              chooseKicker: "三个层次，一个生态",
-              chooseTitle: "决定由谁掌控视觉系统。",
-              chooseDescription: "使用 gpui-component 保持统一风格，基于 gpui-base 构建自己的设计系统，或用 gpui-shell 让应用可以被 JavaScript 扩展。",
-              shipTitle: "保持风格统一",
-              shipDescription: "gpui-component 提供完整、成熟且开箱即用的视觉与交互系统。",
-              shipPoints: ["60+ 个成品组件", "内置明暗主题", "开箱即用的交互细节"],
-              startComponent: "开始使用",
-              ownTitle: "拥有设计系统",
-              ownDescription: "复用焦点、选择、浮层与虚拟化行为，视觉完全由你决定。",
-              ownPoints: ["零样式原语", "完整可访问性行为", "视觉表达 100% 自主"],
-              startBase: "阅读 gpui-base 文档",
-              scriptTitle: "用 JavaScript 扩展应用",
-              scriptDescription: "宿主仍然是 Rust，扩展是 JavaScript：脚本能碰到什么由宿主逐项授予，界面则在同一个进程里画出来。",
-              scriptPoints: ["扩展产品不必 fork，也不必发新版本", "默认不授予任何系统能力", "保存文件即 hot-reload，无需重启"],
-              startShell: "了解 gpui-shell",
-              principleKicker: "设计原则",
-              principleLead: "行为属于基础层。",
-              principleTail: "视觉属于应用。",
-              principleDetail: "gpui-base 处理困难的交互机制：焦点、浮层定位、虚拟化与无障碍；你的产品决定它们最终呈现的样子。",
-              footerPrefix: "基于 Apache-2.0 许可证开源，由",
-              footerSuffix: " 开发。",
-              footerBuiltOn: "构建于",
-              footerAttribution: " 之上，GPUI 来自 Zed Industries，同样采用 Apache-2.0。",
-              footerNav: "页脚导航",
-              contributors: "贡献者",
-              reportBug: "报告问题",
-              discussion: "讨论",
-              iconCredits: "图标资源来自",
-              and: "与",
-              period: "。",
-          }
-        : {
+const copy = {
               copyLabel: "Copy install command",
               eyebrow: "Proven in production at Longbridge.",
               title: "Build fantastic, high-performance desktop apps.",
@@ -193,8 +135,7 @@ const copy = computed(() =>
               iconCredits: "Icons by",
               and: "and",
               period: ".",
-          },
-);
+          };
 </script>
 
 <template>

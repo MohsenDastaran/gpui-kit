@@ -1,11 +1,5 @@
 ---
-export interface Props {
-  lang?: 'en' | 'zh-CN';
-}
-
-const { lang = 'en' } = Astro.props;
-const isZh = lang === 'zh-CN';
-const label = isZh ? '框架' : 'Framework';
+const label = 'Framework';
 ---
 
 <div class="framework-select" data-framework-select>

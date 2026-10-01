@@ -19,8 +19,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-
 interface Skill {
     id: string;
     name: string;
@@ -28,18 +26,13 @@ interface Skill {
     skillPath: string;
 }
 
-const props = defineProps<{
-    lang: 'en' | 'zh-CN';
+defineProps<{
     skills: Skill[];
 }>();
 
-const isZh = computed(() => props.lang === 'zh-CN');
-const title = computed(() => (isZh.value ? "GPUI Kit 技能" : "GPUI Kit Skills"));
-const description = computed(() =>
-    isZh.value
-        ? "这里汇总了适用于 GPUI Kit 的开发技能、约定和最佳实践。"
-        : "Skills available for working with GPUI Kit. These skills provide guidance and best practices for building GPUI applications.",
-);
+const title = "GPUI Kit Skills";
+const description =
+    "Skills available for working with GPUI Kit. These skills provide guidance and best practices for building GPUI applications.";
 </script>
 
 <style>

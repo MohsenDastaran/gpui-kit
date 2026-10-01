@@ -25,8 +25,6 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
-
 interface Contributor {
     id: number;
     login: string;
@@ -34,22 +32,16 @@ interface Contributor {
     avatar_url: string;
 }
 
-const props = defineProps<{
-    lang: 'en' | 'zh-CN';
+defineProps<{
     contributors: Contributor[];
 }>();
 
-const isZh = computed(() => props.lang === 'zh-CN');
-const title = computed(() => (isZh.value ? "贡献者" : "Contributors"));
-const description = computed(() =>
-    isZh.value ? "感谢所有为这个项目做出贡献的开发者。" : "Thanks to all the people who have contributed to this project!",
-);
-const moreText = computed(() =>
-    isZh.value ? "这里没有展示全部贡献者，完整列表请查看 GitHub 上的 " : "More contributors not shown here. See the full ",
-);
-const contributorsLinkText = computed(() => (isZh.value ? "贡献者列表" : "Contributors"));
+const title = "Contributors";
+const description = "Thanks to all the people who have contributed to this project!";
+const moreText = "More contributors not shown here. See the full ";
+const contributorsLinkText = "Contributors";
 const bgUrl = `${import.meta.env.BASE_URL}contributors.svg`.replace(/\/+/g, '/');
-const suffixText = computed(() => (isZh.value ? "。" : " on GitHub."));
+const suffixText = " on GitHub.";
 </script>
 
 <style>

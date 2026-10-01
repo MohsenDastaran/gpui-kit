@@ -4,10 +4,9 @@ import type { SidebarItem } from '../lib/sidebar';
 export interface Props {
   items: SidebarItem[];
   currentPath: string;
-  lang?: 'en' | 'zh-CN';
 }
 
-const { items, currentPath, lang = 'en' } = Astro.props;
+const { items, currentPath } = Astro.props;
 
 function isActive(link: string): boolean {
   return currentPath === link;

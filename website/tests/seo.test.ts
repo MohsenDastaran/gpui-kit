@@ -31,7 +31,6 @@ test('indexable pages have canonical and English alternates', () => {
     assert.match(html, /<link rel="canonical" href="https:\/\/gpui-kit\.com\//, `${path} canonical`);
     assert.match(html, /hreflang="en"/, `${path} English alternate`);
     assert.match(html, /hreflang="x-default"/, `${path} default alternate`);
-    assert.doesNotMatch(html, /hreflang="zh-CN"/, `${path} has no Chinese alternate`);
   }
 });
 
@@ -115,12 +114,9 @@ test('component links and discovery use canonical routes', () => {
   const index = read('llms.txt');
   const full = read('llms-full.txt');
   assert.ok(sitemap.includes('https://gpui-kit.com/component/button'));
-  assert.ok(!sitemap.includes('https://gpui-kit.com/zh-CN/'));
   assert.ok(index.includes('/component.md'));
   assert.ok(index.includes('/component/button.md'));
-  assert.ok(!index.includes('/zh-CN/'));
   assert.ok(full.includes('Source: /component/button'));
-  assert.ok(!full.includes('/zh-CN/'));
   assert.ok(read('base/primitives/input/index.html').includes('href="/component/input"'));
   assert.ok(read('component/icon/index.html').includes('href="/docs/assets"'));
   assert.ok(read('component/index.html').includes('href="/component/button"'));

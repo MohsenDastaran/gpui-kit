@@ -21,7 +21,6 @@ const props = defineProps<{
   devVersion?: string;
   /** Frameworks besides GPUI with a live example of this component. */
   frameworks?: string[];
-  lang?: "en" | "zh-CN";
 }>();
 
 const isDev = props.devVersion !== undefined;
@@ -168,15 +167,11 @@ const windowTitle = computed(() => {
   return `${title} — ${active.value.library}`;
 });
 
-const missingLabel = computed(() =>
-  props.lang === "zh-CN"
-    ? `此组件暂无 ${active.value.name} 示例。`
-    : `No ${active.value.name} example for this component yet.`,
+const missingLabel = computed(
+  () => `No ${active.value.name} example for this component yet.`,
 );
-const loadingLabel = computed(() =>
-  props.lang === "zh-CN"
-    ? `正在加载 ${active.value.name} 示例…`
-    : `Loading the ${active.value.name} example…`,
+const loadingLabel = computed(
+  () => `Loading the ${active.value.name} example…`,
 );
 
 const target = shallowRef<HTMLElement>();

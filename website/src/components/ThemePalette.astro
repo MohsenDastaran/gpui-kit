@@ -1,26 +1,23 @@
 ---
 import { themes } from '../lib/theme-catalog';
 
-export interface Props { lang?: 'en' | 'zh-CN' }
-const { lang = 'en' } = Astro.props;
-const isZh = lang === 'zh-CN';
 const base = `${import.meta.env.BASE_URL.replace(/\/+$/, '')}/`;
 const choices = [
-  { id: 'system', name: isZh ? '跟随系统' : 'Follow System', family: 'GPUI Kit', mode: 'system' },
-  { id: 'light', name: isZh ? '默认浅色' : 'Default Light', family: 'GPUI Kit', mode: 'light' },
-  { id: 'dark', name: isZh ? '默认深色' : 'Default Dark', family: 'GPUI Kit', mode: 'dark' },
+  { id: 'system', name: 'Follow System', family: 'GPUI Kit', mode: 'system' },
+  { id: 'light', name: 'Default Light', family: 'GPUI Kit', mode: 'light' },
+  { id: 'dark', name: 'Default Dark', family: 'GPUI Kit', mode: 'dark' },
   ...themes,
 ];
 const groups = [
-  { mode: 'system', label: isZh ? '系统' : 'System' },
-  { mode: 'light', label: isZh ? '浅色' : 'Light' },
-  { mode: 'dark', label: isZh ? '深色' : 'Dark' },
+  { mode: 'system', label: 'System' },
+  { mode: 'light', label: 'Light' },
+  { mode: 'dark', label: 'Dark' },
 ];
 ---
 
 <button id="theme-palette-open" class="theme-toggle" type="button"
-  aria-label={isZh ? '选择主题，按 T 打开' : 'Choose theme, press T to open'}
-  aria-keyshortcuts="T" title={isZh ? '选择主题 (T)' : 'Choose theme (T)'}>
+  aria-label="Choose theme, press T to open"
+  aria-keyshortcuts="T" title="Choose theme (T)">
   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
     <path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/>
     <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
@@ -29,15 +26,15 @@ const groups = [
 </button>
 
 <dialog id="theme-palette" aria-labelledby="theme-palette-title">
-  <h2 id="theme-palette-title" class="sr-only">{isZh ? '选择主题' : 'Choose theme'}</h2>
+  <h2 id="theme-palette-title" class="sr-only">Choose theme</h2>
   <label class="theme-palette__search">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
       <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
     </svg>
     <input id="theme-palette-query" type="search" autocomplete="off" aria-controls="theme-palette-list"
-      placeholder={isZh ? '搜索主题…' : 'Search themes…'} aria-label={isZh ? '搜索主题' : 'Search themes'} />
+      placeholder="Search themes…" aria-label="Search themes" />
   </label>
-  <div id="theme-palette-list" class="theme-palette__list" role="listbox" aria-label={isZh ? '可用主题' : 'Available themes'}>
+  <div id="theme-palette-list" class="theme-palette__list" role="listbox" aria-label="Available themes">
     {groups.map((group) => (
       <div class="theme-palette__group" data-theme-group={group.mode} role="group" aria-label={group.label}>
         <div class="theme-palette__heading" aria-hidden="true">{group.label}</div>
@@ -57,7 +54,7 @@ const groups = [
         ))}
       </div>
     ))}
-    <p class="theme-palette__empty" hidden>{isZh ? '没有匹配的主题' : 'No matching themes'}</p>
+    <p class="theme-palette__empty" hidden>No matching themes</p>
   </div>
 </dialog>
 

@@ -1,22 +1,21 @@
 ---
 import DocsLayout from '../layouts/DocsLayout.astro';
 import { getShowcaseReadme } from '../lib/showcases.ts';
-const { app, lang = 'en' } = Astro.props;
-const isZh = lang === 'zh-CN';
+const { app } = Astro.props;
 const html = await getShowcaseReadme(app);
 ---
-<DocsLayout title={`${app.name} — GPUI Kit`} description={app.description} lang={lang}>
+<DocsLayout title={`${app.name} — GPUI Kit`} description={app.description}>
   <div class="showcase-detail">
-    <a class="showcase-detail__back" href={isZh ? '/zh-CN/apps' : '/apps'}>← {isZh ? '全部应用' : 'All apps'}</a>
+    <a class="showcase-detail__back" href="/apps">← All apps</a>
     <header>
       {app.featured && <span class="showcase-detail__featured">Featured</span>}
       <h1>{app.name}</h1>
       <p class="showcase-detail__author">{app.author}</p>
       <p class="showcase-detail__description">{app.description}</p>
       <p class="showcase-detail__meta">{app.platforms.join(' / ')}{app.stars !== null && ` · ★ ${app.stars.toLocaleString()} GitHub Stars`}</p>
-      <nav aria-label={isZh ? '应用链接' : 'App links'}>
-        {app.website && <a href={app.website} target="_blank" rel="noopener noreferrer">{isZh ? '官网' : 'Website'} ↗</a>}
-        {app.source && <a href={app.source} target="_blank" rel="noopener noreferrer">{isZh ? '源码' : 'Source'} ↗</a>}
+      <nav aria-label="App links">
+        {app.website && <a href={app.website} target="_blank" rel="noopener noreferrer">Website ↗</a>}
+        {app.source && <a href={app.source} target="_blank" rel="noopener noreferrer">Source ↗</a>}
       </nav>
     </header>
     <div class="showcase-detail__previews">

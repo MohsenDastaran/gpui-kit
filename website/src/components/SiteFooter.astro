@@ -1,65 +1,33 @@
 ---
-export interface Props {
-  lang?: 'en' | 'zh-CN';
-}
-
-const { lang = 'en' } = Astro.props;
-const isZh = lang === 'zh-CN';
 const base = import.meta.env.BASE_URL;
 
 function url(path: string) {
   return `${base}${path}`.replace(/\/+/g, '/');
 }
 
-const prefix = isZh ? 'zh-CN/' : '';
+const links = [
+  { text: 'Design Guides', href: url('docs/design-guides') },
+  { text: 'Coding Guides', href: url('docs/coding-guides') },
+  { text: 'App Stories', href: url('apps') },
+  { text: 'Contributors', href: url('contributors') },
+  { text: 'Releases', href: url('releases') },
+  { text: 'Skills', href: url('skills') },
+  { text: 'llms-full.txt', href: url('llms-full.txt'), external: true },
+  { text: 'Report Bug', href: 'https://github.com/longbridge/gpui-kit/issues', external: true },
+  { text: 'Discussion', href: 'https://github.com/longbridge/gpui-kit/discussions', external: true },
+];
 
-const links = isZh
-  ? [
-      { text: '设计指南', href: url(`${prefix}docs/design-guides`) },
-      { text: '编码指南', href: url(`${prefix}docs/coding-guides`) },
-      { text: '应用案例', href: url(`${prefix}apps`) },
-      { text: '贡献者', href: url(`${prefix}contributors`) },
-      { text: '版本发布', href: url(`${prefix}releases`) },
-      { text: 'Skills', href: url(`${prefix}skills`) },
-      { text: 'llms-full.txt', href: url('llms-full.txt'), external: true },
-      { text: '报告问题', href: 'https://github.com/longbridge/gpui-kit/issues', external: true },
-      { text: '讨论', href: 'https://github.com/longbridge/gpui-kit/discussions', external: true },
-    ]
-  : [
-      { text: 'Design Guides', href: url('docs/design-guides') },
-      { text: 'Coding Guides', href: url('docs/coding-guides') },
-      { text: 'App Stories', href: url('apps') },
-      { text: 'Contributors', href: url('contributors') },
-      { text: 'Releases', href: url('releases') },
-      { text: 'Skills', href: url('skills') },
-      { text: 'llms-full.txt', href: url('llms-full.txt'), external: true },
-      { text: 'Report Bug', href: 'https://github.com/longbridge/gpui-kit/issues', external: true },
-      { text: 'Discussion', href: 'https://github.com/longbridge/gpui-kit/discussions', external: true },
-    ];
-
-const copy = isZh
-  ? {
-      nav: '页脚导航',
-      prefix: '基于 Apache-2.0 许可证开源，由',
-      suffix: ' 开发。',
-      builtOn: '构建于',
-      attributionMid: ' 之上，GPUI 来自 ',
-      attributionEnd: '，同样采用 Apache-2.0。',
-      iconCredits: '图标资源来自',
-      and: '与',
-      period: '。',
-    }
-  : {
-      nav: 'Footer navigation',
-      prefix: 'Open source under the Apache-2.0 License, developed by',
-      suffix: '.',
-      builtOn: 'Built on',
-      attributionMid: ', the UI framework from ',
-      attributionEnd: ', also Apache-2.0.',
-      iconCredits: 'Icons by',
-      and: 'and',
-      period: '.',
-    };
+const copy = {
+  nav: 'Footer navigation',
+  prefix: 'Open source under the Apache-2.0 License, developed by',
+  suffix: '.',
+  builtOn: 'Built on',
+  attributionMid: ', the UI framework from ',
+  attributionEnd: ', also Apache-2.0.',
+  iconCredits: 'Icons by',
+  and: 'and',
+  period: '.',
+};
 ---
 
 <footer class="site-footer">

@@ -29,7 +29,6 @@ const seoTitle = entry.id.replace(/\.md$/, '') === 'index' ? entry.data.title : 
 <DocsLayout
   title={seoTitle}
   description={entry.data.description}
-  lang="en"
   headings={headings}
   sidebar={enComponentSidebar}
 >
@@ -42,7 +41,6 @@ const seoTitle = entry.id.replace(/\.md$/, '') === 'index' ? entry.data.title : 
       baseUrl={base}
       devVersion={devVersion}
       frameworks={frameworks}
-      lang="en"
     />
   )}
 </DocsLayout>
