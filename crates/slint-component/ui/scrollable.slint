@@ -2,16 +2,33 @@ import { Theme } from "theme.slint";
 
 // A vertical scroll area with an overlay scrollbar. Mirrors GPUI Component's
 // `Scrollable`: the bar stays thin and widens while the pointer is over it.
+//
+// Height is explicit. Without it, Slint copies the content's preferred height
+// onto the flickable, the area grows to fit, and a wheel move never scrolls.
 export component Scrollable {
     in-out property <length> viewport-y <=> flick.viewport-y;
     out property <length> viewport-height <=> flick.viewport-height;
 
+    horizontal-stretch: 1;
+    vertical-stretch: 1;
+    min-width: 0px;
+    min-height: 0px;
+    preferred-width: 100%;
+    preferred-height: 100%;
+
     private property <length> overflow: max(0px, flick.viewport-height - flick.height);
     private property <length> thumb-height: overflow > 0 ? max(24px, flick.height * flick.height / flick.viewport-height) : 0;
 
-    VerticalLayout {
-        flick := Flickable {
-            viewport-width: self.width;
+    flick := Flickable {
+        x: 0px;
+        y: 0px;
+        width: parent.width;
+        height: parent.height;
+        viewport-width: self.width;
+        viewport-height: max(self.height, content.preferred-height);
+
+        content := VerticalLayout {
+            alignment: start;
             @children
         }
     }
@@ -44,6 +61,9 @@ export component Scrollable {
                         -overflow,
                         0px);
                 }
+            }
+            scroll-event(event) => {
+                return reject;
             }
         }
     }

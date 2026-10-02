@@ -1,8 +1,8 @@
-import { Theme } from "../theme.slint";
-import { GroupBox, GroupBoxVariant } from "section.slint";
+import { Theme, ButtonVariant, ControlSize } from "../theme.slint";
+import { GroupBox } from "section.slint";
 import { Card, CardFooter } from "../card.slint";
-import { ButtonVariant } from "../theme.slint";
 import { Button } from "../button.slint";
+import { Input } from "../input.slint";
 
 export component CardExample inherits VerticalLayout {
     horizontal-stretch: 1;
@@ -35,6 +35,74 @@ export component CardExample inherits VerticalLayout {
                 title: "Plan";
                 Text { text: "Team · billed monthly."; color: Theme.muted-foreground; }
             }
+        }
+    }
+
+    GroupBox {
+        title: "Login";
+        Card {
+            title: "Login to your account";
+            description: "Enter your email below to login to your account";
+            Input {
+                placeholder: "m@example.com";
+            }
+            Button {
+                text: "Forgot your password?";
+                variant: ButtonVariant.link;
+                horizontal-stretch: 0;
+            }
+            Button {
+                text: "Login";
+                variant: ButtonVariant.primary;
+                horizontal-stretch: 1;
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Size";
+        Card {
+            title: "Default";
+            description: "The standard inset and title size.";
+        }
+        Card {
+            title: "Small";
+            description: "A compact card for dense layouts.";
+            size: ControlSize.small;
+        }
+    }
+
+    GroupBox {
+        title: "Spacing";
+        Card {
+            title: "16 px";
+            description: "Inset and the gap between sections.";
+            inset: 16px;
+        }
+        Card {
+            title: "20 px";
+            description: "Inset and the gap between sections.";
+            inset: 20px;
+        }
+        Card {
+            title: "24 px";
+            description: "Inset and the gap between sections.";
+            inset: 24px;
+        }
+        Card {
+            title: "32 px";
+            description: "Inset and the gap between sections.";
+            inset: 32px;
+        }
+    }
+
+    GroupBox {
+        title: "Image";
+        Card {
+            cover: @image-url("assets/attachment-preview.svg");
+            badge: "Featured";
+            title: "Design systems meetup";
+            description: "A practical talk on component APIs and shipping faster.";
         }
     }
 

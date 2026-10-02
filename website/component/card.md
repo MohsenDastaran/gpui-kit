@@ -5,7 +5,7 @@ description: A bordered content surface with header, body, and footer parts.
 
 # Card
 
-Card is a presentational container for grouping related content. Compose [`CardHeader`], [`CardTitle`], [`CardDescription`], [`CardContent`], and [`CardFooter`] inside a [`Card`] — the same part structure as shadcn/ui, using GPUI theme tokens for border, radius, and type.
+Card is a presentational container for grouping related content: a heading, supporting text, a body, and an optional footer.
 
 Use [GroupBox](group-box) when the region is a labeled cluster of controls. Use Card when the region is a content surface with a heading and actions.
 
@@ -56,6 +56,16 @@ h_flex()
     )
 ```
 
+### Login
+
+### Size
+
+### Spacing
+
+### Image
+
+<!-- framework: gpui -->
+
 ## Parts
 
 - **Card** — bordered surface, padding, and vertical gap.
@@ -66,6 +76,8 @@ h_flex()
 - **CardFooter** — action row.
 
 All parts implement [`ParentElement`] and [`Styled`], so you can add children and refine layout without a sealed API.
+
+<!-- framework: gpui -->
 
 ## Copy source
 

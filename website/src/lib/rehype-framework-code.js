@@ -156,6 +156,54 @@ function selector(copy, slug) {
   );
 }
 
+const FRAMEWORK_MARK = /framework:\s*(gpui|slint)/;
+
+function isMdBlank(node) {
+  return node.type === 'text' && !String(node.value ?? '').trim();
+}
+
+// `<!-- framework: gpui -->` before a heading keeps that section on one
+// framework. The marker is removed; the heading and the blocks under it carry
+// `data-framework-only`.
+export function remarkFrameworkOnly() {
+  return (tree) => {
+    const visitNode = (node) => {
+      const children = node.children;
+      if (!children) return;
+      for (let index = 0; index < children.length; index += 1) {
+        const child = children[index];
+        if (child.type !== 'html') {
+          visitNode(child);
+          continue;
+        }
+        const match = FRAMEWORK_MARK.exec(child.value ?? '');
+        if (!match) continue;
+        const framework = match[1];
+        children.splice(index, 1);
+        index -= 1;
+        let heading = index + 1;
+        while (heading < children.length && isMdBlank(children[heading])) heading += 1;
+        const head = children[heading];
+        if (!head || head.type !== 'heading') continue;
+        let end = heading + 1;
+        while (end < children.length) {
+          const next = children[end];
+          if (next.type === 'heading' && next.depth <= head.depth) break;
+          end += 1;
+        }
+        for (let at = heading; at < end; at += 1) {
+          const sectionNode = children[at];
+          if (sectionNode.type === 'html' || isMdBlank(sectionNode)) continue;
+          const data = (sectionNode.data ??= {});
+          const props = (data.hProperties ??= {});
+          props['data-framework-only'] = framework;
+        }
+      }
+    };
+    visitNode(tree);
+  };
+}
+
 export function rehypeFrameworkCode() {
   return (tree, file) => {
     const path = String(file?.path ?? file?.history?.[0] ?? '');
