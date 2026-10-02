@@ -5,7 +5,6 @@ import { Input } from "../input.slint";
 
 export component ClipboardExample inherits VerticalLayout {
     horizontal-stretch: 1;
-    private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
@@ -13,26 +12,14 @@ export component ClipboardExample inherits VerticalLayout {
     GroupBox {
         title: "Copy";
         variant: GroupBoxVariant.outline;
-        GridLayout {
-            spacing: 8px;
-            Input {
-                row: Theme.wrap-row(0, root.wrap-cols);
-                col: Theme.wrap-col(0, root.wrap-cols);
-                horizontal-stretch: 0;
-                text: "gpui-kit";
-            }
+        // Stretch fills the card. A grid cell with stretch 0 collapses this
+        // field, because its preferred width is the parent's width.
+        field := Input {
+            min-width: 280px;
+            text: "https://github.com";
             Clipboard {
-                row: Theme.wrap-row(1, root.wrap-cols);
-                col: Theme.wrap-col(1, root.wrap-cols);
-                horizontal-stretch: 0;
-                value: "gpui-kit";
-            }
-            Rectangle {
-                row: 0;
-                col: root.wrap-cols;
-                horizontal-stretch: 1;
+                value: field.text;
             }
         }
     }
-
 }
