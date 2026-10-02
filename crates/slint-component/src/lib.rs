@@ -143,7 +143,8 @@ mod web {
             theme.set_palette(false);
             return;
         };
-        let assign = |value: Option<slint::Color>, fallback: slint::Color| value.unwrap_or(fallback);
+        let assign =
+            |value: Option<slint::Color>, fallback: slint::Color| value.unwrap_or(fallback);
         theme.set_palette_background(background);
         theme.set_palette_foreground(foreground);
         theme.set_palette_surface(assign(color("--card"), background));
@@ -188,10 +189,8 @@ mod web {
         );
         let observer = web_sys::MutationObserver::new(listener.as_ref().unchecked_ref())
             .expect("theme observer");
-        let _ = observer.observe_with_options(
-            &root,
-            web_sys::MutationObserverInit::new().attributes(true),
-        );
+        let _ = observer
+            .observe_with_options(&root, web_sys::MutationObserverInit::new().attributes(true));
         std::mem::forget(observer);
         listener.forget();
     }
@@ -212,12 +211,7 @@ mod web {
     }
 
     fn css_color(color: slint::Color) -> String {
-        format!(
-            "rgb({}, {}, {})",
-            color.red(),
-            color.green(),
-            color.blue()
-        )
+        format!("rgb({}, {}, {})", color.red(), color.green(), color.blue())
     }
 
     fn parse_css_color(value: &str) -> Option<slint::Color> {
@@ -251,8 +245,18 @@ mod web {
         let hex = hex.trim();
         let byte = |index: usize| u8::from_str_radix(&hex[index..index + 2], 16).ok();
         match hex.len() {
-            6 => Some(slint::Color::from_argb_u8(255, byte(0)?, byte(2)?, byte(4)?)),
-            8 => Some(slint::Color::from_argb_u8(byte(6)?, byte(0)?, byte(2)?, byte(4)?)),
+            6 => Some(slint::Color::from_argb_u8(
+                255,
+                byte(0)?,
+                byte(2)?,
+                byte(4)?,
+            )),
+            8 => Some(slint::Color::from_argb_u8(
+                byte(6)?,
+                byte(0)?,
+                byte(2)?,
+                byte(4)?,
+            )),
             _ => None,
         }
     }

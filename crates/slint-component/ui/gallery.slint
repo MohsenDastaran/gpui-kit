@@ -1,5 +1,5 @@
 // The gallery the website embeds: one window showing one component's example,
-// chosen by page slug.
+// chosen by page slug. The page list is generated into gallery-catalog.slint.
 
 import "../fonts/Inter-Regular.ttf";
 import "../fonts/JetBrainsMono-Regular.ttf";
@@ -7,83 +7,8 @@ import "../fonts/NotoEmoji.ttf";
 
 import { Theme } from "theme.slint";
 import { Scrollable } from "scrollable.slint";
-import { AccordionExample } from "examples/accordion.slint";
-import { AlertDialogExample } from "examples/alert-dialog.slint";
-import { AlertExample } from "examples/alert.slint";
-import { AttachmentExample } from "examples/attachment.slint";
-import { AvatarExample } from "examples/avatar.slint";
-import { BadgeExample } from "examples/badge.slint";
-import { BubbleExample } from "examples/bubble.slint";
-import { ButtonExample } from "examples/button.slint";
-import { CalendarExample } from "examples/calendar.slint";
-import { CardExample } from "examples/card.slint";
-import { CarouselExample } from "examples/carousel.slint";
-import { ChartExample } from "examples/chart.slint";
-import { CheckboxExample } from "examples/checkbox.slint";
-import { ClipboardExample } from "examples/clipboard.slint";
-import { CollapsibleExample } from "examples/collapsible.slint";
-import { ColorPickerExample } from "examples/color-picker.slint";
-import { ComboboxExample } from "examples/combobox.slint";
-import { CommandExample } from "examples/command.slint";
-import { DataTableExample } from "examples/data-table.slint";
-import { DatePickerExample } from "examples/date-picker.slint";
-import { DescriptionListExample } from "examples/description-list.slint";
-import { DialogExample } from "examples/dialog.slint";
-import { DockExample } from "examples/dock.slint";
-import { DropdownButtonExample } from "examples/dropdown_button.slint";
-import { EditorExample } from "examples/editor.slint";
-import { EmptyExample } from "examples/empty.slint";
-import { FocusTrapExample } from "examples/focus-trap.slint";
-import { FormExample } from "examples/form.slint";
-import { GroupBoxExample } from "examples/group-box.slint";
-import { HoverCardExample } from "examples/hover-card.slint";
-import { IconExample } from "examples/icon.slint";
-import { ImageExample } from "examples/image.slint";
-import { InputGroupExample } from "examples/input-group.slint";
-import { InputExample } from "examples/input.slint";
-import { KbdExample } from "examples/kbd.slint";
-import { LabelExample } from "examples/label.slint";
-import { ListExample } from "examples/list.slint";
-import { MarkerExample } from "examples/marker.slint";
-import { MenuExample } from "examples/menu.slint";
-import { MessageExample } from "examples/message.slint";
-import { MessageScrollerExample } from "examples/message-scroller.slint";
-import { NotificationExample } from "examples/notification.slint";
-import { NumberInputExample } from "examples/number-input.slint";
-import { OtpInputExample } from "examples/otp-input.slint";
-import { PaginationExample } from "examples/pagination.slint";
-import { PlotExample } from "examples/plot.slint";
-import { PopoverExample } from "examples/popover.slint";
-import { ProgressExample } from "examples/progress.slint";
-import { QuestionnaireExample } from "examples/questionnaire.slint";
-import { RadioExample } from "examples/radio.slint";
-import { RatingExample } from "examples/rating.slint";
-import { ResizableExample } from "examples/resizable.slint";
-import { RootExample } from "examples/root.slint";
-import { ScrollableExample } from "examples/scrollable.slint";
-import { SelectExample } from "examples/select.slint";
-import { SettingsExample } from "examples/settings.slint";
-import { SheetExample } from "examples/sheet.slint";
-import { ShimmerExample } from "examples/shimmer.slint";
-import { SidebarExample } from "examples/sidebar.slint";
-import { SkeletonExample } from "examples/skeleton.slint";
-import { SliderExample } from "examples/slider.slint";
-import { SpinnerExample } from "examples/spinner.slint";
-import { StatusBarExample } from "examples/status-bar.slint";
-import { StepperExample } from "examples/stepper.slint";
-import { SwitchExample } from "examples/switch.slint";
-import { TableExample } from "examples/table.slint";
-import { TabsExample } from "examples/tabs.slint";
-import { TagExample } from "examples/tag.slint";
-import { TextareaExample } from "examples/textarea.slint";
-import { TextViewExample } from "examples/text-view.slint";
-import { ThemeExample } from "examples/theme.slint";
-import { TitleBarExample } from "examples/title-bar.slint";
-import { ToggleExample } from "examples/toggle.slint";
-import { TooltipExample } from "examples/tooltip.slint";
-import { TreeExample } from "examples/tree.slint";
-import { VirtualListExample } from "examples/virtual-list.slint";
 import { ExampleBridge } from "examples/bridge.slint";
+import { GalleryCatalog } from "gallery-catalog.slint";
 
 export { Theme, ExampleBridge }
 
@@ -104,85 +29,9 @@ export component Gallery inherits Window {
 
     VerticalLayout {
         Scrollable {
-            VerticalLayout {
-            alignment: start;
-            if component == "accordion": AccordionExample { }
-            if component == "alert-dialog": AlertDialogExample { }
-            if component == "alert": AlertExample { }
-            if component == "attachment": AttachmentExample { }
-            if component == "avatar": AvatarExample { }
-            if component == "badge": BadgeExample { }
-            if component == "bubble": BubbleExample { }
-            if component == "button": ButtonExample { }
-            if component == "calendar": CalendarExample { }
-            if component == "card": CardExample { }
-            if component == "carousel": CarouselExample { }
-            if component == "chart": ChartExample { }
-            if component == "checkbox": CheckboxExample { }
-            if component == "clipboard": ClipboardExample { }
-            if component == "collapsible": CollapsibleExample { }
-            if component == "color-picker": ColorPickerExample { }
-            if component == "combobox": ComboboxExample { }
-            if component == "command": CommandExample { }
-            if component == "data-table": DataTableExample { }
-            if component == "date-picker": DatePickerExample { }
-            if component == "description-list": DescriptionListExample { }
-            if component == "dialog": DialogExample { }
-            if component == "dock": DockExample { }
-            if component == "dropdown_button": DropdownButtonExample { }
-            if component == "editor": EditorExample { }
-            if component == "empty": EmptyExample { }
-            if component == "focus-trap": FocusTrapExample { }
-            if component == "form": FormExample { }
-            if component == "group-box": GroupBoxExample { }
-            if component == "hover-card": HoverCardExample { }
-            if component == "icon": IconExample { }
-            if component == "image": ImageExample { }
-            if component == "input-group": InputGroupExample { }
-            if component == "input": InputExample { }
-            if component == "kbd": KbdExample { }
-            if component == "label": LabelExample { }
-            if component == "list": ListExample { }
-            if component == "marker": MarkerExample { }
-            if component == "menu": MenuExample { }
-            if component == "message": MessageExample { }
-            if component == "message-scroller": MessageScrollerExample { }
-            if component == "notification": NotificationExample { }
-            if component == "number-input": NumberInputExample { }
-            if component == "otp-input": OtpInputExample { }
-            if component == "pagination": PaginationExample { }
-            if component == "plot": PlotExample { }
-            if component == "popover": PopoverExample { }
-            if component == "progress": ProgressExample { }
-            if component == "questionnaire": QuestionnaireExample { }
-            if component == "radio": RadioExample { }
-            if component == "rating": RatingExample { }
-            if component == "resizable": ResizableExample { }
-            if component == "root": RootExample { }
-            if component == "scrollable": ScrollableExample { }
-            if component == "select": SelectExample { }
-            if component == "settings": SettingsExample { }
-            if component == "sheet": SheetExample { }
-            if component == "shimmer": ShimmerExample { }
-            if component == "sidebar": SidebarExample { }
-            if component == "skeleton": SkeletonExample { }
-            if component == "slider": SliderExample { }
-            if component == "spinner": SpinnerExample { }
-            if component == "status-bar": StatusBarExample { }
-            if component == "stepper": StepperExample { }
-            if component == "switch": SwitchExample { }
-            if component == "table": TableExample { }
-            if component == "tabs": TabsExample { }
-            if component == "tag": TagExample { }
-            if component == "textarea": TextareaExample { }
-            if component == "text-view": TextViewExample { }
-            if component == "theme": ThemeExample { }
-            if component == "title-bar": TitleBarExample { }
-            if component == "toggle": ToggleExample { }
-            if component == "tooltip": TooltipExample { }
-            if component == "tree": TreeExample { }
-            if component == "virtual-list": VirtualListExample { }
-        }
+            GalleryCatalog {
+                component: root.component;
+            }
         }
     }
 }
