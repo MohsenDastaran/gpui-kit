@@ -4,7 +4,7 @@ use gpui_kit::assets::IconName;
 use gpui_kit::base::ElementExt as _;
 use gpui_kit::component::{
     ActiveTheme, Icon, Sizable as _, StyledExt,
-    button::{Button, ButtonVariants as _},
+    button::Button,
     chart::{
         AreaChart, BarChart, CandlestickChart, LineChart, PieChart, RadarChart, SankeyChart,
         SankeyLabel,
@@ -380,7 +380,7 @@ impl Card {
                             .child(
                                 h_flex()
                                     .items_center()
-                                    .gap_1()
+                                    .gap_2()
                                     .when(centered, |this| this.justify_center())
                                     .child(
                                         div()
@@ -400,15 +400,13 @@ impl Card {
                                     .when(example_source::enabled(), |row| {
                                         let source_title = source_title.clone();
                                         row.child(
-                                            Button::new(SharedString::from(format!(
-                                                "chart-source-{}-{}",
-                                                source_title, self.period
-                                            )))
-                                            .icon(IconName::CodeXml)
-                                            .ghost()
-                                            .xsmall()
-                                            .tooltip("View source")
-                                            .accessibility_label("View source")
+                                            example_source::source_button(
+                                                format!(
+                                                    "chart-source-{}-{}",
+                                                    source_title, self.period
+                                                ),
+                                                cx,
+                                            )
                                             .on_click(move |_, _, _| {
                                                 example_source::show(0, &source_title);
                                             }),

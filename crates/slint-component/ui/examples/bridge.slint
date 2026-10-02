@@ -22,7 +22,7 @@ export component SourceHeading inherits HorizontalLayout {
     property <int> index: -1;
     property <string> posted: source-title != "" ? source-title : title;
 
-    spacing: 4px;
+    spacing: 8px;
     vertical-stretch: 0;
 
     init => {
@@ -59,11 +59,15 @@ export component SourceHeading inherits HorizontalLayout {
         alignment: center;
 
         icon := Rectangle {
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             vertical-stretch: 0;
-            border-radius: Theme.radius-sm;
-            background: icon-hit.has-hover ? Theme.accent : transparent;
+            border-radius: Theme.radius-lg;
+            border-width: 1px;
+            border-color: Theme.primary.with-alpha(icon-hit.pressed ? 0.7 : icon-hit.has-hover ? 0.55 : 0.35);
+            background: Theme.primary.with-alpha(icon-hit.pressed ? 0.34 : icon-hit.has-hover ? 0.22 : 0.12);
+            animate background { duration: 120ms; }
+            animate border-color { duration: 120ms; }
             accessible-role: button;
             accessible-label: "View source";
             accessible-action-default => { root.open(); }
@@ -77,8 +81,8 @@ export component SourceHeading inherits HorizontalLayout {
                     x: (parent.width - self.width) / 2;
                     y: (parent.height - self.height) / 2;
                     name: "code-xml";
-                    size: 14px;
-                    color: Theme.muted-foreground;
+                    size: 16px;
+                    color: Theme.primary;
                 }
             }
         }

@@ -118,6 +118,171 @@ component ChartGrid inherits Rectangle {
     }
 }
 
+export global ChartFormat {
+    public pure function num(value: float) -> string {
+        "\{round(value)}"
+    }
+
+    public pure function band(cursor: length, span: length, count: int) -> int {
+        if count <= 1 || span <= 0px {
+            return 0;
+        }
+        min(count - 1, max(0, floor(cursor / span * count)))
+    }
+
+    public pure function nearest(cursor: length, span: length, count: int) -> int {
+        if count <= 1 || span <= 0px {
+            return 0;
+        }
+        min(count - 1, max(0, round(cursor / span * (count - 1))))
+    }
+}
+
+// One second, ease-out quart: the same draw-in GPUI uses for a chart's first paint.
+// It starts when the chart enters the window. Setting it from init would finish
+// before the first frame, and a chart below the fold would already be done.
+component ChartMotion {
+    out property <float> progress: started ? 1 : 0;
+    private property <bool> started: false;
+    private property <int> samples: 0;
+
+    width: 0px;
+    height: 0px;
+    animate progress { duration: 1s; easing: cubic-bezier(0.165, 0.84, 0.44, 1); }
+
+    Timer {
+        interval: 40ms;
+        running: !root.started;
+        triggered => {
+            root.samples += 1;
+            // The first ticks still report every chart at the origin, before layout.
+            if root.samples < 3 || (root.absolute-position.y == 0px && root.samples < 8) {
+                return;
+            }
+            if root.absolute-position.y < 900px && root.absolute-position.y > -160px {
+                root.started = true;
+            }
+        }
+    }
+}
+
+// Crosshair, point, and value card for the plot under the pointer.
+component ChartHover inherits TouchArea {
+    in property <string> title;
+    in property <string> detail;
+    in property <length> mark-x;
+    in property <length> mark-y;
+    in property <color> mark: Theme.chart-2;
+    in property <bool> guide: true;
+    in property <bool> show-point: true;
+    // A horizontal guide, for bars that run sideways.
+    in property <bool> across: false;
+
+    width: 100%;
+    height: 100%;
+    mouse-cursor: default;
+
+    if root.has-hover && guide && !across: Rectangle {
+        x: mark-x;
+        y: 0px;
+        width: 1px;
+        height: 100%;
+        background: Theme.foreground.with-alpha(0.28);
+    }
+    if root.has-hover && guide && across: Rectangle {
+        x: 0px;
+        y: mark-y;
+        width: 100%;
+        height: 1px;
+        background: Theme.foreground.with-alpha(0.28);
+    }
+    if root.has-hover && show-point: Rectangle {
+        x: mark-x - 5px;
+        y: mark-y - 5px;
+        width: 10px;
+        height: 10px;
+        border-radius: 5px;
+        border-width: 2px;
+        border-color: Theme.background;
+        background: mark;
+    }
+    if root.has-hover && title != "": Rectangle {
+        property <length> tip-w: card.preferred-width;
+        property <length> tip-h: card.preferred-height;
+        // Sit beside the pointer. Flip to the other side when the card would leave the plot.
+        property <length> raw-x: root.mouse-x + 14px + tip-w > root.width - 4px
+            ? root.mouse-x - tip-w - 12px
+            : root.mouse-x + 14px;
+        property <length> raw-y: root.mouse-y + 16px + tip-h > root.height - 4px
+            ? root.mouse-y - tip-h - 12px
+            : root.mouse-y + 16px;
+
+        x: max(4px, min(raw-x, root.width - tip-w - 4px));
+        y: max(4px, min(raw-y, root.height - tip-h - 4px));
+        width: tip-w;
+        height: tip-h;
+        border-radius: Theme.radius-md;
+        border-width: 1px;
+        border-color: Theme.border;
+        background: Theme.popover;
+        drop-shadow-blur: 8px;
+        drop-shadow-offset-y: 2px;
+        drop-shadow-color: Theme.shadow;
+
+        card := VerticalLayout {
+            horizontal-stretch: 0;
+            vertical-stretch: 0;
+            padding-left: 8px;
+            padding-right: 8px;
+            padding-top: 4px;
+            padding-bottom: 4px;
+            spacing: 1px;
+            alignment: start;
+            Text {
+                text: root.title;
+                color: Theme.foreground;
+                font-size: Theme.font-size-xs;
+                font-weight: 600;
+                wrap: no-wrap;
+                horizontal-stretch: 0;
+            }
+            if root.detail != "": Text {
+                text: root.detail;
+                color: Theme.muted-foreground;
+                font-size: Theme.font-size-xs;
+                wrap: no-wrap;
+                horizontal-stretch: 0;
+            }
+        }
+    }
+}
+
+// Clips children to a window that grows from the left. The children stay the
+// full plot width, so a line does not stretch as it is revealed.
+component ChartReveal inherits Rectangle {
+    in property <float> progress: 1;
+
+    clip: true;
+    width: 100%;
+    height: 100%;
+
+    Rectangle {
+        clip: true;
+        x: 0px;
+        y: 0px;
+        width: max(0px, parent.width * progress);
+        height: 100%;
+
+        Rectangle {
+            x: 0px;
+            y: 0px;
+            width: root.width;
+            height: 100%;
+            @children
+        }
+    }
+}
+
 // Line through up to twelve points. Curve is a smooth cubic; step is step-after.
 export component LineChart {
     in property <[ChartPoint]> points;
@@ -143,6 +308,7 @@ export component LineChart {
         max(n > 10 ? points[10].value : 0,
             n > 11 ? points[11].value : 0))))))))))));
     private property <float> span: max(n - 1, 1);
+    private property <int> line-at: ChartFormat.nearest(line-hover.mouse-x, line-hover.width, n);
 
     function px(i: int) -> float { 100 * i / span; }
     function py(v: float) -> float { 96 - 88 * clamp(v / peak, 0, 1); }
@@ -176,34 +342,46 @@ export component LineChart {
     horizontal-stretch: 1;
     min-height: plot-height + 24px;
 
+    motion := ChartMotion {}
+
     VerticalLayout {
         spacing: 8px;
         Rectangle {
             height: plot-height;
             ChartGrid { }
-            Path {
-                x: 0px;
-                y: 0px;
-                width: 100%;
-                height: 100%;
-                viewbox-width: 100;
-                viewbox-height: 100;
-                fit: ImageFit.fill;
-                stroke: stroke;
-                stroke-width: 2px;
-                commands: line-path;
-            }
-            if dots: Rectangle {
-                width: 100%;
-                height: 100%;
-                for point[index] in points: Rectangle {
-                    x: parent.width * px(index) / 100 - 3px;
-                    y: parent.height * py(point.value) / 100 - 3px;
-                    width: 6px;
-                    height: 6px;
-                    border-radius: 3px;
-                    background: stroke;
+            ChartReveal {
+                progress: motion.progress;
+                Path {
+                    x: 0px;
+                    y: 0px;
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    fit: ImageFit.fill;
+                    stroke: stroke;
+                    stroke-width: 2px;
+                    commands: line-path;
                 }
+                if dots: Rectangle {
+                    width: 100%;
+                    height: 100%;
+                    for point[index] in points: Rectangle {
+                        x: parent.width * px(index) / 100 - 3px;
+                        y: parent.height * py(point.value) / 100 - 3px;
+                        width: 6px;
+                        height: 6px;
+                        border-radius: 3px;
+                        background: stroke;
+                    }
+                }
+            }
+            line-hover := ChartHover {
+                title: root.n > 0 ? root.points[root.line-at].label : "";
+                detail: root.n > 0 ? ChartFormat.num(root.val(root.line-at)) : "";
+                mark: root.stroke;
+                mark-x: root.n <= 1 ? self.width / 2 : self.width * root.line-at / root.span;
+                mark-y: self.height * root.py(root.val(root.line-at)) / 100;
             }
         }
         PlotLabels { points: root.points; tick-margin: root.tick-margin; }
@@ -217,6 +395,8 @@ export component AreaChart {
     in property <LineInterpolation> interpolation: LineInterpolation.curve;
     in property <color> fill: Theme.chart-2;
     in property <color> fill-b: Theme.chart-4;
+    in property <string> series-a;
+    in property <string> series-b;
     in property <int> tick-margin: 1;
     in property <float> max-value;
     in property <length> plot-height: 140px;
@@ -251,6 +431,7 @@ export component AreaChart {
                 n > 11 ? points[11].value : 0))))))))))));
     private property <float> peak: max-value > 0 ? max-value : raw-peak;
     private property <float> span: max(n - 1, 1);
+    private property <int> area-at: ChartFormat.nearest(area-hover.mouse-x, area-hover.width, n);
 
     function px(i: int) -> float { 100 * i / span; }
     function py(v: float) -> float { 96 - 88 * clamp(v / peak, 0, 1); }
@@ -281,6 +462,24 @@ export component AreaChart {
             + (n > 11 ? line-join(11, upper) : "");
     }
 
+    function area-title() -> string {
+        if n <= 0 {
+            return "";
+        }
+        stacked ? series[area-at].label : points[area-at].label
+    }
+
+    function area-detail() -> string {
+        if n <= 0 {
+            return "";
+        }
+        if !stacked {
+            return ChartFormat.num(points[area-at].value);
+        }
+        (series-a == "" ? "A" : series-a) + "  " + ChartFormat.num(series[area-at].a)
+            + "\n" + (series-b == "" ? "B" : series-b) + "  " + ChartFormat.num(series[area-at].b)
+    }
+
     private property <string> close: n > 0 ? " L \{round(px(n - 1))} 100 L 0 100 Z" : "";
     private property <string> lower-fill: series-line(false) + close;
     private property <string> upper-fill: stacked ? series-line(true) + close : "";
@@ -288,56 +487,68 @@ export component AreaChart {
     horizontal-stretch: 1;
     min-height: plot-height + 24px;
 
+    motion := ChartMotion {}
+
     VerticalLayout {
         spacing: 8px;
         Rectangle {
             height: plot-height;
             ChartGrid { }
-            Path {
-                x: 0px;
-                y: 0px;
-                width: 100%;
-                height: 100%;
-                viewbox-width: 100;
-                viewbox-height: 100;
-                fit: ImageFit.fill;
-                fill: fill.with-alpha(0.35);
-                commands: lower-fill;
+            ChartReveal {
+                progress: motion.progress;
+                Path {
+                    x: 0px;
+                    y: 0px;
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    fit: ImageFit.fill;
+                    fill: fill.with-alpha(0.35);
+                    commands: lower-fill;
+                }
+                if stacked: Path {
+                    x: 0px;
+                    y: 0px;
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    fit: ImageFit.fill;
+                    fill: fill-b.with-alpha(0.35);
+                    commands: upper-fill;
+                }
+                Path {
+                    x: 0px;
+                    y: 0px;
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    fit: ImageFit.fill;
+                    stroke: fill;
+                    stroke-width: 2px;
+                    commands: series-line(false);
+                }
+                if stacked: Path {
+                    x: 0px;
+                    y: 0px;
+                    width: 100%;
+                    height: 100%;
+                    viewbox-width: 100;
+                    viewbox-height: 100;
+                    fit: ImageFit.fill;
+                    stroke: fill-b;
+                    stroke-width: 2px;
+                    commands: series-line(true);
+                }
             }
-            if stacked: Path {
-                x: 0px;
-                y: 0px;
-                width: 100%;
-                height: 100%;
-                viewbox-width: 100;
-                viewbox-height: 100;
-                fit: ImageFit.fill;
-                fill: fill-b.with-alpha(0.35);
-                commands: upper-fill;
-            }
-            Path {
-                x: 0px;
-                y: 0px;
-                width: 100%;
-                height: 100%;
-                viewbox-width: 100;
-                viewbox-height: 100;
-                fit: ImageFit.fill;
-                stroke: fill;
-                stroke-width: 2px;
-                commands: series-line(false);
-            }
-            if stacked: Path {
-                x: 0px;
-                y: 0px;
-                width: 100%;
-                height: 100%;
-                viewbox-width: 100;
-                viewbox-height: 100;
-                fit: ImageFit.fill;
-                stroke: fill-b;
-                stroke-width: 2px;
-                commands: series-line(true);
+            area-hover := ChartHover {
+                title: root.area-title();
+                detail: root.area-detail();
+                mark: root.stacked ? root.fill-b : root.fill;
+                mark-x: root.n <= 1 ? self.width / 2 : self.width * root.area-at / root.span;
+                mark-y: self.height * root.py(root.stacked ? root.high(root.area-at) : root.low(root.area-at)) / 100;
             }
         }
         if !stacked: PlotLabels { points: root.points; tick-margin: root.tick-margin; }
@@ -370,6 +581,10 @@ export component BarChart {
     in property <color> fill: Theme.chart-2;
     in property <length> bar-width: 22px;
     in property <length> plot-height: 140px;
+    in property <string> series-a: "A";
+    in property <string> series-b: "B";
+    in property <string> series-c: "C";
+    in property <string> series-d: "D";
 
     private property <int> n: stacked ? stacks.length : points.length;
     private property <bool> horizontal: alignment == BarAlign.left || alignment == BarAlign.right;
@@ -417,8 +632,40 @@ export component BarChart {
         mixed ? Theme.chart-tone(index) : fill;
     }
 
+    // Bars grow out of the baseline. A finished bar keeps its minimum thickness.
+    function grown(full: length) -> length {
+        full * motion.progress;
+    }
+
+    function bar-name(index: int) -> string {
+        if index < 0 || index >= n {
+            return "";
+        }
+        stacked ? stacks[index].label : points[index].label
+    }
+
+    function bar-detail(index: int) -> string {
+        if index < 0 || index >= n {
+            return "";
+        }
+        if stacked {
+            return series-a + "  " + ChartFormat.num(stacks[index].a) + "\n"
+                + series-b + "  " + ChartFormat.num(stacks[index].b) + "\n"
+                + series-c + "  " + ChartFormat.num(stacks[index].c) + "\n"
+                + series-d + "  " + ChartFormat.num(stacks[index].d);
+        }
+        ChartFormat.num(points[index].value)
+    }
+
+    private property <int> bar-at: ChartFormat.band(
+        horizontal ? bar-hover.mouse-y : bar-hover.mouse-x,
+        horizontal ? bar-hover.height : bar-hover.width,
+        n);
+
     horizontal-stretch: 1;
     min-height: horizontal ? 24px * max(n, 1) + 16px : plot-height + 28px;
+
+    motion := ChartMotion {}
 
     VerticalLayout {
         spacing: 8px;
@@ -434,25 +681,56 @@ export component BarChart {
             }
             Rectangle { horizontal-stretch: 1; height: plot-height; }
         }
-        if !horizontal && stacked: HorizontalLayout {
-            height: plot-height;
+        Rectangle {
+            horizontal-stretch: 1;
+            height: horizontal ? (22px * max(n, 1) + 8px * max(n - 1, 0)) : plot-height;
+            if !horizontal && stacked: HorizontalLayout {
+            width: 100%;
+            height: 100%;
             spacing: 8px;
             alignment: space-around;
             padding-left: 4px;
             padding-right: 4px;
-            for stack in stacks: VerticalLayout {
-                spacing: 0px;
-                alignment: end;
+            for stack in stacks: Rectangle {
                 horizontal-stretch: 1;
-                Rectangle { height: plot-height * stack.d / span; background: Theme.chart-4; border-top-left-radius: corner; border-top-right-radius: corner; }
-                Rectangle { height: plot-height * stack.c / span; background: Theme.chart-3; }
-                Rectangle { height: plot-height * stack.b / span; background: Theme.chart-2; }
-                Rectangle { height: plot-height * stack.a / span; background: Theme.chart-1; }
+                height: plot-height;
+                min-width: 0px;
+                VerticalLayout {
+                    x: (parent.width - self.width) / 2;
+                    y: 0px;
+                    width: root.bar-width;
+                    height: 100%;
+                    alignment: end;
+                    spacing: 0px;
+                    Rectangle {
+                        horizontal-stretch: 1;
+                        height: root.grown(root.plot-height * stack.d / root.span);
+                        background: Theme.chart-4;
+                        border-top-left-radius: root.corner;
+                        border-top-right-radius: root.corner;
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1;
+                        height: root.grown(root.plot-height * stack.c / root.span);
+                        background: Theme.chart-3;
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1;
+                        height: root.grown(root.plot-height * stack.b / root.span);
+                        background: Theme.chart-2;
+                    }
+                    Rectangle {
+                        horizontal-stretch: 1;
+                        height: root.grown(root.plot-height * stack.a / root.span);
+                        background: Theme.chart-1;
+                    }
+                }
             }
         }
 
         if !horizontal && !stacked && around-zero: HorizontalLayout {
-            height: plot-height;
+            width: 100%;
+            height: 100%;
             spacing: 8px;
             alignment: space-around;
             padding-left: 4px;
@@ -465,7 +743,7 @@ export component BarChart {
                     alignment: end;
                     if point.value >= 0: Rectangle {
                         width: bar-width;
-                        height: (plot-height / 2) * point.value / span;
+                        height: root.grown((plot-height / 2) * point.value / span);
                         border-top-left-radius: corner;
                         border-top-right-radius: corner;
                         background: Theme.success;
@@ -478,7 +756,7 @@ export component BarChart {
                     alignment: start;
                     if point.value < 0: Rectangle {
                         width: bar-width;
-                        height: (plot-height / 2) * (-point.value) / span;
+                        height: root.grown((plot-height / 2) * (-point.value) / span);
                         border-bottom-left-radius: corner;
                         border-bottom-right-radius: corner;
                         background: Theme.danger;
@@ -489,7 +767,8 @@ export component BarChart {
         }
 
         if !horizontal && !stacked && !around-zero: HorizontalLayout {
-            height: plot-height;
+            width: 100%;
+            height: 100%;
             spacing: 8px;
             alignment: space-around;
             padding-left: 4px;
@@ -506,7 +785,7 @@ export component BarChart {
                 }
                 Rectangle {
                     width: bar-width;
-                    height: max(4px, plot-height * abs(point.value) / span);
+                    height: root.grown(max(4px, plot-height * abs(point.value) / span));
                     border-radius: rounded ? self.height / 2 : Theme.radius-sm;
                     border-top-left-radius: from-end ? Theme.radius-sm : corner;
                     border-top-right-radius: from-end ? Theme.radius-sm : corner;
@@ -523,6 +802,64 @@ export component BarChart {
                     font-size: Theme.font-size-xs;
                     horizontal-alignment: center;
                 }
+            }
+        }
+
+            if horizontal: VerticalLayout {
+                width: 100%;
+                height: 100%;
+                spacing: 8px;
+                for point[index] in points: HorizontalLayout {
+                    spacing: 8px;
+                    height: 22px;
+                    if !from-end: Text {
+                        width: 72px;
+                        text: point.label;
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-xs;
+                        vertical-alignment: center;
+                        overflow: elide;
+                    }
+                    track := Rectangle {
+                        horizontal-stretch: 1;
+                        height: 14px;
+                        y: 4px;
+                        Rectangle {
+                            x: from-end ? parent.width - self.width : 0px;
+                            y: 0px;
+                            height: 14px;
+                            width: root.grown(max(8px, track.width * abs(point.value) / span));
+                            border-radius: rounded ? 7px : Theme.radius-sm;
+                            background: gradient
+                                ? @linear-gradient(90deg, root.tone-of(index), root.tone-of(index).with-alpha(0.7))
+                                : root.tone-of(index);
+                        }
+                    }
+                    if from-end: Text {
+                        width: 72px;
+                        text: point.label;
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-xs;
+                        vertical-alignment: center;
+                        horizontal-alignment: right;
+                        overflow: elide;
+                    }
+                    if show-labels: Text {
+                        width: 48px;
+                        text: "\{round(point.value)}";
+                        color: Theme.muted-foreground;
+                        font-size: Theme.font-size-xs;
+                        vertical-alignment: center;
+                    }
+                }
+            }
+            bar-hover := ChartHover {
+                across: root.horizontal;
+                title: root.bar-name(root.bar-at);
+                detail: root.bar-detail(root.bar-at);
+                mark: root.stacked ? Theme.chart-1 : root.tone-of(root.bar-at);
+                mark-x: root.horizontal ? self.mouse-x : (root.bar-at + 0.5) * self.width / max(root.n, 1);
+                mark-y: root.horizontal ? (root.bar-at + 0.5) * self.height / max(root.n, 1) : self.mouse-y;
             }
         }
 
@@ -548,53 +885,6 @@ export component BarChart {
                 font-size: Theme.font-size-xs;
                 horizontal-alignment: center;
                 overflow: elide;
-            }
-        }
-
-        if horizontal: VerticalLayout {
-            spacing: 8px;
-            for point[index] in points: HorizontalLayout {
-                spacing: 8px;
-                height: 22px;
-                if !from-end: Text {
-                    width: 72px;
-                    text: point.label;
-                    color: Theme.muted-foreground;
-                    font-size: Theme.font-size-xs;
-                    vertical-alignment: center;
-                    overflow: elide;
-                }
-                track := Rectangle {
-                    horizontal-stretch: 1;
-                    height: 14px;
-                    y: 4px;
-                    Rectangle {
-                        x: from-end ? parent.width - self.width : 0px;
-                        y: 0px;
-                        height: 14px;
-                        width: max(8px, track.width * abs(point.value) / span);
-                        border-radius: rounded ? 7px : Theme.radius-sm;
-                        background: gradient
-                            ? @linear-gradient(90deg, root.tone-of(index), root.tone-of(index).with-alpha(0.7))
-                            : root.tone-of(index);
-                    }
-                }
-                if from-end: Text {
-                    width: 72px;
-                    text: point.label;
-                    color: Theme.muted-foreground;
-                    font-size: Theme.font-size-xs;
-                    vertical-alignment: center;
-                    horizontal-alignment: right;
-                    overflow: elide;
-                }
-                if show-labels: Text {
-                    width: 48px;
-                    text: "\{round(point.value)}";
-                    color: Theme.muted-foreground;
-                    font-size: Theme.font-size-xs;
-                    vertical-alignment: center;
-                }
             }
         }
     }
@@ -670,8 +960,55 @@ export component PieChart {
         Theme.chart-tone(index);
     }
 
+    private property <float> pie-angle: atan2((pie-hover.mouse-y - plot-size / 2) / 1px, (pie-hover.mouse-x - plot-size / 2) / 1px) / 1deg;
+    private property <float> pie-turn: pie-angle + 90 < 0 ? pie-angle + 450 : pie-angle + 90;
+    private property <float> pie-frac: pie-turn / 360;
+    private property <float> pie-dx: (pie-hover.mouse-x - plot-size / 2) / 1px;
+    private property <float> pie-dy: (pie-hover.mouse-y - plot-size / 2) / 1px;
+    private property <float> pie-reach: sqrt(pie-dx * pie-dx + pie-dy * pie-dy);
+    private property <bool> pie-on: n > 0
+        && pie-reach <= plot-size / 1px * outer-radius / 100 + 6
+        && pie-reach + 4 >= plot-size / 1px * hole / 100;
+
+    function pie-holds(index: int) -> bool {
+        index < n && pie-frac >= prefix(index) / total && pie-frac < (prefix(index) + points[index].value) / total
+    }
+
+    private property <int> pie-at: pie-holds(0) ? 0
+        : pie-holds(1) ? 1
+        : pie-holds(2) ? 2
+        : pie-holds(3) ? 3
+        : pie-holds(4) ? 4
+        : pie-holds(5) ? 5
+        : pie-holds(6) ? 6
+        : pie-holds(7) ? 7
+        : 0;
+
+    function pie-name() -> string {
+        if !pie-on || pie-at >= n {
+            return "";
+        }
+        points[pie-at].label
+    }
+
+    function pie-detail() -> string {
+        if !pie-on || pie-at >= n {
+            return "";
+        }
+        ChartFormat.num(points[pie-at].value)
+    }
+
+    function pie-mid() -> float {
+        if pie-at >= n {
+            return -90;
+        }
+        (prefix(pie-at) + points[pie-at].value / 2) / total * 360 - 90
+    }
+
     horizontal-stretch: 1;
     height: plot-size + (show-labels ? 8px : 0);
+
+    motion := ChartMotion {}
 
     Rectangle {
         width: plot-size;
@@ -679,11 +1016,11 @@ export component PieChart {
         x: (parent.width - self.width) / 2;
 
         for point[index] in points: PieSlice {
-            start: prefix(index) / total;
-            sweep: point.value / total;
+            start: prefix(index) / total * motion.progress;
+            sweep: point.value / total * motion.progress;
             inner: hole;
             outer: outer-radius;
-            pad: pad-angle;
+            pad: pad-angle * motion.progress;
             slice-fill: slice-tone(index);
         }
 
@@ -700,6 +1037,15 @@ export component PieChart {
                 font-weight: 600;
             }
         }
+        pie-hover := ChartHover {
+            guide: false;
+            show-point: root.pie-on;
+            title: root.pie-name();
+            detail: root.pie-detail();
+            mark: root.slice-tone(root.pie-at);
+            mark-x: self.width / 2 + self.width * 0.34 * cos(root.pie-mid() * 1deg);
+            mark-y: self.height / 2 + self.height * 0.34 * sin(root.pie-mid() * 1deg);
+        }
     }
 }
 
@@ -711,6 +1057,8 @@ export component RadarChart {
     in property <int> grid-levels: 4;
     in property <color> stroke: Theme.chart-1;
     in property <color> stroke-b: Theme.chart-2;
+    in property <string> series-a: "Alpha";
+    in property <string> series-b: "Beta";
     in property <float> max-value: 100;
     in property <length> plot-size: 200px;
 
@@ -718,6 +1066,27 @@ export component RadarChart {
     private property <float> cx: 50;
     private property <float> cy: 50;
     private property <float> radius: 32;
+    private property <float> radar-angle: atan2((radar-hover.mouse-y - plot-size / 2) / 1px, (radar-hover.mouse-x - plot-size / 2) / 1px) / 1deg;
+    private property <float> radar-turn: radar-angle + 90 < 0 ? radar-angle + 450 : radar-angle + 90;
+    private property <int> radar-at: mod(round(radar-turn / 360 * n), max(n, 1));
+
+    function radar-name() -> string {
+        if radar-at >= points.length {
+            return "";
+        }
+        points[radar-at].label
+    }
+
+    function radar-detail() -> string {
+        if radar-at >= points.length {
+            return "";
+        }
+        if !multiple {
+            return ChartFormat.num(points[radar-at].alpha);
+        }
+        series-a + "  " + ChartFormat.num(points[radar-at].alpha)
+            + "\n" + series-b + "  " + ChartFormat.num(points[radar-at].beta)
+    }
 
     function ang(i: int) -> float { -90 + 360 * i / n; }
     function gx(i: int, t: float) -> float { cx + radius * t * cos(ang(i) * 1deg); }
@@ -733,20 +1102,26 @@ export component RadarChart {
         + (n > 7 ? " L \{gx(7, t)} \{gy(7, t)}" : "")
         + " Z";
     }
+    function reach(use-beta: bool, i: int) -> float {
+        motion.progress * (use-beta ? points[i].beta : points[i].alpha) / max-value;
+    }
+
     function series-path(use-beta: bool) -> string {
-        "M \{gx(0, (use-beta ? points[0].beta : points[0].alpha) / max-value)} \{gy(0, (use-beta ? points[0].beta : points[0].alpha) / max-value)}"
-        + (n > 1 ? " L \{gx(1, (use-beta ? points[1].beta : points[1].alpha) / max-value)} \{gy(1, (use-beta ? points[1].beta : points[1].alpha) / max-value)}" : "")
-        + (n > 2 ? " L \{gx(2, (use-beta ? points[2].beta : points[2].alpha) / max-value)} \{gy(2, (use-beta ? points[2].beta : points[2].alpha) / max-value)}" : "")
-        + (n > 3 ? " L \{gx(3, (use-beta ? points[3].beta : points[3].alpha) / max-value)} \{gy(3, (use-beta ? points[3].beta : points[3].alpha) / max-value)}" : "")
-        + (n > 4 ? " L \{gx(4, (use-beta ? points[4].beta : points[4].alpha) / max-value)} \{gy(4, (use-beta ? points[4].beta : points[4].alpha) / max-value)}" : "")
-        + (n > 5 ? " L \{gx(5, (use-beta ? points[5].beta : points[5].alpha) / max-value)} \{gy(5, (use-beta ? points[5].beta : points[5].alpha) / max-value)}" : "")
-        + (n > 6 ? " L \{gx(6, (use-beta ? points[6].beta : points[6].alpha) / max-value)} \{gy(6, (use-beta ? points[6].beta : points[6].alpha) / max-value)}" : "")
-        + (n > 7 ? " L \{gx(7, (use-beta ? points[7].beta : points[7].alpha) / max-value)} \{gy(7, (use-beta ? points[7].beta : points[7].alpha) / max-value)}" : "")
+        "M \{gx(0, reach(use-beta, 0))} \{gy(0, reach(use-beta, 0))}"
+        + (n > 1 ? " L \{gx(1, reach(use-beta, 1))} \{gy(1, reach(use-beta, 1))}" : "")
+        + (n > 2 ? " L \{gx(2, reach(use-beta, 2))} \{gy(2, reach(use-beta, 2))}" : "")
+        + (n > 3 ? " L \{gx(3, reach(use-beta, 3))} \{gy(3, reach(use-beta, 3))}" : "")
+        + (n > 4 ? " L \{gx(4, reach(use-beta, 4))} \{gy(4, reach(use-beta, 4))}" : "")
+        + (n > 5 ? " L \{gx(5, reach(use-beta, 5))} \{gy(5, reach(use-beta, 5))}" : "")
+        + (n > 6 ? " L \{gx(6, reach(use-beta, 6))} \{gy(6, reach(use-beta, 6))}" : "")
+        + (n > 7 ? " L \{gx(7, reach(use-beta, 7))} \{gy(7, reach(use-beta, 7))}" : "")
         + " Z";
     }
 
     horizontal-stretch: 1;
     height: plot-size + 8px;
+
+    motion := ChartMotion {}
 
     Rectangle {
         width: plot-size;
@@ -795,8 +1170,8 @@ export component RadarChart {
             width: 100%;
             height: 100%;
             for point[index] in points: Rectangle {
-                x: parent.width * gx(index, point.alpha / max-value) / 100 - 3px;
-                y: parent.height * gy(index, point.alpha / max-value) / 100 - 3px;
+                x: parent.width * gx(index, point.alpha / max-value * motion.progress) / 100 - 3px;
+                y: parent.height * gy(index, point.alpha / max-value * motion.progress) / 100 - 3px;
                 width: 6px;
                 height: 6px;
                 border-radius: 3px;
@@ -811,6 +1186,14 @@ export component RadarChart {
             color: Theme.muted-foreground;
             font-size: Theme.font-size-xs;
             horizontal-alignment: center;
+        }
+        radar-hover := ChartHover {
+            guide: false;
+            title: root.radar-name();
+            detail: root.radar-detail();
+            mark: root.stroke;
+            mark-x: self.width * root.gx(root.radar-at, root.reach(false, root.radar-at)) / 100;
+            mark-y: self.height * root.gy(root.radar-at, root.reach(false, root.radar-at)) / 100;
         }
     }
 }
@@ -829,38 +1212,96 @@ export component CandlestickChart {
     private property <float> lo: min-price != 0 || max-price != 0 ? min-price : (n > 0 ? points[0].low : 0);
     private property <float> hi: max-price > min-price ? max-price : (n > 0 ? points[0].high : 1);
     private property <float> range: max(hi - lo, 1);
+    private property <int> candle-at: ChartFormat.band(candle-hover.mouse-x, candle-hover.width, n);
+
+    function candle-title() -> string {
+        if n <= 0 {
+            return "";
+        }
+        points[candle-at].label
+    }
+
+    function candle-detail() -> string {
+        if n <= 0 {
+            return "";
+        }
+        "Open  " + ChartFormat.num(points[candle-at].open) + "\n"
+            + "High  " + ChartFormat.num(points[candle-at].high) + "\n"
+            + "Low  " + ChartFormat.num(points[candle-at].low) + "\n"
+            + "Close  " + ChartFormat.num(points[candle-at].close)
+    }
+
+    function candle-up() -> bool {
+        if n <= 0 {
+            return true;
+        }
+        points[candle-at].close >= points[candle-at].open
+    }
+
+    function candle-mark-y(span: length) -> length {
+        if n <= 0 {
+            return span / 2;
+        }
+        span * (hi - points[candle-at].close) / range
+    }
 
     horizontal-stretch: 1;
     min-height: plot-height + 24px;
 
+    motion := ChartMotion {}
+
     VerticalLayout {
         spacing: 8px;
-        HorizontalLayout {
+        Rectangle {
             height: plot-height;
-            spacing: 4px;
-            alignment: space-around;
-            padding-left: 8px;
-            padding-right: 8px;
-            for point in points: Rectangle {
-                horizontal-stretch: 1;
-                property <bool> up: point.close >= point.open;
-                property <float> top: max(point.open, point.close);
-                property <float> bot: min(point.open, point.close);
-                Rectangle {
-                    x: parent.width / 2 - 1px;
-                    y: parent.height * (hi - point.high) / range;
-                    width: 2px;
-                    height: parent.height * (point.high - point.low) / range;
-                    background: up ? bullish : bearish;
+            ChartReveal {
+                progress: motion.progress;
+                HorizontalLayout {
+                    width: 100%;
+                    height: 100%;
+                    spacing: 4px;
+                    alignment: space-around;
+                    padding-left: 8px;
+                    padding-right: 8px;
+                    for point in points: slot := Rectangle {
+                        // The layout assigns the column. The body reads that
+                        // width; it must not publish its own size back, or the
+                        // candle collapses to the wick.
+                        horizontal-stretch: 1;
+                        vertical-stretch: 1;
+                        min-width: 0px;
+                        preferred-width: 0px;
+                        height: 100%;
+
+                        property <bool> up: point.close >= point.open;
+                        property <float> top: max(point.open, point.close);
+                        property <float> bot: min(point.open, point.close);
+                        property <length> breadth: max(4px, slot.width * min(root.body-width, 1));
+
+                        Rectangle {
+                            x: (slot.width - self.width) / 2;
+                            y: slot.height * (root.hi - point.high) / root.range;
+                            width: 1px;
+                            height: max(1px, slot.height * (point.high - point.low) / root.range);
+                            background: up ? root.bullish : root.bearish;
+                        }
+                        Rectangle {
+                            x: (slot.width - self.width) / 2;
+                            y: slot.height * (root.hi - top) / root.range;
+                            width: breadth;
+                            height: max(2px, slot.height * (top - bot) / root.range);
+                            background: up ? root.bullish : root.bearish;
+                            border-radius: 1px;
+                        }
+                    }
                 }
-                Rectangle {
-                    x: parent.width * (1 - body-width) / 2;
-                    y: parent.height * (hi - top) / range;
-                    width: parent.width * body-width;
-                    height: max(3px, parent.height * (top - bot) / range);
-                    background: up ? bullish : bearish;
-                    border-radius: 1px;
-                }
+            }
+            candle-hover := ChartHover {
+                title: root.candle-title();
+                detail: root.candle-detail();
+                mark: root.candle-up() ? root.bullish : root.bearish;
+                mark-x: (root.candle-at + 0.5) * self.width / max(root.n, 1);
+                mark-y: root.candle-mark-y(self.height);
             }
         }
         HorizontalLayout {
@@ -1045,12 +1486,70 @@ export component SankeyChart {
             + "\{round(col-x(fc) + bar-units())} \{round(src-top(fc, fs, ts) + src-span(fc, fs, value))} Z"
     }
 
+    function sankey-hit(i: int) -> bool {
+        i < node-n
+            && sankey-hover.mouse-x >= sankey-hover.width * col-x(node-col(i)) / 1000
+            && sankey-hover.mouse-x <= sankey-hover.width * col-x(node-col(i)) / 1000 + node-width
+            && sankey-hover.mouse-y >= sankey-hover.height * node-y(node-col(i), node-slot(i)) / 1000
+            && sankey-hover.mouse-y <= sankey-hover.height * (node-y(node-col(i), node-slot(i)) + band(node-col(i), node-slot(i))) / 1000
+    }
+
+    private property <int> sankey-at: sankey-hit(0) ? 0
+        : sankey-hit(1) ? 1
+        : sankey-hit(2) ? 2
+        : sankey-hit(3) ? 3
+        : sankey-hit(4) ? 4
+        : sankey-hit(5) ? 5
+        : sankey-hit(6) ? 6
+        : sankey-hit(7) ? 7
+        : -1;
+
+    function sankey-title() -> string {
+        if sankey-at < 0 || sankey-at >= node-n {
+            return "";
+        }
+        nodes[sankey-at].name
+    }
+
+    function sankey-detail() -> string {
+        if sankey-at < 0 || sankey-at >= node-n {
+            return "";
+        }
+        ChartFormat.num(nodes[sankey-at].value)
+    }
+
+    function sankey-mark() -> color {
+        if sankey-at < 0 || sankey-at >= node-n {
+            return Theme.chart-1;
+        }
+        fill-of(nodes[sankey-at].tone)
+    }
+
+    function sankey-mark-x(span: length) -> length {
+        if sankey-at < 0 {
+            return 0px;
+        }
+        span * col-x(node-col(sankey-at)) / 1000 + node-width / 2
+    }
+
+    function sankey-mark-y(span: length) -> length {
+        if sankey-at < 0 {
+            return 0px;
+        }
+        span * (node-y(node-col(sankey-at), node-slot(sankey-at)) + band(node-col(sankey-at), node-slot(sankey-at)) / 2) / 1000
+    }
+
     horizontal-stretch: 1;
     height: plot-height;
+
+    motion := ChartMotion {}
 
     Rectangle {
         width: 100%;
         height: 100%;
+
+        ChartReveal {
+            progress: motion.progress;
 
         for link in links: Path {
             x: 0px;
@@ -1094,6 +1593,16 @@ export component SankeyChart {
                 font-size: Theme.font-size-xs;
                 overflow: elide;
             }
+        }
+        }
+        sankey-hover := ChartHover {
+            guide: false;
+            show-point: root.sankey-at >= 0;
+            title: root.sankey-title();
+            detail: root.sankey-detail();
+            mark: root.sankey-mark();
+            mark-x: root.sankey-mark-x(self.width);
+            mark-y: root.sankey-mark-y(self.height);
         }
     }
 }

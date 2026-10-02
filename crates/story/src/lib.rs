@@ -418,15 +418,11 @@ impl RenderOnce for StorySection {
                                     )
                                     .when(example_source::enabled(), |row| {
                                         let source_title = source_title.clone();
-                                        row.child(
-                                            Button::new(SharedString::from(format!(
-                                                "example-source-{index}"
-                                            )))
-                                            .icon(gpui_kit::assets::IconName::CodeXml)
-                                            .ghost()
-                                            .xsmall()
-                                            .tooltip("View source")
-                                            .accessibility_label("View source")
+                                        row.gap_2().child(
+                                            example_source::source_button(
+                                                format!("example-source-{index}"),
+                                                cx,
+                                            )
                                             .on_click(move |_, _, _| {
                                                 example_source::show(index, &source_title);
                                             }),

@@ -282,7 +282,7 @@ export component ChartExample inherits VerticalLayout {
         period: "April – June 2025";
         headline: "Trending up by 12.4% this week";
         note: "1.2k visitors over the last three months";
-        AreaChart { series: visitors; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
+        AreaChart { series: visitors; stacked: true; series-a: "Desktop"; series-b: "Mobile"; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
         ChartLegend { points: [{ label: "Desktop", value: 0 }, { label: "Mobile", value: 0 }]; }
     }
     ChartCard {
@@ -315,7 +315,7 @@ export component ChartExample inherits VerticalLayout {
         period: "2025";
         headline: "Trending up by 36.1% year over year";
         note: "Gradient fills fade to the baseline";
-        AreaChart { series: year-over-year; stacked: true; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
+        AreaChart { series: year-over-year; stacked: true; series-a: "2024"; series-b: "2025"; fill: Theme.chart-1; fill-b: Theme.chart-2; tick-margin: 2; }
         ChartLegend { points: [{ label: "2024", value: 0 }, { label: "2025", value: 0 }]; }
     }
     ChartCard {
@@ -352,7 +352,7 @@ export component ChartExample inherits VerticalLayout {
         period: "First week of April";
         headline: "612 visitors in eight days";
         note: "Stacked by device, a custom Plot";
-        BarChart { stacks: devices; stacked: true; }
+        BarChart { stacks: devices; stacked: true; series-a: "Desktop"; series-b: "Mobile"; series-c: "Tablet"; series-d: "Watch"; }
         ChartLegend { points: [{ label: "Desktop", value: 0 }, { label: "Mobile", value: 0 }, { label: "Tablet", value: 0 }, { label: "Watch", value: 0 }]; }
     }
     ChartCard {
