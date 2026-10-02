@@ -1,8 +1,9 @@
-import { Theme, Status } from "theme.slint";
+import { Theme, Status, ControlSize } from "theme.slint";
 import { Icon } from "icon.slint";
 
 // A callout for user attention. Mirrors GPUI Component's `Alert`: status
-// variants, an optional title, a closable banner, and custom icons.
+// variants, an optional title, sizes, a closable banner, and custom icons.
+// `open` is the visibility flag. Formatted body content goes in `@children`.
 export component Alert {
     in property <string> title;
     in property <string> message;
@@ -10,6 +11,7 @@ export component Alert {
     in property <string> icon;
     in property <bool> closable;
     in property <bool> banner;
+    in property <ControlSize> size: ControlSize.medium;
     in-out property <bool> open: true;
     callback closed();
 
@@ -24,24 +26,34 @@ export component Alert {
         : status == Status.warning ? "triangle-alert"
         : status == Status.danger ? "circle-x"
         : "info";
+    // GPUI keeps text-sm at every size and only changes padding, gap, and radius.
+    private property <length> pad-x: size == ControlSize.large ? 20px
+        : size == ControlSize.medium ? 16px
+        : 12px;
+    private property <length> pad-y: size == ControlSize.xsmall ? 6px
+        : size == ControlSize.small ? 8px
+        : size == ControlSize.large ? 14px
+        : 10px;
+    private property <length> content-gap: size == ControlSize.xsmall || size == ControlSize.small ? 6px : 12px;
+    private property <length> corner: size == ControlSize.large ? Theme.radius-lg : Theme.radius-md;
 
     visible: root.open;
     horizontal-stretch: 1;
 
     Rectangle {
         horizontal-stretch: 1;
-        border-radius: banner ? 0 : Theme.radius-md;
+        border-radius: banner ? 0 : corner;
         border-width: 1px;
         border-color: edge;
         background: fill;
 
         HorizontalLayout {
             width: 100%;
-            padding-left: banner ? 12px : 16px;
+            padding-left: banner ? 12px : pad-x;
             padding-right: self.padding-left;
-            padding-top: banner ? 8px : 10px;
+            padding-top: banner ? 8px : pad-y;
             padding-bottom: self.padding-top;
-            spacing: 12px;
+            spacing: banner ? 12px : content-gap;
             // `start` packs every item at its preferred width and drops
             // stretch, which leaves the close control beside the title.
             // Stretch gives the message column the leftover width so the

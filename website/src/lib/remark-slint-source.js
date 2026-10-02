@@ -364,7 +364,6 @@ const ALIASES = {
   },
   alert: {
     'Alert with Title': 'Default',
-    'Closable Alerts': 'Default',
     'Success Notification': 'Variants',
     'System Status Banner': 'Banner',
     'Form Validation Errors': 'Variants',

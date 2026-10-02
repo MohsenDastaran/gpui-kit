@@ -1,7 +1,8 @@
-import { Theme } from "../theme.slint";
+import { Theme, Status, ControlSize } from "../theme.slint";
 import { GroupBox } from "section.slint";
 import { Alert } from "../alert.slint";
-import { Status } from "../theme.slint";
+import { Switch } from "../switch.slint";
+import { TextView, TextParagraph } from "../text-view.slint";
 
 export component AlertExample inherits VerticalLayout {
     horizontal-stretch: 1;
@@ -10,6 +11,8 @@ export component AlertExample inherits VerticalLayout {
     alignment: start;
 
     property <bool> banner-open: true;
+    property <bool> should-show-alert: true;
+    property <bool> update-dismissed;
 
     GroupBox {
         title: "Default";
@@ -83,6 +86,142 @@ export component AlertExample inherits VerticalLayout {
             title: "Two events overlap by 30 minutes";
             message: "The quarterly planning review overlaps with the APAC operations call. Move one event or invite another owner before sending the agenda.";
             icon: "calendar";
+        }
+    }
+
+    GroupBox {
+        title: "Alert Sizes";
+        Alert {
+            title: "XSmall Alert";
+            message: "Message content";
+            status: Status.info;
+            size: ControlSize.xsmall;
+        }
+        Alert {
+            title: "Small Alert";
+            message: "Message content";
+            status: Status.info;
+            size: ControlSize.small;
+        }
+        Alert {
+            title: "Medium Alert";
+            message: "Message content";
+            status: Status.info;
+        }
+        Alert {
+            title: "Large Alert";
+            message: "Message content";
+            status: Status.info;
+            size: ControlSize.large;
+        }
+    }
+
+    GroupBox {
+        title: "Closable Alerts";
+        Alert {
+            title: "Dismissible";
+            message: "This alert can be dismissed.";
+            status: Status.info;
+            closable: true;
+        }
+    }
+
+    GroupBox {
+        title: "With Markdown Content";
+        Alert {
+            title: "Payment Failed";
+            status: Status.danger;
+            TextView {
+                TextParagraph {
+                    text: "Please verify your billing information and try again.";
+                    color: Theme.danger;
+                }
+                TextParagraph {
+                    text: "• Check your card details";
+                    color: Theme.danger;
+                }
+                TextParagraph {
+                    text: "• Ensure sufficient funds";
+                    color: Theme.danger;
+                }
+                TextParagraph {
+                    text: "• Verify billing address";
+                    color: Theme.danger;
+                }
+            }
+        }
+    }
+
+    GroupBox {
+        title: "Conditional Visibility";
+        Switch {
+            label: "Show alert";
+            checked <=> root.should-show-alert;
+        }
+        Alert {
+            title: "Conditional";
+            message: "This alert may be hidden.";
+            status: Status.info;
+            open: root.should-show-alert;
+        }
+    }
+
+    GroupBox {
+        title: "Interactive Alert with Custom Action";
+        Alert {
+            title: "Update Available";
+            message: "A new version of the application is available.";
+            status: Status.info;
+            icon: "download";
+            closable: true;
+            closed => {
+                root.update-dismissed = true;
+            }
+        }
+        if root.update-dismissed: Text {
+            text: "Update dismissed";
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-sm;
+        }
+    }
+
+    GroupBox {
+        title: "Multi-line Content with Formatting";
+        Alert {
+            title: "Security Alert";
+            status: Status.warning;
+            icon: "shield";
+            TextView {
+                TextParagraph {
+                    text: "Security Notice";
+                    color: Theme.warning;
+                    font-weight: 600;
+                }
+                TextParagraph {
+                    text: "Unusual activity detected on your account.";
+                    color: Theme.warning;
+                }
+                TextParagraph {
+                    text: "Recent activity:";
+                    color: Theme.warning;
+                }
+                TextParagraph {
+                    text: "• Login from new device (Chrome on Windows)";
+                    color: Theme.warning;
+                }
+                TextParagraph {
+                    text: "• Location: San Francisco, CA";
+                    color: Theme.warning;
+                }
+                TextParagraph {
+                    text: "• Time: Today at 2:30 PM";
+                    color: Theme.warning;
+                }
+                TextParagraph {
+                    text: "If this wasn't you, please change your password immediately.";
+                    color: Theme.warning;
+                }
+            }
         }
     }
 }
