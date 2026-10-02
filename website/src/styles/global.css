@@ -2143,6 +2143,11 @@ html[data-framework="slint"]
   display: block;
 }
 
+html[data-framework="slint"] [data-framework-only="gpui"],
+html:not([data-framework="slint"]) [data-framework-only="slint"] {
+  display: none;
+}
+
 .framework-api__panel[data-framework-panel="slint"],
 html[data-framework="slint"]
   .framework-api__panel[data-framework-panel="gpui"] {

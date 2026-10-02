@@ -66,7 +66,14 @@ const label = 'On this page';
         return;
       }
       const id = decodeURIComponent(link.hash.slice(1));
-      const panel = document.getElementById(id)?.closest<HTMLElement>('[data-framework-panel]');
+      const target = document.getElementById(id);
+      const only = target?.dataset.frameworkOnly;
+      if (only && only !== framework) {
+        item.hidden = true;
+        link.classList.remove('is-current');
+        return;
+      }
+      const panel = target?.closest<HTMLElement>('[data-framework-panel]');
       item.hidden = panel ? panel.dataset.frameworkPanel !== framework : false;
       if (item.hidden) link.classList.remove('is-current');
     });

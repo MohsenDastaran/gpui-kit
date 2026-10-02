@@ -4,8 +4,8 @@ import { logoElement } from './toggle-logos.js';
 
 // Component pages carry one copy-paste block per framework. ```slint fences
 // directly after a Rust fence become that example's Slint version; any other
-// block is GPUI. A framework without a fence gets a visible placeholder, so the
-// page shows what is missing instead of silently hiding the example.
+// block is GPUI. A block that only one framework has is omitted from the other
+// framework, including the heading that introduces nothing else.
 
 export const FRAMEWORKS = ['gpui', 'slint'];
 
@@ -31,6 +31,82 @@ function frameworkOf(pre) {
 
 function isBlank(node) {
   return node.type === 'text' && !node.value.trim();
+}
+
+function classNames(node) {
+  const value = node.properties?.className;
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'string') return value.split(/\s+/);
+  return [];
+}
+
+function headingDepth(node) {
+  return node.type === 'element' ? Number(/^h([1-6])$/.exec(node.tagName)?.[1] ?? 0) : 0;
+}
+
+function panelIsMissing(panel) {
+  return (panel.children ?? []).some((child) => classNames(child).includes('framework-code__missing'));
+}
+
+// A sample that exists in only one framework, and a heading whose section is
+// made entirely of those samples. The other framework drops both.
+function markSingleFramework(tree) {
+  const visitNode = (node) => {
+    for (const child of node.children ?? []) visitNode(child);
+    if (node.children) markSections(node.children);
+  };
+  visitNode(tree);
+}
+
+function markSections(children) {
+  for (const node of children) {
+    if (!classNames(node).includes('framework-code')) continue;
+    const panels = (node.children ?? []).filter((child) => child.properties?.dataFrameworkPanel);
+    const present = panels.filter((panel) => !panelIsMissing(panel));
+    if (present.length === 1) node.properties.dataFrameworkOnly = present[0].properties.dataFrameworkPanel;
+  }
+
+  const headings = children
+    .map((node, index) => ({ node, index, depth: headingDepth(node) }))
+    .filter((item) => item.depth > 0)
+    .sort((a, b) => b.depth - a.depth || b.index - a.index);
+
+  for (const heading of headings) {
+    let end = children.length;
+    for (let index = heading.index + 1; index < children.length; index += 1) {
+      const depth = headingDepth(children[index]);
+      if (depth && depth <= heading.depth) {
+        end = index;
+        break;
+      }
+    }
+    for (const framework of FRAMEWORKS) {
+      if (!sectionBelongsTo(children, heading.index + 1, end, framework)) continue;
+      heading.node.properties ??= {};
+      heading.node.properties.dataFrameworkOnly = framework;
+      break;
+    }
+  }
+}
+
+function sectionBelongsTo(children, start, end, framework) {
+  let saw = false;
+  for (let index = start; index < end; index += 1) {
+    const node = children[index];
+    if (isBlank(node)) continue;
+    if (headingDepth(node)) {
+      if (node.properties?.dataFrameworkOnly !== framework) return false;
+      saw = true;
+      continue;
+    }
+    const only = node.properties?.dataFrameworkOnly;
+    if (only === framework) {
+      saw = true;
+      continue;
+    }
+    return false;
+  }
+  return saw;
 }
 
 function missing(copy, framework, covered) {
@@ -131,6 +207,8 @@ export function rehypeFrameworkCode() {
       parent.children[index] = group;
       open = framework === 'gpui' ? { group, parent, slint: panels.slint, filled: false } : null;
     }
+
+    markSingleFramework(tree);
 
     const title = tree.children.findIndex((node) => node.type === 'element' && node.tagName === 'h1');
     if (title === -1) return;
