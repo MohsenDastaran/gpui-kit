@@ -401,10 +401,6 @@ const ALIASES = {
   calendar: {
     'Multiple Months Display': 'Two columns',
   },
-  checkbox: {
-    'Disabled State': 'Basic',
-    'Checkbox List': 'Basic',
-  },
   clipboard: {
     'Basic Clipboard': 'Copy',
   },
@@ -563,6 +559,9 @@ const SHARED = {
     Basic: 'Usage',
     Vertical: 'Orientation',
     Controlled: 'Controlled selection',
+  },
+  checkbox: {
+    Disabled: 'Disabled State',
   },
   chart: {
     LineChart: 'LineChart',

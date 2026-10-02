@@ -6,6 +6,9 @@ import { ControlSize } from "../theme.slint";
 export component CheckboxExample inherits VerticalLayout {
     horizontal-stretch: 1;
     private property <int> wrap-cols: Theme.wrap-columns(Theme.viewport);
+    private property <bool> updates: false;
+    private property <bool> terms: false;
+    private property <bool> newsletter: true;
     padding: Theme.page-padding(Theme.viewport);
     spacing: 24px;
     alignment: start;
@@ -28,6 +31,17 @@ export component CheckboxExample inherits VerticalLayout {
         Checkbox {
             label: "Disabled";
             enabled: false;
+        }
+    }
+    GroupBox {
+        title: "Default";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "Product updates";
+        }
+        Checkbox {
+            label: "Remember this device";
+            checked: true;
         }
     }
     GroupBox {
@@ -74,5 +88,79 @@ export component CheckboxExample inherits VerticalLayout {
             }
         }
     }
-
+    GroupBox {
+        title: "Controlled Checkbox";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "Receive product updates";
+            checked <=> root.updates;
+        }
+        Text {
+            text: root.updates ? "Subscribed" : "Not subscribed";
+            color: Theme.muted-foreground;
+            font-size: Theme.font-size-xs;
+        }
+    }
+    GroupBox {
+        title: "Disabled State";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "Checked";
+            checked: true;
+            enabled: false;
+        }
+        Checkbox {
+            label: "Unchecked";
+            enabled: false;
+        }
+    }
+    GroupBox {
+        title: "Without label";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            checked: true;
+        }
+    }
+    GroupBox {
+        title: "Labels";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "Automatic updates";
+            description: "Download updates when the application is idle.";
+            checked: true;
+        }
+        Checkbox {
+            label: "Notify me when a new device signs in to my account";
+        }
+        Checkbox {
+            label: "Accept the terms";
+            description: "Read the terms of service before continuing.";
+        }
+    }
+    GroupBox {
+        title: "Checkbox List";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "Option 1";
+            checked: true;
+        }
+        Checkbox {
+            label: "Option 2";
+        }
+        Checkbox {
+            label: "Option 3";
+        }
+    }
+    GroupBox {
+        title: "Form Integration";
+        variant: GroupBoxVariant.outline;
+        Checkbox {
+            label: "I agree to the terms and conditions";
+            checked <=> root.terms;
+        }
+        Checkbox {
+            label: "Subscribe to newsletter";
+            checked <=> root.newsletter;
+        }
+    }
 }

@@ -109,7 +109,7 @@ impl Render for CheckboxStory {
                     ),
             )
             .child(
-                section("Disabled")
+                section("Disabled State")
                     .description("Both checked and unchecked values remain visible.")
                     .w_128()
                     .child(

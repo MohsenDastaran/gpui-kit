@@ -29,6 +29,20 @@ Checkbox::new("my-checkbox")
 
 The `on_change` callback is triggered when the user toggles the checkbox, receiving the **new checked state**.
 
+### Default
+
+Checked and unchecked options can be mixed freely.
+
+```rust
+Checkbox::new("updates")
+    .label("Product updates")
+    .checked(false)
+
+Checkbox::new("remember")
+    .label("Remember this device")
+    .checked(true)
+```
+
 ### Sizes
 
 ```rust
@@ -82,10 +96,15 @@ impl Render for ControlledCheckbox {
 ```rust
 use gpui_kit::component::Disableable as _;
 
-Checkbox::new("checkbox")
-    .label("Disabled checkbox")
+Checkbox::new("disabled-checked")
+    .label("Checked")
+    .checked(true)
     .disabled(true)
+
+Checkbox::new("disabled-unchecked")
+    .label("Unchecked")
     .checked(false)
+    .disabled(true)
 ```
 
 ### Without Label
@@ -93,6 +112,29 @@ Checkbox::new("checkbox")
 ```rust
 Checkbox::new("checkbox")
     .checked(true)
+```
+
+### Labels
+
+Labels can wrap and include supporting content.
+
+```rust
+Checkbox::new("description")
+    .label("Automatic updates")
+    .child(
+        div()
+            .text_xs()
+            .child("Download updates when the application is idle."),
+    )
+
+Checkbox::new("wrapping")
+    .label("Notify me when a new device signs in to my account")
+
+Checkbox::new("markdown")
+    .label("Accept the terms")
+    .child(markdown(
+        "Read the [terms of service](https://github.com) before continuing.",
+    ))
 ```
 
 ### Custom Tab Order

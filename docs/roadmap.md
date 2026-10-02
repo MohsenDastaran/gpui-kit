@@ -140,7 +140,7 @@ The sample is the gallery example that is already running, not a separately writ
 - [x] Card
 - [x] Carousel
 - [x] Chart
-- [ ] Checkbox
+- [x] Checkbox
 - [ ] Clipboard
 - [ ] Collapsible
 - [ ] Color picker

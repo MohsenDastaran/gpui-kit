@@ -27,6 +27,7 @@ const FIRST_BATCH = [
   'card',
   'carousel',
   'chart',
+  'checkbox',
 ];
 
 function headingText(node) {
