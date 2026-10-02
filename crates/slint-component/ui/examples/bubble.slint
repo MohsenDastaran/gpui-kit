@@ -341,7 +341,15 @@ export component BubbleExample inherits VerticalLayout {
         title: "Custom style";
         Bubble {
             show-avatar: false;
-            custom-style: true;
+            // Success is the semantic green. The fill is a tint, the label and
+            // border use the same role so the contrast stays paired.
+            fill: Theme.success.with-alpha(0.15);
+            text-color: Theme.success;
+            border-color: Theme.success.with-alpha(0.35);
+            border-width: 1px;
+            radius: Theme.radius-lg;
+            padding-x: 16px;
+            padding-y: 12px;
             text: "Custom semantic color";
         }
     }
